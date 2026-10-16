@@ -1,0 +1,390 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+        typeName: 'Item',
+        typeNamePlural: 'Items',
+        title: { label: 'Item ',
+                 value: 'Item_Id',
+                 type: #STANDARD }
+  },
+  textArrangement: #TEXT_LAST
+  }
+@UI.presentationVariant: [{requestAtLeast: ['Id','Item_Id']}]
+@UI.lineItem: [{criticality: 'StatusCriticality'}]
+annotate entity ZC_INTERCOPROPOSALITEMAQ with
+{
+  @UI.facet: [
+    //Header Facet - Object Page
+                { id: 'HAmountGlb',
+                  purpose: #HEADER,
+                  type: #DATAPOINT_REFERENCE,
+                  position: 10,
+                  targetQualifier: 'HAmountGlb'
+                },
+    //    //Body Facet ( Object Page)
+    //    // Facet 1 - Parent (collection) for General Info
+                {
+                  id: 'General',
+                  purpose: #STANDARD,
+                  type: #COLLECTION,
+                  label: 'General',
+                  position: 10 ,
+                  targetQualifier: 'General'
+                },
+                {
+                  id: 'BasicData',
+                  purpose: #STANDARD,
+                  type: #FIELDGROUP_REFERENCE,
+                  parentId: 'General',
+                  label: 'Basic Data',
+                  position: 10,
+                  targetQualifier: 'BasicData'
+                },
+    //    // Facet 2 - Base
+                {
+                  id: 'Base',
+                  purpose: #STANDARD,
+                  type: #LINEITEM_REFERENCE,
+                  label: 'Base Calculation',
+                  position: 20 ,
+                  targetElement: '_ProposalItemsBasis'
+                },
+    //    // Facet 3 - Calc
+                {
+                  id: 'Calculo',
+                  purpose: #STANDARD,
+                  type: #LINEITEM_REFERENCE,
+                  label: 'Calculation Result',
+                  position: 40 ,
+                  targetElement: '_ProposalItemsCalc'
+                }
+    ]
+
+  @UI: {
+      lineItem: [ {
+          position: 5,
+            label: 'Estado',
+          criticality: 'StatusCriticality',
+            criticalityRepresentation: #WITH_ICON
+      } ],
+
+      dataPoint: {
+          qualifier: 'StatusCriticality',
+            title: 'Estado',
+          criticality: 'StatusCriticality',
+          criticalityRepresentation: #WITH_ICON
+      }
+  }
+  //  @UI.hidden: true
+  @EndUserText.label: 'Status'
+  Status;
+
+  @UI.hidden: true
+  @Consumption.filter.hidden: true
+  StatusCriticality;
+
+  @UI.hidden: false
+  Id;
+
+  @UI: {  lineItem: [ { position: 10 } ],
+          identification:[ { position: 10 } ] }
+  @EndUserText.label: 'Item'
+  Item_Id;
+
+  @UI: {  lineItem: [ { position: 20 } ],
+          identification:[ { position: 20 } ],
+          fieldGroup: [{ qualifier: 'BasicData', position: 20 } ]}
+  @EndUserText.label: 'Provider Company Code'
+  ProviderCompanyCode;
+  @UI: { hidden: false }
+  @EndUserText.label: 'Provider Company Name'
+  ProviderCompanyName;
+
+  @UI: { lineItem: [ { position: 30 } ],identification:[ { position: 30 } ],
+          fieldGroup: [{ qualifier: 'BasicData', position: 30 } ]}
+  @EndUserText.label: 'Recipient Company Code'
+  recipientcompanycode;
+  @UI: { hidden: false }
+  @EndUserText.label: 'Recipient Company Name'
+  RecipientCompanyName;
+
+  @UI: { lineItem: [ { position: 40 } ],
+         identification:[ { position: 40 } ],
+          fieldGroup: [{ qualifier: 'BasicData', position: 10 } ]}
+  @EndUserText.label: 'Concept'
+  Product;
+  @UI: { hidden: false }
+  @EndUserText.label: 'Concept name'
+  ProductName;
+
+  @UI: { lineItem: [ { position: 50 } ],identification:[ { position: 50 } ],
+          fieldGroup: [{ qualifier: 'BasicData', position: 40 } ]}
+  @EndUserText.label: 'Profit Center'
+  profitcenter;
+  @UI: { hidden: false }
+  @EndUserText.label: 'Profit Center Name'
+  ProfitCenterName;
+
+  @UI: { lineItem: [ { position: 60 } ] }
+  @EndUserText.label: 'GL Account'
+  GlAccount;
+
+  @UI: { lineItem: [ { position: 70 } ] }
+  @EndUserText.label: 'Cost Center'
+  CostCenter;
+
+  @UI: { lineItem: [ { position: 80 } ] }
+  @EndUserText.label: 'Interdivisional'
+  Interdivisional;
+
+  @UI: {
+    lineItem: [ { position: 90 } ],
+    identification:[ { position: 80 } ] }
+  @EndUserText.label: 'TOTAL Base Amount'
+  BaseAmountProfitCenter;
+
+  // *** Nuevas anotaciones para los campos con sufijo H ***
+  @UI: {
+    lineItem: [ { position: 91, label: 'Base Amount C' } ],
+    identification:[ { position: 81 } ] }
+  BaseAmountProfitCenterC;
+  @UI: {
+    lineItem: [ { position: 92, label: 'Base Amount H' } ],
+    identification:[ { position: 82 } ] }
+  BaseAmountProfitCenterH;
+  @UI: {
+    lineItem: [ { position: 93, label: 'Base Amount L' } ],
+    identification:[ { position: 83 } ] }
+  BaseAmountProfitCenterL;
+
+  @UI: {
+    lineItem: [ { position: 111 } ],
+    identification:[ { position: 71 } ],
+    dataPoint: {
+      title: 'Rate H',
+      valueFormat: {
+          scaleFactor: 1000,
+          numberOfFractionalDigits: 5
+      }
+    }
+  }
+  @EndUserText.label: 'Shared Rate H'
+  SharedRateH;
+  @UI: {
+    lineItem: [ { position: 112 } ],
+    identification:[ { position: 72 } ],
+    dataPoint: {
+      title: 'Rate L',
+      valueFormat: {
+          scaleFactor: 1000,
+          numberOfFractionalDigits: 5
+      }
+    }
+  }
+  @EndUserText.label: 'Shared Rate H'
+  sharedratel;
+
+  @UI: {
+    lineItem: [ { position: 141 } ],
+    identification:[ { position: 91 } ],
+    hidden: false }
+  @EndUserText.label: 'Amount in Global Currency C'
+  b_amountinglobalcurrencyC;
+  @UI: {
+  lineItem: [ { position: 142 } ],
+  identification:[ { position: 92 } ],
+  hidden: false }
+  @EndUserText.label: 'Amount in Global Currency H'
+  b_amountinglobalcurrencyH;
+  @UI: {
+  lineItem: [ { position: 143 } ],
+  identification:[ { position: 93 } ],
+  hidden: false }
+  @EndUserText.label: 'Amount in Global Currency H'
+  b_amountinglobalcurrencyL;
+  // *** Fin de nuevas anotaciones ***
+
+  @UI: { hidden: false }
+  @EndUserText.label: 'Profit Center Base Currency'
+  BaseCurrencyProfitCenter;
+
+  @UI: { lineItem: [ { position: 100 } ] }
+  @EndUserText.label: 'Amount by GLAcc - CeCo'
+  AmountByCeBeCeCo;
+
+  @UI: { lineItem: [ { position: 110 } ],identification:[ { position: 70 } ]
+  , dataPoint: {
+  //      qualifier: '',
+      title: 'Rate',
+      valueFormat: {
+          scaleFactor: 1000,
+          numberOfFractionalDigits: 5
+      }
+  }
+  }
+  @EndUserText.label: 'Shared Rate'
+  sharedrate;
+  @UI: {
+    lineItem: [ { position: 460 } ],
+    identification: [ { position: 460 } ],
+    hidden: false
+  }
+  @EndUserText.label: 'Shared Rate Unit'
+  SharedRateUnit;
+
+  @UI: { lineItem: [ { position: 120 } ],identification:[ { position: 100 } ],
+         hidden: false }
+  @EndUserText.label: 'Amount in Company Code Currency'
+  AmountInCompanyCurr;
+
+  @UI: { lineItem: [ { exclude: true } ],
+         identification: [{ exclude: true }],
+         hidden: false }
+  @EndUserText.label: 'Company Code Currency'
+  CompanyCurr;
+
+  @UI: { lineItem: [ { position: 130 } ],
+         hidden: false }
+  ExchangeRate;
+
+  @UI: { lineItem: [ { position: 140 } ],
+         identification:[ { position: 90 } ],
+         hidden: false }
+  @EndUserText.label: 'Amount in Global Currency'
+  AmountInGlobalCurrency;
+
+  @UI: { lineItem: [ { exclude: true } ],
+         identification: [{ exclude: true }],
+         hidden: false }
+  @EndUserText.label: 'Global Currency'
+  GlobalCurrency;
+
+  @UI: { lineItem: [ { position: 150 } ],
+         hidden: false }
+  @EndUserText.label: 'Amount in Transaction Currency'
+  AmountInTCurr;
+
+  @UI: { lineItem: [ { exclude: true } ],
+         identification: [{ exclude: true }],
+         hidden: false }
+  @EndUserText.label: 'Transaction Currency'
+  transactioncurrency;
+
+  @UI: { lineItem: [ { position: 160 } ] }
+  @EndUserText.label: 'Markup (%)'
+  markup;
+
+  @UI: { lineItem: [ { position: 170 } ] }
+  @EndUserText.label: 'Markup Amount'
+  MKUPAmountInGlobCurr;
+
+  @UI: { lineItem: [ { position: 180 } ] }
+  @EndUserText.label: 'Markup Amount in Company code'
+  MKUPAmountInCompCurr;
+
+  @UI: { lineItem: [ { position: 190 } ] }
+  @EndUserText.label: 'Grossing Up Margin (%)'
+  grossingupmargin;
+
+  @UI: { lineItem: [ { position: 200 } ] }
+  @EndUserText.label: 'Grossing Up Margin Amount'
+  GUpMAmountInGlobCurr;
+
+  @UI: { lineItem: [ { position: 210 } ] }
+  @EndUserText.label: 'Grossing Up Margin Amount in Comp Code'
+  GUpMAmountInCompCurr;
+
+  @UI: { lineItem: [ { position: 220 } ] }
+  @EndUserText.label: 'Grossing Up Base (%)'
+  grossingupbase;
+
+  @UI: { lineItem: [ { position: 230 } ] }
+  @EndUserText.label: 'Grossing Up Base Amount'
+  GUpBAmountInGlobCurr;
+
+  @UI: { lineItem: [ { position: 240 } ] }
+  @EndUserText.label: 'Grossing Up Base Amount in Company Code'
+  GUpBAmountInCompCurr;
+
+  //  @UI: { lineItem: [ { position: 250 } ],
+  //         hidden : true }
+  @EndUserText.label: 'Late Payment Interest (%)'
+  latepaymentinterest;
+
+  //  @UI: { lineItem: [ { position: 260 } ],
+  //         hidden : true }
+  @EndUserText.label: 'Late Payment Interest Amount'
+  LPInAmountInGlobCurr;
+
+  //  @UI: { lineItem: [ { position: 270 } ],
+  //         hidden : true }
+  @EndUserText.label: 'Late Payment Interest Amount in Company'
+  LPInAmountInCompCurr;
+
+  //  @UI: { lineItem: [ { position: 280 } ],
+  //         hidden : true }
+  @EndUserText.label: 'Provider Grossing Up (%)'
+  providergrossingup;
+
+  //  @UI: { lineItem: [ { position: 290 } ],
+  //         hidden : true }
+  @EndUserText.label: 'Provider Grossing Up Amount'
+  GUpPAmountInGlobCurr;
+
+  //  @UI: { lineItem: [ { position: 300 } ],
+  //         hidden : true }
+  @EndUserText.label: 'Provider Grossing Up Amount in Comp Code'
+  GUpPAmountInCompCurr;
+
+  @UI: { lineItem: [ { position: 310 } ] }
+  @EndUserText.label: 'Total in Global Amount'
+  TotalInGlobalAmount;
+
+  @UI: { lineItem: [ { position: 320 } ] }
+  @EndUserText.label: 'Total in Company Code Amount'
+  TotalInCompanyCodeAmount;
+
+  //  @UI: { lineItem: [ { position: 330 } ] }
+  //  @EndUserText.label: 'Markup in Trans. Curr.'
+  //  mkupamntintcurr;
+  //
+  //  @UI: { lineItem: [ { position: 340 } ] }
+  //  @EndUserText.label: 'Markup in Trans. Curr.'
+  //  gupmamntintcurr;
+  //
+  //  @UI: { lineItem: [ { position: 350 } ] }
+  //  @EndUserText.label: 'Markup in Trans. Curr.'
+  //  gupbamntintcurr;
+  //
+  //  @UI: { lineItem: [ { position: 360 } ] }
+  //  @EndUserText.label: 'Markup in Trans. Curr.'
+  //  intmamntintcurr;
+  //
+  //  @UI: { lineItem: [ { position: 370 } ] }
+  //  @EndUserText.label: 'Markup in Trans. Curr.'
+  //  guppamntintcurr;
+  @UI: { lineItem: [ { position: 380 } ] }
+  @EndUserText.label: 'Base GL Account'
+  BASE_GL;
+  @UI: { lineItem: [ { position: 390 } ] }
+  @EndUserText.label: 'Markup GL Account'
+  MKUP_GL;
+  @UI: { lineItem: [ { position: 400 } ] }
+  @EndUserText.label: 'GUpK GL Account'
+  GUPK_GL;
+  @UI: { lineItem: [ { position: 410 } ] }
+  @EndUserText.label: 'GUpB GL Account'
+  GUPB_GL;
+  @UI: { lineItem: [ { position: 420 } ] }
+  @EndUserText.label: 'LPIn GL Account'
+  INTM_GL;
+  @UI: { lineItem: [ { position: 430 } ] }
+  @EndUserText.label: 'GUpP GL Account'
+  GUPP_GL;
+  @UI: { lineItem: [ { position: 440 } ] }
+  @EndUserText.label: 'Created At'
+  createdat;
+  @UI: { lineItem: [ { position: 450 } ] }
+  @EndUserText.label: 'Created By'
+  createdby;
+}

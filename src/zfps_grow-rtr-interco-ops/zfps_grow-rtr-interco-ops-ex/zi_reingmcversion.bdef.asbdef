@@ -1,0 +1,98 @@
+managed implementation in class ZBP_ReingMCVersion unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_ReingMCVersion
+persistent table zreing_mcv_a
+draft table zreing_mcv_d
+lock master total etag ChangedAt
+authorization master ( global, instance )
+etag master ChangedAt
+early numbering
+with additional save
+{
+  create;
+  update ( features : instance );
+  delete ( features : instance );
+
+  field ( readonly ) MetricCode;
+  field ( readonly ) VersionNum;
+  field ( readonly ) VersionStatus;
+  field ( readonly ) MetricType;
+  field ( readonly ) MetricStatus;
+  field ( readonly ) LastVersNum;
+  field ( readonly ) IsLatestVersion;
+  field ( readonly ) StatusCriticality;
+  field ( readonly ) IsNewVersion;
+  field ( readonly ) VersionStatusText;
+  field ( readonly ) MetricStatusText;
+  field ( readonly ) CreatedBy;
+  field ( readonly ) CreatedAt;
+  field ( readonly ) ChangedBy;
+  field ( readonly ) ChangedAt;
+  field ( mandatory ) MetricDesc;
+  field ( mandatory ) DataSource;
+  field ( mandatory ) DataSourceVer;
+  field ( mandatory ) ChangeReason;
+  field ( readonly ) MetricTypeText;
+
+  draft action ( features : instance ) Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation ValidateRequiredFields;
+    validation ValidateDuplicateMetricCode;
+    validation ValidateNoActiveContracts;
+    validation ValidateSingleActiveVersion;
+  }
+
+  validation ValidateRequiredFields on save { create; update; }
+  validation ValidateVersionDeletion on save { delete; }
+  validation ValidateDuplicateMetricCode on save { create; }
+  validation ValidateNoActiveContracts on save { create; update; }
+  validation ValidateSingleActiveVersion on save { create; update; }
+
+  determination SetValidityDates on modify { create; }
+  determination UpdateMetricHeader on modify { create; update; delete; }
+  determination SetStatusTexts on modify { create; field VersionStatus; field MetricStatus; }
+  determination SetMetricTypeText  on modify { create; field MetricType; }
+
+  side effects
+  {
+    field MetricDesc affects field MetricStatus, field LastVersNum, field IsLatestVersion, field StatusCriticality;
+    field VersionStatus affects field MetricStatus, field LastVersNum, field IsLatestVersion, field StatusCriticality, field VersionStatusText;
+    field MetricStatus affects field MetricStatusText;
+    field IsNewVersion affects field LastVersNum, field IsLatestVersion;
+    field MetricType    affects field MetricTypeText;
+  }
+
+  action ( features : instance, lock : none ) ActivateVersion result [1] $self;
+  action ( features : instance, lock : none ) InactivateVersion result [1] $self;
+  action ( features : instance, lock : none ) NewVersion result [1] $self;
+
+  mapping for zreing_mcv_a
+    {
+      MetricCode        = metric_code;
+      VersionNum        = version_num;
+      VersionStatus     = version_status;
+      DataSourceVer     = data_source_ver;
+      ChangeReason      = change_reason;
+      ValidFrom         = valid_from;
+      ValidTo           = valid_to;
+      VarPctLimit       = var_pct_limit;
+      MetricDesc        = metric_desc;
+      MetricType        = metric_type;
+      DataSource        = data_source;
+      Responsible       = responsible;
+      IsNewVersion      = isnewversion;
+      VersionStatusText = version_status_txt;
+      MetricStatusText  = metric_status_txt;
+      MetricTypeText    = metric_type_txt;
+      CreatedBy         = created_by;
+      CreatedAt         = created_at;
+      ChangedBy         = changed_by;
+      ChangedAt         = changed_at;
+    }
+}

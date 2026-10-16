@@ -1,0 +1,25 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_IntercoCompanyRelProdBill alias CompanyRelationshipProductBill
+{
+  use create;
+  use action uploadProdBill;
+  use update;
+  use delete;
+  use action SetDeletebBill;
+
+  use action Resume;
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Prepare;
+
+//  use association _atta { create; with draft; }
+}
+//define behavior for ZC_INtERCORELPRODBILL_ATTA alias Attachments
+//{
+//
+//  use association _RelProdbill { with draft; }
+//}

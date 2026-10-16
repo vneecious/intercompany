@@ -1,0 +1,43 @@
+@Metadata.layer: #CORE
+
+annotate view ZI_ReingMCVersionList with
+{
+  @EndUserText.label: 'Version'
+  @UI.lineItem: [{ position: 10, importance: #HIGH, qualifier: 'OtherVersions' }]
+  VersionNum;
+
+  @EndUserText.label: 'Estado'
+  @UI.lineItem: [{ position: 20, importance: #HIGH,
+                   qualifier: 'OtherVersions',
+                   criticality: 'StatusCriticality',
+                   criticalityRepresentation: #WITH_ICON }]
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZI_ReingMCVerStatus', element: 'VersionStatus' },
+    label: 'Estado version',
+    useForValidation: true
+  }]
+  VersionStatus;
+
+  @EndUserText.label: 'Vigencia Desde'
+  @UI.lineItem: [{ position: 30, importance: #HIGH, qualifier: 'OtherVersions' }]
+  ValidFrom;
+
+  @EndUserText.label: 'Vigencia Hasta'
+  @UI.lineItem: [{ position: 40, importance: #HIGH, qualifier: 'OtherVersions' }]
+  ValidTo;
+
+  @EndUserText.label: 'Motivo de Cambio'
+  @UI.lineItem: [{ position: 50, importance: #HIGH, qualifier: 'OtherVersions' }]
+  ChangeReason;
+
+  @EndUserText.label: 'Creado Por'
+  @UI.lineItem: [{ position: 60, importance: #MEDIUM, qualifier: 'OtherVersions' }]
+  CreatedBy;
+
+  @EndUserText.label: 'Creado El'
+  @UI.lineItem: [{ position: 70, importance: #MEDIUM, qualifier: 'OtherVersions' }]
+  CreatedAt;
+
+  @UI.hidden: true
+  StatusCriticality;
+}

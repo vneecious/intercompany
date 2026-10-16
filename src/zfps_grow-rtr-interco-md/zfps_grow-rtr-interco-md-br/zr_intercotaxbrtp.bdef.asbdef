@@ -1,0 +1,94 @@
+managed implementation in class zbp_r_intercotaxbrtp unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_IntercoTaxBRTP alias TaxBrazil
+persistent table zint_a_md_taxbr
+draft table zint_d_md_taxbr
+lock master
+total etag LastChangedAt
+authorization master ( global )
+with additional save
+//etag master <field_name>
+{
+
+  field ( readonly : update ) DOcumentTYpe, ProviderCompanyCode, RecipientCompanyCode, Product, Department, ValidFrom;
+  field ( mandatory )
+  ValidTo;
+
+  association _Items { create; with draft; }
+
+  create;
+  update ( features : instance );
+  delete;
+
+  draft action ( features : instance ) Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation ( always ) ValidateDateOverlap;
+    validation ( always ) ValidateValidTo;
+    validation ( always ) ValidateRequired;
+  }
+
+  action ( features : instance ) Delete result [1] $self;
+  action ( features : instance ) Restore result [1] $self;
+  static function DefaultForCreate result [1] $self;
+
+  validation ValidateRequired on save { create; update; }
+  validation ValidateDateOverlap on save { create; update; field ValidFrom, ValidTo; }
+  validation ValidateValidTo on save { create; update; field ValidFrom, ValidTo; }
+
+  side effects
+  {
+    action Delete affects $self;
+  }
+
+  mapping for zint_a_md_taxbr corresponding
+    {
+      DocumentType       = doctype;
+      Department         = depto;
+      product            = product;
+      ValidTo            = valid_to;
+      ValidFrom          = valid_from;
+      IsDeleted          = is_deleted;
+      CreatedAt          = created_at;
+      CreatedBy          = created_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedBy      = last_changed_by;
+    }
+}
+
+define behavior for ZR_IntercoTaxBRItemTP alias TaxBrazilItem
+persistent table zint_a_md_taxbri
+draft table zint_d_md_taxbri
+
+lock dependent by _Header
+authorization dependent by _Header
+{
+  field ( readonly ) DocumentType, ProviderCompanyCode, RecipientCompanyCode, Department, Product, ValidFrom;
+  field ( readonly : update ) TaxType;
+  update;
+  delete;
+  association _Header { with draft; }
+
+  mapping for zint_a_md_taxbri corresponding
+    {
+      DocumentType         = doctype;
+      ValidFrom            = valid_from;
+      TaxType              = taxtype;
+      TaxRate              = taxrate;
+      RecipientCompanyCode = recipientcompanycode;
+      ProviderCompanyCode  = providercompanycode;
+      Product              = product;
+      department           = depto;
+      Contingency          = contingency;
+      GLAccount2           = gl_account2;
+      GLAccount1           = gl_account1;
+      CreatedBy            = created_by;
+      CreatedAt            = created_at;
+    }
+}

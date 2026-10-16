@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZREING_CA_ROW_TYPE</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ZREING_CA_ROW_TYPE</DOMNAME>
+    <HEADLEN>37</HEADLEN>
+    <SCRLEN1>09</SCRLEN1>
+    <SCRLEN2>12</SCRLEN2>
+    <SCRLEN3>24</SCRLEN3>
+    <DDTEXT>Row Type (CDS Union)</DDTEXT>
+    <REPTEXT>Row Type (CDS Union)</REPTEXT>
+    <SCRTEXT_S>Row Type</SCRTEXT_S>
+    <SCRTEXT_M>Row Type</SCRTEXT_M>
+    <SCRTEXT_L>Row Type (CDS Union)</SCRTEXT_L>
+    <DTELMASTER>E</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Tipo de fila (UNION CDS)</DDTEXT>
+     <REPTEXT>Tipo de fila para UNION de lectura CA</REPTEXT>
+     <SCRTEXT_S>Tipo fila</SCRTEXT_S>
+     <SCRTEXT_M>Tipo de fila</SCRTEXT_M>
+     <SCRTEXT_L>Tipo de fila (UNION CDS)</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

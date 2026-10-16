@@ -1,0 +1,246 @@
+managed implementation in class zbp_i_intercoproposal unique;
+strict ( 2 );
+foreign entity I_JournalEntryTP;
+foreign entity I_SalesOrderTP;
+foreign entity I_BillingDocumentTP;
+foreign entity I_PurchaseOrderTP_2;
+foreign entity I_SupplierInvoiceTP;
+
+define behavior for ZI_IntercoProposal //alias <alias_name>
+persistent table zfi_a_intrc_cph
+with additional save
+lock master
+authorization master ( instance )
+//etag master <field_name>
+{
+  create;
+  update;
+  delete ( features : instance, precheck );
+  association _Items { create; }
+
+  field ( numbering : managed, readonly : update ) Id;
+  // Ini Facturación Local CH/ARG EXT_OSCUGALD 08.10.2026 - C22: tipo derivado de solo lectura
+  field ( readonly ) PaymentType;
+  // Fin EXT_OSCUGALD 08.10.2026 - C22
+  action ( features : instance ) Invoice;
+  action ( features : instance ) Simulate;
+  action ( features : instance ) SetDelete;
+  //  action ( features : instance ) ApplyMetric result [1] $self;
+  action ( features : instance ) ApplyMetric parameter ZSTR_METRIC_PARAM result [1] $self; //parametros enviados por front - version metricas
+  action ( features : instance ) SetAppliedMetric result [1] $self;
+  action ( features : instance ) Calculate result [1] $self;
+  //action Adjustmen;
+  action ( features : instance ) Check result [1] $self;
+  action ( features : instance ) Commit result [1] $self;
+  action ( features : instance ) Reverse result [1] $self;
+  action ( features : instance ) CommitTest result [1] $self;
+  action ( features : instance ) AnulateTest result [1] $self;
+  action ( features : instance ) simulation result [1] $self;
+
+  //  function GetRegionalMetrics result [0..*] ZSTR_METRIC_PARAM;
+  function GetAvailableMetrics result [0..*] ZSTR_METRIC_PARAM;
+
+  function GetDocumentFlow deep result [0..*] ZR_INTERCODOCParentFLOW external 'GetDocFlow';
+
+  //  function GetSumaryStatus deep result [0..*] ZR_IntercoSummaryStatus external 'GetSummaryStatus';
+  function callEvent result [1] $self;
+
+  event commited; //parameter ZD_IntercoProposalEvent;
+  event reversed;
+  event testing;
+  event deleted;
+  event finished;
+  event simulated;
+
+
+  side effects
+  {
+    //    action ApplyMetric affects entity _Items, permissions ( action ApplyMetric, action Calculate, action Check, action Commit, action Invoice, action Reverse, action SetDelete ), $self;
+    action ApplyMetric affects entity _Items, entity _ItemsByProfitCenter, permissions ( action ApplyMetric, action Calculate, action Check, action Commit, action Invoice, action Reverse, action SetDelete ), $self;
+    action Calculate affects entity _Items, permissions ( action ApplyMetric, action Calculate, action Check, action Commit, action Invoice, action Reverse, action SetDelete ), $self;
+    action SetDelete affects field IsDeleted, permissions ( delete, action SetDelete, action ApplyMetric, action Calculate, action Check, action Commit, action Invoice, action Reverse );
+  }
+
+  mapping
+       for zfi_a_intrc_cph corresponding;
+    }
+
+  define behavior for ZI_IntercoProposalItem //alias <alias_name>
+  persistent table zfi_a_intrc_cpi
+  lock dependent by _Proposal
+  authorization dependent by _Proposal
+  //etag master <field_name>
+  {
+    update;
+    delete;
+    field ( readonly ) id;
+    //    field ( readonly : update ) item_id, BaseAmountProfitCenterC, BaseAmountProfitCenterH, BaseAmountProfitCenterL, baseamountprofitcenter, b_amountinglobalcurrencyC, b_amountinglobalcurrencyH, b_amountinglobalcurrencyL;
+    field ( readonly : update ) item_id, BaseAmountProfitCenterC, BaseAmountProfitCenterH, BaseAmountProfitCenterL, baseamountprofitcenter, b_amountinglobalcurrencyC, b_amountinglobalcurrencyH, b_amountinglobalcurrencyL, CpiCompanyCodeCurrency,
+    AmountInCompanyCodeCurrency, AmountInCompanyCodeCurrencyC, AmountInCompanyCodeCurrencyH, AmountInCompanyCodeCurrencyL;
+    action ReverseItem result [1] $self;
+
+    association _Proposal;
+    association _ProposalItemsBasis { create; }
+    association _ProposalItemsDetails { create; }
+    //    association _ProposalItemsBasis;
+    //    association _ProposalItemsCalc { create; }
+
+    //    field ( readonly : update ) item_id;
+
+    mapping for zfi_a_intrc_cpi corresponding
+      {
+        BaseAmountProfitCenterC      = baseamountprofitcenter_c;
+        BaseAmountProfitCenterH      = baseamountprofitcenter_h;
+        BaseAmountProfitCenterL      = baseamountprofitcenter_l;
+        CpiCompanyCodeCurrency       = companycodecurrency;
+        AmountInCompanyCodeCurrency  = amountincompanycodecurrency;
+        AmountInCompanyCodeCurrencyC = amountincompanycodecurrency_c;
+        AmountInCompanyCodeCurrencyH = amountincompanycodecurrency_h;
+        AmountInCompanyCodeCurrencyL = amountincompanycodecurrency_l;
+      }
+  }
+
+  define behavior for ZI_IntercoProposalItemOrGLAcct //alias <alias_name>
+  persistent table zfi_a_intrc_cpig
+  lock dependent by _Proposal
+  authorization dependent by _Proposal
+  //etag master <field_name>
+  {
+    update;
+    delete;
+    field ( readonly : update ) id, itemid;
+    association _Item;
+    association _Proposal;
+
+    mapping for zfi_a_intrc_cpig corresponding
+      {
+        GlAccount               = gl_account;
+        CostCenter              = cost_center;
+        ItemId                  = item_id;
+        AmountInGlobalCurrency  = amount_in_global_currency;
+        AmountInGlobalCurrencyH = amount_in_global_currency_h;
+        AmountInGlobalCurrencyL = amount_in_global_currency_l;
+        GlobalCurrency          = global_currency;
+        PercentOfTotal          = percent_of_total;
+        Department              = depto;
+      }
+  }
+
+  define behavior for ZI_IntercoProposalItemBasis //alias <alias_name>
+  persistent table zfi_a_intrc_cpib
+  lock dependent by _Proposal
+  authorization dependent by _Proposal
+  //etag master <field_name>
+  {
+    update;
+    delete;
+    field ( readonly ) id, item_id, itembasis_id;
+    field ( readonly : update ) sharedrate, sharedrate_h, sharedrate_l, amountinglobalcurrency, amountinglobalcurrency_c, amountinglobalcurrency_h, amountinglobalcurrency_l;
+    association _Proposal;
+    association _Items;
+    association _ItemsCalc { create; }
+    association _ProposalItemsBaOGlAc { create; }
+
+    mapping for zfi_a_intrc_cpib corresponding
+      {
+        amountinglobalcurrency_c = amountinglobalcurrency_c;
+        amountinglobalcurrency_h = amountinglobalcurrency_h;
+        amountinglobalcurrency_l = amountinglobalcurrency_l;
+      }
+    //  field(readonly:update) glaccount, costcenter;
+  }
+
+  define behavior for ZI_IntercoProposalItemBaOGlAc //alias <alias_name>
+  persistent table zfi_a_intrc_cpbg
+  lock dependent by _i_Proposal
+  authorization dependent by _i_Proposal
+  //etag master <field_name>
+  {
+    update;
+    delete;
+    field ( readonly : update ) id, item_id, itembasis_id, costcenter, SharedRateH, SharedRateL, glaccount, amountinglobalcurrencyc, amountinglobalcurrencyh, amountinglobalcurrencyl, amountincompanycodecurrencyc, amountincompanycodecurrencyh,
+    amountincompanycodecurrencyl;
+    association _i_Proposal;
+    association _Items;
+    association _ItemsBasis;
+
+    mapping for zfi_a_intrc_cpbg corresponding
+      {
+        GlAccount                    = gl_account;
+        costcenter                   = cost_center;
+        amountinglobalcurrencyc      = amountinglobalcurrency_c;
+        amountinglobalcurrencyh      = amountinglobalcurrency_h;
+        amountinglobalcurrencyl      = amountinglobalcurrency_l;
+        amountincompanycodecurrencyc = amountincompanycodecurrency_c;
+        amountincompanycodecurrencyh = amountincompanycodecurrency_h;
+        amountincompanycodecurrencyl = amountincompanycodecurrency_l;
+      }
+
+  }
+
+  define behavior for ZI_IntercoProposalItemCalc //alias <alias_name>
+  persistent table zfi_a_intrc_cpic
+  lock dependent by _Proposal
+  authorization dependent by _Proposal
+  //etag master <field_name>
+  {
+    //  create;
+    update;
+    delete;
+    field ( readonly ) id, item_id, itembasis_id, itemcalc_id;
+    //    field ( readonly : update ) amountinglobalcurrency_c, amountinglobalcurrency_h;
+    association _Proposal;
+    association _Items;
+    association _ItemsBasis;
+    association _ItemsDoc { create; }
+
+    //  field(readonly:update) metric_id;
+
+    mapping
+         for zfi_a_intrc_cpic corresponding;
+      }
+
+    define behavior for ZI_IntercoProposalItemDoc //alias <alias_name>
+    persistent table zfi_a_intrc_cpid
+    lock dependent by _Proposal
+    authorization dependent by _Proposal
+    //etag master <field_name>
+    {
+      //  create;
+      update;
+      delete;
+      field ( readonly ) id, item_id, Itembasis_Id, Itemcalc_Id, CompanyCode, FiscalYear;
+      field ( readonly : update ) Documenttype, Documentkey;
+
+      association _Proposal;
+      association _Items;
+      association _ItemsBasis;
+      association _ItemCalc;
+      association _ChildItemDoc;
+      //          association _log { create; }
+
+      mapping
+           for zfi_a_intrc_cpid corresponding;
+        }
+
+      //          define behavior for zi_intercoproposallog //alias <alias_name>
+      //          persistent table zfi_a_intrc_cpdf
+      //          lock dependent by _Proposal
+      //          authorization dependent by _Proposal
+      //          //etag master <field_name>
+      //          {
+      //            //  create;
+      //            update;
+      //            delete;
+      //            field ( readonly ) id, itemid, ItembasisId, ItemcalcId;
+      //            field ( readonly : update ) Documenttype, Documentkey, Tstmpl;
+      //
+      //            association _Proposal;
+      //            association _Items;
+      //            association _ItemsBasis;
+      //            association _ItemCalc;
+      //            association _ItemDoc;
+      //
+      //            mapping
+      //                 for ZFI_A_INTRC_CPDF corresponding;
+      //              }

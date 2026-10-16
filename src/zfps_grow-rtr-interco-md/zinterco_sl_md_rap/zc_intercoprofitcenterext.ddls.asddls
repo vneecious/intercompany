@@ -1,0 +1,61 @@
+@EndUserText.label: 'Intercompany - Profit Center for Metics'
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@Metadata.allowExtensions: true
+define root view entity ZC_INTERCOPROFITCENTEREXT
+  as projection on zI_intercoPROFITCENTERext
+{
+  key ControllingArea,
+  key ProfitCenter,
+  key ValidityEndDate,
+      Subbu,
+      SubbuName,
+      BusinessUnit,
+      BusinessUnitName,
+      BusinessUnitProductName,      
+      ProfitCtrResponsiblePersonName,
+      CompanyCode,
+      ProfitCtrResponsibleUser,
+      ValidityStartDate,
+      Department,
+      ProfitCenterStandardHierarchy,
+      Segment,
+      ProfitCenterIsBlocked,
+      FormulaPlanningTemplate,
+      FormOfAddress,
+      AddressName,
+      AdditionalName,
+      ProfitCenterAddrName3,
+      ProfitCenterAddrName4,
+      StreetAddressName,
+      POBox,
+      CityName,
+      PostalCode,
+      POBoxPostalCode,
+      District,
+      Country,
+      Region,
+      TaxJurisdiction,
+      Language,
+      PhoneNumber1,
+      PhoneNumber2,
+      TeleboxNumber,
+      TelexNumber,
+      FaxNumber,
+      TeletexNumber,
+      DataCommunicationPhoneNumber,
+      ProfitCenterPrinterName,
+      ProfitCenterCreatedByUser,
+      ProfitCenterCreationDate,
+      /* Associations */
+      _Company,
+      _ControllingArea,
+//      _ControllingAreaText,
+      _Country,
+      _Language,
+      _PrftCtrCompanyCodeAssignment,
+      _ProfitCenterHierarchyNode,
+      _Region
+//      _Segment,
+//      _SegmentText
+//      _Text
+}

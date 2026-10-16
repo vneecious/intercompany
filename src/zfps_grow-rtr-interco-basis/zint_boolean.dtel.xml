@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZINT_BOOLEAN</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ABAP_BOOLEAN</DOMNAME>
+    <LOGFLAG>X</LOGFLAG>
+    <HEADLEN>13</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>15</SCRLEN2>
+    <SCRLEN3>20</SCRLEN3>
+    <DDTEXT>Truth Value: True/False</DDTEXT>
+    <REPTEXT>Truth Value</REPTEXT>
+    <SCRTEXT_S>Value</SCRTEXT_S>
+    <SCRTEXT_M>Truth Value</SCRTEXT_M>
+    <SCRTEXT_L>Truth Value</SCRTEXT_L>
+    <DTELMASTER>D</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>D</LANGU>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>D</DDLANGUAGE>
+     <DDTEXT>Wahrheitswert: wahr/falsch</DDTEXT>
+     <REPTEXT>Wahrheitswert</REPTEXT>
+     <SCRTEXT_S>Wahrheits.</SCRTEXT_S>
+     <SCRTEXT_M>Wahrheitswert</SCRTEXT_M>
+     <SCRTEXT_L>Wahrheitswert</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>P</DDLANGUAGE>
+     <DDTEXT>Valor verdadeiro: verdadeiro/falso</DDTEXT>
+     <REPTEXT>Valor verdad.</REPTEXT>
+     <SCRTEXT_S>ValVerdad.</SCRTEXT_S>
+     <SCRTEXT_M>Valor verdad.</SCRTEXT_M>
+     <SCRTEXT_L>Valor verdadeiro</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Valor verdadero: Verdadero/Falso</DDTEXT>
+     <REPTEXT>Val.verdadero</REPTEXT>
+     <SCRTEXT_S>Val.verd.</SCRTEXT_S>
+     <SCRTEXT_M>Valor verdadero</SCRTEXT_M>
+     <SCRTEXT_L>Valor verdadero</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

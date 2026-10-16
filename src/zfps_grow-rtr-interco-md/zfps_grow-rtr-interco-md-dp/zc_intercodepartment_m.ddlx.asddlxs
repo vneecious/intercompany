@@ -1,0 +1,93 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Departmento',
+    typeNamePlural: 'Departmentos',
+    title: {
+        label: 'Departmento',
+        value: 'Department'
+    }
+  },
+/* Presentation Variant */
+  presentationVariant: [{
+    sortOrder: [
+      { by: 'Department',  direction: #ASC }
+    ],
+    visualizations: [{ type: #AS_LINEITEM }]
+   }],
+  textArrangement: #TEXT_LAST
+}
+@Consumption.semanticObject: 'IntercoDepartment'
+@Search.searchable: true
+annotate entity ZC_IntercoDepartment_M with
+{
+  @UI: {
+     lineItem: [
+         { importance: #HIGH } ,
+         { type: #FOR_ACTION, dataAction: 'Delete', label: 'Marcar como borrado' }
+         ],
+     identification: [{
+         importance: #HIGH,
+         label: 'Marcar como borrado',
+         inline: true,
+         dataAction: 'Delete',
+         type: #FOR_ACTION,
+         position: 15 }] }
+
+  @UI.facet: [
+                {
+             id: 'GeneralInformation',
+             position: 10,
+             purpose: #STANDARD,
+             type: #COLLECTION,
+             label: 'Generales'
+         },
+         {
+             id: 'BasicData',
+             label: 'Datos Basicos',
+             position: 10,
+             purpose: #STANDARD,
+             type: #FIELDGROUP_REFERENCE,
+             targetQualifier: 'BasicData',
+             parentId: 'GeneralInformation'
+         },
+          {
+             id: 'RulesDefinition',
+             label: 'Reglas',
+             position: 20,
+             purpose: #STANDARD,
+             type: #COLLECTION
+         },
+               {
+             id: 'Rules',
+             label: 'Reglas',
+             importance: #HIGH,
+             position: 20,
+             purpose: #STANDARD,
+             type: #COLLECTION,
+             parentId: 'RulesDefinition'
+         },
+         {
+           type: #LINEITEM_REFERENCE,
+           position: 10,
+           purpose: #STANDARD,
+           targetElement: '_Rules',
+           parentId: 'Rules'
+         }]
+  @UI.lineItem: [{ position: 1 }]
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 1 }]
+  @Search: { defaultSearchElement: true, ranking: #HIGH, fuzzinessThreshold: 1 }
+  Department;
+  @Search: { defaultSearchElement: true, ranking: #HIGH, fuzzinessThreshold: 1 }
+  @UI.lineItem: [{ position: 2 }]
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 2 }]
+  @EndUserText.label: 'Descripción'
+  Description;
+
+  @Consumption.filter: {
+    selectionType: #SINGLE,
+    defaultValue: ' '
+  }
+  @EndUserText.label: 'Marcado como borrado'
+  IsDeleted;
+}

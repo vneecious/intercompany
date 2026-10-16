@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CHDO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <CHDO>
+    <REPORTS_GENERATED>
+     <TCDRPS>
+      <OBJECT>ZINT_A_MD_DP</OBJECT>
+      <REPORTNAME>*CLASS_GEN*</REPORTNAME>
+      <ARBGEB>CD</ARBGEB>
+      <FEHLERNR>600</FEHLERNR>
+      <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+     </TCDRPS>
+    </REPORTS_GENERATED>
+    <OBJECTS>
+     <TCDOBS>
+      <OBJECT>ZINT_A_MD_DP</OBJECT>
+      <TABNAME>ZINT_A_MD_DPH</TABNAME>
+      <DOCUD_NOIF>X</DOCUD_NOIF>
+     </TCDOBS>
+     <TCDOBS>
+      <OBJECT>ZINT_A_MD_DP</OBJECT>
+      <TABNAME>ZINT_A_MD_DPI</TABNAME>
+      <DOCUD_NOIF>X</DOCUD_NOIF>
+     </TCDOBS>
+    </OBJECTS>
+    <OBJECTS_TEXT>
+     <TCDOBTS>
+      <SPRAS>E</SPRAS>
+      <OBJECT>ZINT_A_MD_DP</OBJECT>
+      <OBTEXT>Change document for Department</OBTEXT>
+     </TCDOBTS>
+    </OBJECTS_TEXT>
+   </CHDO>
+  </asx:values>
+ </asx:abap>
+</abapGit>

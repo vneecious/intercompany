@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZREING_POST_SIDE</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ZREING_POST_SIDE</DOMNAME>
+    <HEADLEN>20</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>20</SCRLEN2>
+    <SCRLEN3>20</SCRLEN3>
+    <DDTEXT>Posting Side</DDTEXT>
+    <REPTEXT>Posting Side</REPTEXT>
+    <SCRTEXT_S>Posting Si</SCRTEXT_S>
+    <SCRTEXT_M>Posting Side</SCRTEXT_M>
+    <SCRTEXT_L>Posting Side</SCRTEXT_L>
+    <DTELMASTER>S</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Lado Posteo</DDTEXT>
+     <REPTEXT>Lado Posteo</REPTEXT>
+     <SCRTEXT_S>Lado Poste</SCRTEXT_S>
+     <SCRTEXT_M>Lado Posteo</SCRTEXT_M>
+     <SCRTEXT_L>Lado Posteo</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,120 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Intercompany - Company',
+        typeNamePlural: 'Intercompany - Companies',
+        title: { type: #STANDARD }
+  },
+  textArrangement: #TEXT_LAST,
+  presentationVariant: [{
+        sortOrder: [
+            {
+                by: 'Country',
+                direction: #ASC
+            },
+            {
+                by: 'CountryName',
+                direction: #ASC
+            },
+            {
+                by: 'CompanyCode',
+                direction: #ASC
+            },
+            {
+                by: 'CompanyCodeName',
+                direction: #ASC
+            },
+            {
+                by: 'SiteCode',
+                direction: #ASC
+            },
+            {
+                by: 'SiteName',
+                direction: #ASC
+            }
+        ],
+
+        visualizations: [{
+            type: #AS_LINEITEM
+        }]
+    }]
+}
+@Search.searchable: true
+annotate entity ZC_IntercoCompanyCode with
+{
+  @UI.facet: [ {
+                   id: 'Header',
+                   purpose: #STANDARD,
+                   type: #IDENTIFICATION_REFERENCE,
+                   label: 'Company',
+                   position: 10
+                }
+              ]
+
+  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ]}
+  @EndUserText.label: 'Country'
+  @Consumption.valueHelpDefinition: [{ entity.name: 'I_CountryVH', entity.element: 'Country' }]
+  @UI.selectionField: [{ position: 1 }]
+  Country;
+
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 } ]}
+  @EndUserText.label: 'Country Name'
+  @UI.selectionField: [{exclude: true}]
+  CountryName;
+
+  @UI: { lineItem: [ { position: 30 } ],identification:[ { position: 30 } ]}
+  @EndUserText.label: 'Company'
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCodeVH', element: 'CompanyCode' } }]
+  @UI.selectionField: [{ position: 2 }]
+  CompanyCode;
+
+  @UI: { lineItem: [ { position: 40 } ],identification:[ { position: 40 } ]}
+  @EndUserText.label: 'Company Name'
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @UI.selectionField: [{exclude: true}]
+  CompanyCodeName;
+
+  @UI: { lineItem: [ { position: 45 } ],identification:[ { position: 45 } ]}
+  @EndUserText.label: 'Site Code'
+  @Consumption.filter: { selectionType: #SINGLE }
+  @UI.selectionField: [{ position: 3 }]
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZI_AddlCompanyCodeInfoVH', element: 'CompanyCodeParameterValue' },
+    additionalBinding: [{ element: 'CompanyCodeParameterType',
+                          usage: #FILTER,
+                          localConstant: 'ZIC001' }
+        ] }]
+  SiteCode;
+
+  @UI: { lineItem: [ { position: 50 } ],identification:[ { position: 50 } ]}
+  @EndUserText.label: 'Site Name'
+  @UI.selectionField: [{exclude: true}]
+  SiteName;
+
+  @UI: { lineItem: [ { position: 60 } ],identification:[ { position: 60 } ]}
+  @EndUserText.label: 'Internal Code'
+  @Consumption.valueHelpDefinition: [{
+  entity: { name: 'ZI_AddlCompanyCodeInfoVH', element: 'CompanyCodeParameterValue' },
+  additionalBinding: [{ element: 'CompanyCodeParameterType',
+                        usage: #FILTER,
+                        localConstant: 'ZIDMEL' }
+      ] }]
+  InternalCode;
+
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 70 } ]}
+  @EndUserText.label: 'Internal Code Name'
+  @UI.selectionField: [{exclude: true}]
+  InternalCodeName;
+
+  @UI: { lineItem: [ { position: 80 } ],identification:[ { position: 80 } ]}
+  @EndUserText.label: 'Currency'
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CurrencyStdVH', element: 'Currency' } }]
+  Currency;
+
+  @UI: { lineItem: [ { position: 90 } ],identification:[ { position: 90 } ]}
+  @EndUserText.label: 'Language'
+  Language;
+}

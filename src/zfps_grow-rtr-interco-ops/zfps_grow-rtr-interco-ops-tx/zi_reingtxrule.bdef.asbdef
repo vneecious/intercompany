@@ -1,0 +1,100 @@
+managed implementation in class zcl_reing_tx_rule_bp unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_ReingTXRule alias TxRule
+persistent table zreing_tx_rule_a
+draft table zreing_tx_d_rule
+lock master total etag ChangedAt
+authorization master ( global )
+etag master LocalLastChangedAt
+early numbering
+{
+  field ( readonly )
+    TxRuleId,
+    SpecificityScore,
+    TxStatusCriticality,
+    CreatedBy, CreatedAt, ChangedBy, ChangedAt, LocalLastChangedAt;
+
+  // V009 (15.09.2026) - Country leaves the mandatory list: under the 6-field
+  // specificity engine of ET-REING-BR-001 v5 an empty field is a wildcard
+  // (SS4.5), and consulta A-12(2) resolved "Pais obligatorio: RELAJAR".
+  // It was declared here as well as validated in code, so dropping it from
+  // validate_country alone would not have been enough.
+  // Original line kept for reference:
+  //   field ( mandatory : create ) Country, TaxType, Rate, ValidFrom, ValidTo;
+  field ( mandatory : create )
+    TaxType, Rate, ValidFrom, ValidTo;
+
+  create;
+  update;
+  delete ( features : instance );
+
+  determination SetDefaults     on modify { create; }
+  // V009 (15.09.2026) - the three new matching fields of SS4.2 join the
+  // trigger list, so editing them refreshes the admin fields exactly like
+  // editing any other business field.
+  determination SetAdminFields   on save  { field Country, CountryPrest, BukrsPrest, BukrsRecv, TaxType, Matnr, Lifnr, Rate, GrossUp, ValidFrom, ValidTo, TxStatus, Description, Notes; create; }
+
+  // V009 (15.09.2026) - ValidateCountry now also checks CountryPrest,
+  // BukrsPrest and BukrsRecv, so it has to fire when any of them changes.
+  // They would deserve a validation of their own, but declaring one means
+  // adding a method to the DEFINITION of the local handler class, which
+  // cannot be edited over ADT. See the note in the method body.
+  validation ValidateCountry  on save { field Country, CountryPrest, BukrsPrest, BukrsRecv; create; update; }
+  validation ValidateTaxType  on save { field TaxType;            create; update; }
+  validation ValidateMaterial on save { field Matnr;              create; update; }
+  validation ValidateSupplier on save { field Lifnr;              create; update; }
+  validation ValidateRate     on save { field Rate;               create; update; }
+  validation ValidateValidity on save { field ValidFrom, ValidTo; create; update; }
+  validation ValidateOverlap  on save {                           create; update; }
+
+  action ( features : instance ) ActivateRule result [1] $self;
+  action ( features : instance ) Deactivate   result [1] $self;
+  factory action CopyRule [1];
+  // DF-TX - Carga masiva de reglas via Excel (crea en draft)
+  static action UploadRules parameter ZI_ReingTXUploadParam;
+  // DF-TX - Descarga del template .xlsx vacio con el layout exacto que
+  // espera read_rows. Evita que el usuario arme el archivo a mano (un Excel
+  // con menos columnas falla con "No se pudo leer la fila de titulos").
+  static action DownloadTemplate result [1] ZI_ReingTXTemplateResult;
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation ValidateCountry;
+    validation ValidateTaxType;
+    validation ValidateMaterial;
+    validation ValidateSupplier;
+    validation ValidateRate;
+    validation ValidateValidity;
+    validation ValidateOverlap;
+  }
+
+  mapping for zreing_tx_rule_a
+  {
+    TxRuleId           = tx_rule_id;
+    Country            = country;
+    CountryPrest       = country_prest;
+    BukrsPrest         = bukrs_prest;
+    BukrsRecv          = bukrs_recv;
+    TaxType            = tax_type;
+    Matnr              = matnr;
+    Lifnr              = lifnr;
+    Rate               = rate;
+    GrossUp            = gross_up;
+    ValidFrom          = valid_from;
+    ValidTo            = valid_to;
+    TxStatus           = tx_status;
+    Description        = description;
+    Notes              = notes;
+    CreatedBy          = created_by;
+    CreatedAt          = created_at;
+    ChangedBy          = changed_by;
+    ChangedAt          = changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}

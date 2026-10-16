@@ -1,0 +1,65 @@
+managed implementation in class zbp_i_intercocompanyrelprodbil unique;
+strict ( 2 );
+
+with draft;
+
+define behavior for ZI_IntercoCompanyRelProdBill //alias RelProdbill
+//persistent table zint_a_md002
+draft table zint_d_md002
+with unmanaged save with full data
+lock master total etag LastChangedAt
+authorization master ( instance, global )
+etag master LastChangedAt
+{
+  create;
+  update;
+  delete ( features : instance, precheck );
+
+  //  Association with Attachments
+//  association _atta { create; with draft; }
+
+  validation validateData on save { create; update; }
+  action SetDeletebBill;
+
+  //  Action for Save Json
+  static action uploadProdBill parameter zinterco_str_params_relation;
+
+  field ( numbering : managed, readonly ) Id;
+  field ( readonly ) CreatedAt, CreatedBy, LastChangedAt, IsDeleted, ProductType, CostCenterArea;
+  field ( mandatory ) ValidFrom, ValidTo, Product, PandLID;
+
+  field ( features : instance ) ProfitCenter, CostCenterSubArea;
+
+  //determination fields on modify { field Filename ; }
+  //determination SetCostCenterAllocation on save { field CostCenterAllocation; }
+  determination getCostCenterArea on save { field CostCenterArea; }
+
+  draft action Resume;
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft determine action Prepare
+  {
+
+  }
+  mapping
+       for zint_a_md002 corresponding;
+    }
+
+
+
+//  define behavior for ZI_INtERCORELPRODBILL_ATTA alias Attach
+//  persistent table zint_a_md008
+//  draft table zint_d_md008
+//  lock dependent
+//  authorization dependent by _RelProdbill
+//  etag dependent by _RelProdbill
+//  {
+//    update;
+//    delete;
+//    field ( readonly ) Type, Uname, Uuid;
+//    association _RelProdbill { with draft; }
+//
+//    mapping
+//         for zint_a_md008 corresponding;
+//      }

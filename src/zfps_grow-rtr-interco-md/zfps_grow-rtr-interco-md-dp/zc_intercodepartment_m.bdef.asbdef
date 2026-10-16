@@ -1,0 +1,77 @@
+managed implementation in class zbp_c_intercodepartment_m unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZC_IntercoDepartment_M alias Department
+persistent table zint_a_md_dph
+draft table zint_d_md_dph
+lock master
+total etag LocalLastChangedAt
+with additional save
+authorization master ( instance )
+{
+  create;
+  update;
+  delete;
+  association _Rules { create; with draft; }
+
+  validation ValidateDuplicated on save { create; update; }
+
+  field ( readonly : update ) Department;
+  field ( mandatory : create ) Description;
+
+  draft action ( features : instance ) Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  //  draft determine action Prepare
+  //  {
+  //    validation ValidateDuplicated;
+  //    validation Rule~ValidateDuplicated;
+  //  }
+  draft determine action Prepare;
+
+  action ( features : instance ) Delete;
+
+  mapping for zint_a_md_dph
+    {
+      CreatedAt          = created_at;
+      CreatedBy          = created_by;
+      Department         = depto;
+      Description        = description;
+      isdeleted          = is_deleted;
+      LastChangedAt      = last_changed_at;
+      LastChangedBy      = last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+}
+
+define behavior for ZC_IntercoDepartmentRule_M alias Rule
+persistent table zint_a_md_dpi
+draft table zint_d_md_dpi
+lock dependent by _Department
+authorization dependent by _Department
+with additional save
+
+{
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) Item;
+  field ( readonly ) Department;
+  association _Department { with draft; }
+
+  validation ValidateDuplicated on save { create; update; }
+
+  mapping for zint_a_md_dpi
+    {
+      CompanyCode  = company_code;
+      Department   = dpto;
+      Item         = item;
+      PAndLId      = p_and_l_id;
+      PAndLLevel   = p_and_l_level;
+      Product      = product;
+      ProfitCenter = profit_center;
+    }
+
+}

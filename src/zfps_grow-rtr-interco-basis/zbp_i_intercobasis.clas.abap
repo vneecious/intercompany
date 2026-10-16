@@ -1,0 +1,8 @@
+CLASS zbp_i_intercobasis DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_intercobasis.
+
+ENDCLASS.
+
+CLASS zbp_i_intercobasis IMPLEMENTATION.
+
+ENDCLASS.
+

@@ -1,0 +1,22 @@
+projection;
+strict ( 2 );
+use draft;
+use side effects;
+
+define behavior for ZC_IntercoCompanyRelProduct alias CompanyRelationshipProduct
+{
+  use create;
+  use update;
+  use delete;
+  use action Block;
+  use action Release;
+  use action SetDelete;
+  use action deleteDraft;
+  use action uploadCompProducts;
+
+  use action Resume;
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Prepare;
+}

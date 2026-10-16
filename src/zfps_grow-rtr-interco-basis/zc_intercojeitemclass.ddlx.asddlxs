@@ -1,0 +1,262 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+    typeName: '{@i18n>TypeName}',
+    typeNamePlural: '{@i18n>TypeNamePlural}',
+    title: {
+        type: #STANDARD,
+        label: '{@i18n>appTitle}'
+    },
+    description: {
+        type: #STANDARD,
+        label: '{@i18n>appDescription}'
+    }
+}
+
+@UI.presentationVariant: [{
+    sortOrder: [{ by: 'CompanyCode', direction: #ASC },
+    { by: 'GLAccount', direction: #ASC },
+    { by: 'AccountingDocument', direction: #ASC },
+    { by: 'LedgerGLLineItem', direction: #ASC }],
+    groupBy: [ 'GLAccount', 'CostCenter', 'ProfitCenter', 'IsBillable'],
+    totalBy: [ 'GLAccount', 'CostCenter', 'ProfitCenter', 'IsBillable'],
+    includeGrandTotal: true,
+    requestAtLeast: [ 'GLAccount', 'ProfitCenter', 'CostCenter', 'IsBillableCriticality'],
+    visualizations: [{
+        type: #AS_LINEITEM
+    }]
+}]
+@UI.textArrangement: #TEXT_LAST
+@UI.lineItem: [{criticality: 'IsBillableCriticality'}]
+annotate entity ZC_INTERCOJEITEMCLASS with
+  parameters
+    @Consumption.valueHelpDefinition: [ { entity: { name: 'ZI_intercoCompanyCodeVH', element: 'CompanyCode' } } ]
+    P_CompanyCode
+{
+  @UI.lineItem: [{ position: 10 }]
+  @UI.identification: [{ position: 10 }]
+  @UI.selectionField: [{ position: 10 }]
+  @Consumption.valueHelpDefinition: [{  entity: {name: 'I_GlAccountTextInCompanycode', element: 'GLAccount'} ,
+                 additionalBinding: [{  element: 'CompanyCode', localParameter: 'P_CompanyCode' , usage: #FILTER_AND_RESULT }] }]
+  GLAccount;
+  @UI.lineItem: [{ position: 20 }]
+  @UI.identification: [{ position: 20 }]
+  @Consumption.filter.hidden: true
+  CompanyCode;
+  @UI.lineItem: [{ position: 30 }]
+  @UI.identification: [{ position: 30 }]
+  @Consumption.filter.selectionType: #SINGLE
+  @UI.selectionField: [{exclude: true}]
+  FiscalYear;
+  @UI.selectionField: [{exclude: true}]
+  PaymentType;
+  @UI.selectionField: [{exclude: true}]
+  Ledger;
+  @UI.selectionField: [{exclude: true}]
+  SourceLedger;
+  @UI.lineItem: [{ position: 40 }]
+  @UI.identification: [{ position: 40 }]
+  @UI.selectionField: [{exclude: true}]
+  FiscalPeriod;
+  @UI.lineItem: [{ position: 50 }]
+  @UI.identification: [{ position: 50 }]
+  ChartOfAccounts;
+  @UI.lineItem: [{ position: 60 }]
+  @UI.identification: [{ position: 60 }]
+  Segment;
+  @UI.lineItem: [{ position: 70 }]
+  @UI.identification: [{ position: 70 }]
+  AccountingDocument;
+  @UI.lineItem: [{ position: 80 }]
+  @UI.identification: [{ position: 80 }]
+  @UI.selectionField: [{exclude: true}]
+  LedgerGLLineItem;
+  @UI.lineItem: [{ position: 90 }]
+  @UI.identification: [{ position: 90 }]
+  AccountingDocumentType;
+  @UI.lineItem: [{ position: 100 }]
+  @UI.identification: [{ position: 100 }]
+  @UI.selectionField: [{exclude: true}]
+  AccountingDocumentItem;
+  @UI.lineItem: [{ position: 90 }]
+  @UI.identification: [{ position: 90 }]
+  @UI.selectionField: [{ position: 30 }]
+  @Consumption.valueHelpDefinition: [{
+      entity: { name: 'ZI_INTERCOPRODUCT_SH', element: 'Product' } }]
+  Concept;
+  @UI.hidden: true
+  ConceptName;
+  @UI.lineItem: [{ position: 80 }]
+  @UI.identification: [{ position: 80 }]
+  @EndUserText.label: '{@i18n>CCAllocation}'
+  CCAllocation;
+  @UI.lineItem: [{ position: 85 }]
+  @EndUserText.label: '{@i18n>CCConsolidation}'
+  CCConsolidation;
+  @UI.lineItem: [{ position: 90, criticality: 'IsBillableCriticality' }]
+  @UI.identification: [{ position: 90, criticality: 'IsBillableCriticality' }]
+  IsBillable;
+  @UI.hidden: true
+  TransactionCurrency;
+  @UI.hidden: true
+  AmountInTransactionCurrency;
+  @UI.hidden: true
+  CompanyCodeCurrency;
+  @UI.lineItem: [{ position: 120 }]
+  @UI.identification: [{ position: 120 }]
+  @UI.selectionField: [{exclude: true}]
+  AmountInCompanyCodeCurrency;
+  @UI.hidden: true
+  GlobalCurrency;
+  @UI.lineItem: [{ position: 130 }]
+  @UI.identification: [{ position: 130 }]
+  @UI.selectionField: [{exclude: true}]
+  AmountInGlobalCurrency;
+  @UI.lineItem: [{ position: 150 }]
+  @UI.identification: [{ position: 150 }]
+  @EndUserText.label: '{@i18n>PandLL0}'
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoPandLHierFlattenedSH', entity.element: 'ID', additionalBinding: [{ element: 'CustomerLevel', localConstant: 'L0', usage: #FILTER }] }]
+  PandLL0Id;
+  @UI.hidden: true
+  PandLL0Name;
+  @UI.lineItem: [{ position: 160 }]
+  @UI.identification: [{ position: 160 }]
+  @EndUserText.label: '{@i18n>PandLL1}'
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoPandLHierFlattenedSH', entity.element: 'ID', additionalBinding: [{ element: 'CustomerLevel', localConstant: 'L1', usage: #FILTER }] }]
+  PandLL1Id;
+  @UI.hidden: true
+  PandLL1Name;
+  @UI.lineItem: [{ position: 170 }]
+  @UI.identification: [{ position: 170 }]
+  @EndUserText.label: '{@i18n>PandLL2}'
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoPandLHierFlattenedSH', entity.element: 'ID', additionalBinding: [{ element: 'CustomerLevel', localConstant: 'L2', usage: #FILTER }] }]
+  PandLL2Id;
+  @UI.hidden: true
+  PandLL2Name;
+  @UI.lineItem: [{ position: 180 }]
+  @UI.identification: [{ position: 180 }]
+  @EndUserText.label: '{@i18n>PandLL3}'
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoPandLHierFlattenedSH', entity.element: 'ID', additionalBinding: [{ element: 'CustomerLevel', localConstant: 'L3', usage: #FILTER }] }]
+  PandLL3Id;
+  @UI.hidden: true
+  PandLL3Name;
+  @UI.lineItem: [{ position: 190 }]
+  @UI.identification: [{ position: 190 }]
+  @EndUserText.label: '{@i18n>PandLL4}'
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoPandLHierFlattenedSH', entity.element: 'ID', additionalBinding: [{ element: 'CustomerLevel', localConstant: 'L4', usage: #FILTER }] }]
+  PandLL4Id;
+  @UI.hidden: true
+  PandLL4Name;
+  @UI.lineItem: [{ position: 200 }]
+  @UI.identification: [{ position: 200 }]
+  @EndUserText.label: '{@i18n>PandLL5}'
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoPandLHierFlattenedSH', entity.element: 'ID', additionalBinding: [{ element: 'CustomerLevel', localConstant: 'L5', usage: #FILTER }] }]
+  PandLL5Id;
+  @UI.hidden: true
+  PandLL5Name;
+  @UI.lineItem: [{ position: 205 }]
+  @UI.identification: [{ position: 205 }]
+  @Consumption.filter: { selectionType : #SINGLE, multipleSelections : false}
+  @Consumption.valueHelpDefinition: [{
+     entity: {
+         name: 'ZI_IntercoBasisVH',
+         element: 'Id'
+     },
+     distinctValues: true,
+     useForValidation: true,
+     additionalBinding: [
+     {
+         localParameter: 'P_CompanyCode',
+         element: 'CompanyCode',
+         usage: #FILTER_AND_RESULT
+     },
+  {
+         localParameter: 'P_Ledger',
+         element: 'Ledger',
+         usage: #FILTER_AND_RESULT
+     },
+  {
+         localParameter: 'P_PaymentType',
+         element: 'PaymentType',
+         usage: #FILTER_AND_RESULT
+     },
+     {
+         localParameter: 'P_FiscalYear',
+         element: 'Fiscalyear',
+         usage: #FILTER_AND_RESULT
+     },
+     {
+         localParameter: 'P_FiscalPeriod',
+         element: 'Fiscalperiod',
+         usage: #FILTER_AND_RESULT
+     }
+     ]
+  }]
+  @UI.selectionField: [{ position: 100 }]
+  IdBase;
+  @UI.hidden: true
+  DescriptionBase;
+
+  @UI.selectionField: [{ position: 40 }]
+  @Consumption.valueHelpDefinition: [{
+      entity: {
+          name: 'I_ProfitCenterVH',
+          element: 'ProfitCenter'
+      },
+      distinctValues: true,
+      useForValidation: true,
+      additionalBinding: [{
+          localConstant: 'ML00',
+          element: 'ControllingArea',
+          usage: #FILTER_AND_RESULT
+      }]
+  }]
+  ProfitCenter;
+  @EndUserText.label: '{@i18n>PCConsolidation}'
+  PCConsolidation;
+  @UI.selectionField: [{ position: 50 }]
+  @Consumption.valueHelpDefinition: [{
+      entity: {
+          name: 'ZI_CostCenter_SH',
+          element: 'CostCenter'
+      },
+      distinctValues: true,
+      useForValidation: true,
+      additionalBinding: [{
+          localConstant: 'ML00',
+          element: 'ControllingArea',
+          usage: #FILTER_AND_RESULT
+      },
+      {
+          localParameter: 'P_CompanyCode',
+          element: 'CompanyCode',
+          usage: #FILTER_AND_RESULT
+      }]
+  }]
+  CostCenter;
+  @Consumption.filter.hidden: true
+  ControllingArea;
+  @UI.selectionField: [{exclude: true}]
+  @EndUserText.label: '{@i18n>IsNotBillableFromMasterData}'
+  IsNotBillableFromMasterData;
+  @UI.selectionField: [{exclude: true}]
+  @EndUserText.label: '{@i18n>IsNotBillableFromExemption}'
+  IsNotBillableFromExemption;
+  @Analytics.document.semantics: #PROPERTY
+  //  @UI.hidden: true
+  IsBillableCriticality;
+
+  @UI.selectionField: [ { position: 60 } ]
+  @EndUserText.label: '{@i18n>RuleID}'
+  RuleID;
+  @UI.lineItem: [ { label: '{@i18n>IsDelta}' } ]
+  IsDelta;
+  @EndUserText.label: '{@i18n>ClassificationExemptionExtID}'
+  ClassificationExemptionExtID;
+  @UI.hidden: true
+  ClassificationExemptionID;
+  @UI.hidden: true
+  RuleName;
+  @EndUserText.label: '{@i18n>IsReleased}'
+  IsReleased;
+}

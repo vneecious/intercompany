@@ -1,0 +1,13 @@
+@EndUserText.label: 'CT V2 - Gestion Contratos IC'
+define service ZREING_CT2_SRV {
+  expose ZC_ReingCTContract2 as Contract;
+  expose ZC_ReingCTMaterial2 as Material;
+  expose ZC_ReingCTOpType2   as OpType;
+  expose ZC_ReingCTOpRate2   as OpRate;
+  expose ZC_ReingCTCron2     as Cron;
+  expose ZC_ReingCTReceiver2 as Receiver;
+  expose ZC_ReingCTMetric2   as Metric;
+  expose ZC_ReingCTGL2       as GL;
+  expose ZC_ReingCTGLOpType2 as GLOpType;
+  expose ZC_ReingC2Hist      as Hist;
+}

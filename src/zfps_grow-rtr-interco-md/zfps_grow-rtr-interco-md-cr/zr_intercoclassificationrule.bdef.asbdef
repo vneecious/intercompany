@@ -1,0 +1,123 @@
+managed implementation in class ZBP_R_INTERCO_CLASS_RULE unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_INTERCOCLASSIFICATIONRULE alias ClassificationRule
+persistent table zint_a_md_cr
+draft table zint_d_md_cr
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( global )
+with additional save
+{
+  /*-----------------------------------------------------------------
+   * FIELDS
+   -------------------------------------------------------------------*/
+  field ( numbering : managed )
+  ID;
+
+  field ( readonly )
+  ID,
+  CreatedAt,
+  CreatedBy,
+  LastChangedAt,
+  LastChangedBy,
+  LocalLastChangedAt,
+  Today,
+  Yesterday,
+  IsValid,
+  Score;
+
+  field ( features : instance )
+  Product, ProfitCenter, CcStdHierArea, PAndLID, CcAllocation;
+
+  field ( mandatory )
+  ValidFrom,
+  ValidTo,
+  RuleName,
+  Ledger;
+
+  field ( readonly ) RuleID;
+
+  /*-----------------------------------------------------------------
+   * OPERATIONS
+   -------------------------------------------------------------------*/
+  create;
+  update ( features : instance );
+  delete;
+
+  /*-----------------------------------------------------------------
+   * DETERMINATIONS
+   -------------------------------------------------------------------*/
+  determination SetRuleId on save { create; }
+  determination SetPandLevel on save { field PAndLID; }
+  determination ClearProduct on modify { field IsNotBillable; }
+
+  /*-----------------------------------------------------------------
+   * ACTIONS AND FUNCTIONS
+   -------------------------------------------------------------------*/
+  static function DefaultForCreate result [1] $self;
+  action ( features : instance ) Delimit deep parameter ZD_IntercoDelimit result [1] $self;
+  action ( features : instance ) Delete result [1] $self;
+  action ( features : instance ) Restore result [1] $self;
+  factory action CopyClassificationRule parameter ZD_IntercoClassRuleCopy [1];
+
+  draft action ( features : instance ) Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    //    validation ( always ) ValidateDateOverlap;
+    //    validation ( always ) ValidateValidTo;
+    //    validation ( always ) ValidateRequired;
+    //    validation ( always ) ValidateBillRelation;
+  }
+
+
+
+  validation ValidateDateOverlap on save { create; update; field ValidFrom, ValidTo; }
+  validation ValidateValidTo on save { create; update; field ValidFrom, ValidTo; }
+  validation ValidateBillRelation on save { create; update; }
+  validation ValidateRequired on save { create; update; }
+  validation ValidateDuplicated on save { create; update; }
+  validation ValidateAllFields on save { create; update; }
+
+  /*-----------------------------------------------------------------
+   * SIDE EFFECTS
+   -------------------------------------------------------------------*/
+  side effects
+  {
+    field IsNotBillable affects field Product, permissions ( field Product );
+    field Product affects field ProfitCenter, permissions ( field ProfitCenter );
+    action Delete affects $self;
+  }
+
+  mapping for zint_a_md_cr
+    {
+      ID                 = id;
+      RuleID             = rule_id;
+      RuleName           = rule_name;
+      ValidFrom          = valid_from;
+      ValidTo            = valid_to;
+      CompanyCode        = company_code;
+      Ledger             = ledger;
+      // AGREGADO EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C08: mapea PaymentType al campo nuevo de la tabla
+      PaymentType        = payment_type;
+      // Fin EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C08
+      PAndLID            = p_and_l_id;
+      ProfitCenter       = profit_center;
+      CcStdHierArea      = cc_std_hier_area;
+      CcAllocation       = cc_allocation;
+      CcConsolidation    = cc_consolidation;
+      Product            = product;
+      IsNotBillable      = is_not_billable;
+      IsDeleted          = is_deleted;
+      CreatedAt          = created_at;
+      CreatedBy          = created_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedBy      = last_changed_by;
+      PandLLevel         = p_and_l_level;
+    }
+}

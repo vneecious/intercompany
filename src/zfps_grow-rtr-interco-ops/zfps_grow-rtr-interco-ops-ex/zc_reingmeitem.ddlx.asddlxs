@@ -1,0 +1,76 @@
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: {
+  typeName: 'Valor de Métrica',
+  typeNamePlural: 'Valores de Métricas',
+  title: { type: #STANDARD, value: 'Bukrs' },
+  description: { type: #STANDARD, value: 'Prctr' }
+}
+
+annotate view ZC_ReingMEItem with
+{
+  @EndUserText.label: 'Sociedad'
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 10, qualifier: 'ItemInfo' }]
+  Bukrs;
+
+  @EndUserText.label: 'Centro de Beneficio'
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 20, qualifier: 'ItemInfo' }]
+  Prctr;
+
+  @EndUserText.label: 'Campana'
+  @UI.lineItem: [{ position: 30, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 30, qualifier: 'ItemInfo' }]
+  Campana;
+
+  // ME-03 (Delta v2): F4 de RoleCategory/Allocation via VHs de CT-09 (autocontenidas).
+  // ME-15 (Delta v2): layout de columnas (lineItem/fieldGroup), positions 40/45.
+  @EndUserText.label: 'Categoria'
+  @UI.lineItem: [{ position: 40, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 40, qualifier: 'ItemInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingRoleCatVH', element: 'RoleCategory' } }]
+  RoleCategory;
+
+  // Mod 25.09.2026 EXT_AGFAGINA - Ajustes Sprint 3: "Asignacion" -> "Allocation",
+  // igual que en Contratos (ZC_ReingCTReceiver2, mod 03.09.2026).
+  @EndUserText.label: 'Allocation'
+  @UI.lineItem: [{ position: 45, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 45, qualifier: 'ItemInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingAllocTypeVH', element: 'Allocation' } }]
+  Allocation;
+
+  @EndUserText.label: 'Valor'
+  @UI.lineItem: [{ position: 50, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 50, qualifier: 'ItemInfo' }]
+  MeValue;
+
+  @EndUserText.label: 'Share %'
+  @UI.lineItem: [{ position: 60, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 60, qualifier: 'ItemInfo' }]
+  SharePct;
+
+  @EndUserText.label: 'Var. %'
+  @UI.lineItem: [{ position: 70, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 70, qualifier: 'ItemInfo' }]
+  VarPct;
+
+  @EndUserText.label: 'Flag Var.'
+  @UI.lineItem: [{ position: 80, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 80, qualifier: 'ItemInfo' }]
+  VarFlag;
+
+  @UI.facet: [
+    { id: 'ItemInfo',
+      type: #COLLECTION,
+      label: 'Datos del Item',
+      position: 10 },
+    { id: 'ItemInfoFields',
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'ItemInfo',
+      parentId: 'ItemInfo',
+      position: 10 }
+  ]
+  @EndUserText.label: 'Ult. Modificacion'
+  LocalLastChangedAt;
+}

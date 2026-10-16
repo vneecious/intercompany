@@ -1,0 +1,66 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Relación Empresas x Conceptos por Período',
+        typeNamePlural: 'Relación Empresas x Conceptos por Período',
+        title: { type: #STANDARD }
+    },
+    presentationVariant: [{
+        sortOrder: [
+            { by: 'CreationDate', direction: #DESC },
+            { by: 'CreationTime', direction: #DESC }
+        ],
+        visualizations: [{
+            type: #AS_LINEITEM
+        }]
+    }]
+}
+annotate entity zc_intercorelprodbill_log with
+{
+  @UI.facet: [ { id:              'Log',
+                 purpose:         #STANDARD,
+                 type:            #IDENTIFICATION_REFERENCE,
+                 label:           'Log',
+                 position:        10 } ]
+
+  @UI.hidden: true
+  uuid;
+  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ]}
+  ChangeDocDatabaseTableField;
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 } ]}
+  ChangeDocItemChangeType;
+  @UI: { lineItem: [ { position: 30 } ],identification:[ { position: 30 } ]}
+  @UI.hidden: true
+  ChangeDocPreviousUnit;
+  @UI: { lineItem: [ { position: 40 } ],identification:[ { position: 40 } ]}
+  @UI.hidden: true
+  ChangeDocNewUnit;
+  @UI: { lineItem: [ { position: 50 } ],identification:[ { position: 50 } ]}
+  @UI.hidden: true
+  ChangeDocPreviousCurrency;
+  @UI: { lineItem: [ { position: 60 } ],identification:[ { position: 60 } ]}
+  @UI.hidden: true
+  ChangeDocNewCurrency;
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 70 } ]}
+  ChangeDocNewFieldValue;
+  @UI: { lineItem: [ { position: 80 } ],identification:[ { position: 80 } ]}
+  ChangeDocPreviousFieldValue;
+  @UI: { lineItem: [ { position: 90 } ],identification:[ { position: 90 } ]}
+//  @UI.hidden: true
+  ChangeDocTextIsChanged;
+  @UI: { lineItem: [ { position: 100 } ],identification:[ { position: 100 } ]}
+  CreatedByUser;
+  @UI: { lineItem: [ { position: 100 } ],identification:[ { position: 110 } ]}
+  CreationDate;
+  @UI: { lineItem: [ { position: 120 } ],identification:[ { position: 120 } ]}
+  CreationTime;
+  @UI: { lineItem: [ { position: 130 } ],identification:[ { position: 130 } ]}
+//  @UI.hidden: true
+  ChangeTransactionCode;
+  @UI: { lineItem: [ { position: 140 } ],identification:[ { position: 140 } ]}
+//  @UI.hidden: true
+  ChangeDocChangeType;
+  @UI: { lineItem: [ { position: 150 } ],identification:[ { position: 150 } ]}
+//  @UI.hidden: true
+  ChangeDocLanguage;
+}

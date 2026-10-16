@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZREING_CA_BASE_AMT</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ZREING_CA_AMT_D</DOMNAME>
+    <HEADLEN>10</HEADLEN>
+    <SCRLEN1>08</SCRLEN1>
+    <SCRLEN2>10</SCRLEN2>
+    <SCRLEN3>22</SCRLEN3>
+    <DDTEXT>CA - Base Amount of Calculation</DDTEXT>
+    <REPTEXT>Base Amoun</REPTEXT>
+    <SCRTEXT_S>Base Amt</SCRTEXT_S>
+    <SCRTEXT_M>Base Amoun</SCRTEXT_M>
+    <SCRTEXT_L>Base Amount of Calc.Ba</SCRTEXT_L>
+    <DTELMASTER>S</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>CA - Monto Base del Calculo</DDTEXT>
+     <REPTEXT>Monto Base</REPTEXT>
+     <SCRTEXT_S>Mto.Base</SCRTEXT_S>
+     <SCRTEXT_M>Monto Base</SCRTEXT_M>
+     <SCRTEXT_L>Monto Base del Calculo</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

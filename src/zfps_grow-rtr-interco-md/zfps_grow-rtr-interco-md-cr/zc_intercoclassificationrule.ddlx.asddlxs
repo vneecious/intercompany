@@ -1,0 +1,479 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Classification Rule',
+    typeNamePlural: 'Classification Rules',
+    title: {
+        label: 'Classification Rule',
+        value: 'RuleID'
+    }
+  },
+/* Presentation Variant */
+  presentationVariant: [{
+    sortOrder: [
+      { by: 'RuleID',  direction: #ASC },
+      { by: 'ValidTo', direction: #DESC }
+    ],
+    visualizations: [{ type: #AS_LINEITEM }],
+    requestAtLeast: [
+      'RuleID',
+      'RuleName'
+    ]
+   }],
+  textArrangement: #TEXT_LAST
+}
+@Consumption.semanticObject: 'IntercoExemption'
+@UI.lineItem: [{criticality: 'RuleCriticality'}]
+@UI.chart: [
+  {
+    qualifier: 'radialScore',
+    title: 'Score',
+    description: 'Refleja la prioridad de la regla en superposiciones, basada en el nivel de detalle completado. A mayor cantidad de campos llenos y mayor nivel de P&L, mayor será el puntaje',
+    chartType: #DONUT,
+    measures: ['Score'],
+    measureAttributes: [
+      {
+        measure: 'Score',
+        role: #AXIS_1,
+        asDataPoint: true
+      }
+    ]
+  }
+]
+annotate view ZC_INTERCOCLASSIFICATIONRULE with
+{
+  /*******************************************************
+   Object Page Facets
+   ********************************************************/
+  @UI.facet: [
+        {
+            id: 'GeneralInformation',
+            position: 10,
+            purpose: #STANDARD,
+            type: #COLLECTION,
+            label: '{@i18n>GeneralInformation}'
+        },
+        {
+            id: 'HeaderFacet',
+            purpose: #HEADER,
+            type: #COLLECTION,
+            label: '{@i18n>ClassificationRule}',
+            targetQualifier: 'HeaderItems'
+        },
+        {
+            id: 'HeaderBasicData',
+            label: '{@i18n>BasicData}',
+            position: 10,
+            purpose: #HEADER,
+            type: #FIELDGROUP_REFERENCE,
+            targetQualifier: 'HeaderBasicData'
+        },
+        {
+            id: 'HeaderLog',
+            label: '{@i18n>Log}',
+            position: 30,
+            purpose: #HEADER,
+            type: #FIELDGROUP_REFERENCE,
+            targetQualifier: 'HeaderLog'
+        },
+       {
+            id: 'HeaderScore',
+            position: 30,
+            purpose: #HEADER,
+            type: #CHART_REFERENCE,
+            targetQualifier: 'radialScore'
+        },
+        {
+            id: 'BasicData',
+            label: '{@i18n>BasicData}',
+            position: 10,
+            purpose: #STANDARD,
+            type: #FIELDGROUP_REFERENCE,
+            targetQualifier: 'BasicData',
+            parentId: 'GeneralInformation'
+        },
+        {
+            id: 'Validity',
+            label: '{@i18n>Validity}',
+            position: 20,
+            purpose: #STANDARD,
+            type: #FIELDGROUP_REFERENCE,
+            targetQualifier: 'Validity',
+            parentId: 'GeneralInformation'
+        },
+        {
+            id: 'Rule',
+            label: '{@i18n>Rule}',
+            position: 20,
+            purpose: #STANDARD,
+            type: #COLLECTION,
+            targetQualifier: 'SectionRule'
+        },
+        {
+            id: 'RuleInput',
+            label: '{@i18n>RuleInput}',
+            position: 10,
+            purpose: #STANDARD,
+            type: #FIELDGROUP_REFERENCE,
+            targetQualifier: 'SectionRuleInput',
+            parentId: 'Rule'
+        },
+       {
+            id: 'RuleOutput',
+            label: '{@i18n>RuleOutput}',
+            position: 20,
+            purpose: #STANDARD,
+            type: #FIELDGROUP_REFERENCE,
+            targetQualifier: 'SectionRuleOutput',
+            parentId: 'Rule'
+        },
+        {
+            id: 'Logs',
+            label: '{@i18n>Log}',
+            importance: #HIGH,
+            position: 30,
+            purpose: #STANDARD,
+            type: #COLLECTION
+        },
+        {
+          type: #LINEITEM_REFERENCE,
+          position: 10,
+          purpose: #STANDARD,
+          targetElement: '_Log',
+          parentId: 'Logs'
+        }]
+  /*****"**************************************************
+   Actions
+   ********************************************************/
+  @UI: {
+    // List Page
+    lineItem: [
+        { type: #FOR_ACTION, dataAction: 'Delimit', label: '{@i18n>Delimit}', requiresContext: true },
+        { type: #FOR_ACTION, dataAction: 'Delete', label: '{@i18n>Delete}', requiresContext: true, hidden: #( IsDeleted ) },
+        { type: #FOR_ACTION, dataAction: 'Restore', label: '{@i18n>Restore}', requiresContext: true, hidden: #( IsNotDeleted ) }
+        ],
+    // Object Page
+    identification: [{
+        importance: #MEDIUM,
+        label: '{@i18n>Delimit}',
+        inline: true,
+        dataAction: 'Delimit',
+        requiresContext: true,
+        type: #FOR_ACTION,
+        hidden: #( IsDeleted ),
+        position: 15 },
+        {
+        importance: #HIGH,
+        label: '{@i18n>Delete}',
+        inline: true,
+        dataAction: 'Delete',
+        requiresContext: true,
+        type: #FOR_ACTION,
+        hidden: #( IsDeleted ),
+        position: 20 },
+        {
+        importance: #HIGH,
+        label: '{@i18n>Restore}',
+        inline: true,
+        dataAction: 'Restore',
+        requiresContext: true,
+        type: #FOR_ACTION,
+        hidden: #( IsNotDeleted ),
+        position: 30 }]
+  }
+
+  /*******************************************************
+   Fields
+   ********************************************************/
+  @UI.hidden: true
+  ID;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 10 ,
+        importance: #HIGH
+    }],
+    selectionField: [{ position: 10 }],
+    // Object Page
+    identification: [{
+        position: 10
+    }],
+    fieldGroup: [{ qualifier: 'BasicData', position: 10 }, { qualifier: 'HeaderBasicData', position: 10 }]
+  }
+  RuleID;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 20 ,
+        importance: #HIGH
+    }],
+    selectionField: [{ position: 20 }],
+    // Object Page
+    identification: [{
+        position: 20
+    }],
+    fieldGroup: [{ qualifier: 'BasicData', position: 20 }, { qualifier: 'HeaderBasicData', position: 20 }]
+  }
+  RuleName;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 40 ,
+        importance: #MEDIUM
+    }],
+    selectionField: [{exclude: true}],
+    // Object Page
+    identification: [{
+        position: 40
+    }],
+    fieldGroup: [{ qualifier: 'Validity', position: 10 }]
+  }
+  ValidFrom;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 50 ,
+        importance: #MEDIUM
+    }],
+    selectionField: [{exclude: true}],
+    // Object Page
+    identification: [{
+        position: 50
+    }],
+    fieldGroup: [{ qualifier: 'Validity', position: 20 }]
+  }
+  ValidTo;
+
+  @UI: {
+    // List Page
+  //    lineItem: [{ hidden: true }],
+    // Object Page
+    fieldGroup: [{ qualifier: 'SectionRuleInput', position: 10 }]
+  }
+  // Value Help
+  @Consumption.valueHelpDefinition: [{ entity.name: 'ZI_IntercoCompanyCodeVH', entity.element: 'CompanyCode', useForValidation: true }]
+  CompanyCode;
+
+
+  @UI: {
+    // List Page
+  //    lineItem: [{ hidden: true }],
+    // Object Page
+    fieldGroup: [{ qualifier: 'SectionRuleInput', position: 15 }]
+  }
+  // Value Help
+  @Consumption.valueHelpDefinition: [{ entity.name: 'I_Ledger', entity.element: 'Ledger', useForValidation: true }]
+  Ledger;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+  //        hidden: true,
+        label: '{@i18n>PandLID}'
+    }],
+    fieldGroup: [{ qualifier: 'SectionRuleInput', position: 20 }]
+  }
+  // Value Help
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoPandLHierFlattenedSH', entity.element: 'ID', useForValidation: true }]
+  PAndLID;
+
+
+  @UI: {
+    // List Page
+    lineItem: [{
+  //        hidden: true,
+        label: '{@i18n>ProfitCenter}'
+    }],
+    // Object Page
+    identification: [{
+        label: '{@i18n>ProfitCenter}'
+    }],
+    fieldGroup: [{ qualifier: 'SectionRuleInput', position: 30 }]
+  }
+  // Value Help
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoProfitCenter_SH', entity.element: 'ProfitCenter', useForValidation: true }]
+  ProfitCenter;
+
+
+  @UI: {
+    // List Page
+    lineItem: [{
+  //        hidden: true,
+        label: '{@i18n>CcStdHierArea}'
+    }],
+    // Object Page
+    identification: [{
+        label: '{@i18n>CcStdHierArea}'
+    }],
+    fieldGroup: [{ qualifier: 'SectionRuleInput', position: 40 }]
+  }
+  // Value Help
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoCostCenterSubArea_SH', entity.element: 'CostCenterSubArea', useForValidation: true }]
+  CcStdHierArea;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+  //        hidden: true,
+        label: '{@i18n>CcAllocation}'
+    }],
+    // Object Page
+    identification: [{
+        label: '{@i18n>CcAllocation}'
+    }],
+    fieldGroup: [{ qualifier: 'SectionRuleInput', position: 50 }]
+  }
+  // Value Help
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoCostCenterAlloc_SH', entity.element: 'Allocation', useForValidation: true }]
+  CcAllocation;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+  //        hidden: true,
+        label: '{@i18n>CcConsolidation}'
+    }],
+    // Object Page
+    identification: [{
+        label: '{@i18n>CcConsolidation}'
+    }],
+    fieldGroup: [{ qualifier: 'SectionRuleInput', position: 60 }]
+  }
+  // Value Help
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoCostCenterConsVH', entity.element: 'Consolidation', useForValidation: true }]
+  CcConsolidation;
+
+
+  @UI: {
+    // List Page
+    lineItem: [{
+  //        hidden: true,
+        label: '{@i18n>IsNotBillable}'
+    }],
+    // Object Page
+    identification: [{
+        label: '{@i18n>IsNotBillable}'
+    }],
+    fieldGroup: [{ qualifier: 'SectionRuleOutput', position: 10 }]
+  }
+  @EndUserText.label: '{@i18n>IsNotBillable}'
+  IsNotBillable;
+  -- Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C13F: mostrar y filtrar el tipo de pago
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 30,
+        importance: #HIGH
+    }],
+    selectionField: [{
+        position: 30
+    }],
+    // Object Page
+    fieldGroup: [{
+        qualifier: 'SectionRuleOutput',
+        position: 15
+    }]
+  }
+  @EndUserText.label: 'Payment Type'
+  @Consumption.valueHelpDefinition: [{
+    entity.name: 'ZI_IntercoPaymentTypeVH',
+    entity.element: 'PaymentType',
+    distinctValues: true,
+    useForValidation: true
+  }]
+  PaymentType;
+  -- Fin EXT_OSCUGALD 06.10.2026 - C13F
+  @UI: {
+    // List Page
+    lineItem: [{
+  //        hidden: true,
+        label: '{@i18n>Product}'
+    }],
+    // Object Page
+    identification: [{
+        label: '{@i18n>Product}'
+    }],
+    fieldGroup: [{ qualifier: 'SectionRuleOutput', position: 20 }]
+  }
+  // Value Help
+  @Consumption.valueHelpDefinition: [{
+    entity.name:'ZI_IntercoProduct_SH',
+    entity.element: 'Product',
+    distinctValues: true,
+    useForValidation: true,
+    additionalBinding: [{
+        element: 'Product',
+        localElement: 'Product',
+        usage: #FILTER_AND_RESULT},
+      {  element: 'ProductName',
+         usage: #RESULT }
+         ]}]
+  Product;
+
+  @Consumption.filter.defaultValue: ' '
+  @EndUserText.label: '{@i18n>IsDeleted}'
+  IsDeleted;
+
+  // List Page
+  @UI.lineItem: [ {
+    position: 21 ,
+    importance: #HIGH,
+    criticality: 'IsValidCriticality'
+  } ]
+  // Object Page
+  @UI.identification: [{
+    criticality: 'IsValidCriticality'
+  }]
+  @Consumption.filter.defaultValue: 'X'
+  @EndUserText.label: '{@i18n>IsValid}'
+  IsValid;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+  @UI: {
+   // List Page
+   lineItem: [{ hidden: true, exclude: true }],
+   selectionField: [{ exclude: true }],
+   // Object Page
+   identification: [{
+       position: 10 ,
+       label: '{@i18n>CreatedBy}'
+   }],
+   fieldGroup: [{ qualifier: 'HeaderLog' }]
+  }
+  CreatedBy;
+
+  @UI: {
+     // List Page
+     lineItem: [{ hidden: true, exclude: true }],
+     selectionField: [{ exclude: true }],
+     // Object Page
+     identification: [{
+         position: 10 ,
+         label: '{@i18n>CreatedBy}'
+     }],
+     fieldGroup: [{ qualifier: 'HeaderLog' }]
+    }
+  CreatedAt;
+
+
+  @UI.dataPoint: {
+    qualifier: 'Score',
+    title: 'Score',
+    targetValue: 100.0,
+    visualization: #PROGRESS
+  }
+  @UI.lineItem: [
+  {
+    label: 'Score',
+    type: #AS_DATAPOINT,
+    importance: #LOW
+  }]
+  Score;
+
+}

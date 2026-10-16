@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_INTERCO_BRF_WHT</CLSNAME>
+    <LANGU>S</LANGU>
+    <DESCRIPT>Class to consume BRF WHT Code</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CMPNAME>GET_CC_CODE</CMPNAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Get Cost Center code</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GET_TAX_CODE</CMPNAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Get Tax code</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GET_WHT_CODE</CMPNAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Get Withholding tax code</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_CC_CODE</CMPNAME>
+     <SCONAME>IV_PRODUCT</SCONAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Número de material</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_CC_CODE</CMPNAME>
+     <SCONAME>RV_CC_CODE</SCONAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>CC Code BRF+</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_TAX_CODE</CMPNAME>
+     <SCONAME>EV_TAXCODE_AR</SCONAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Indicador tipo de retenciones BRF+</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>

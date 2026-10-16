@@ -1,0 +1,11 @@
+@EndUserText.label: 'Interco Rate values Company Rela Concept'
+@MappingRole: true
+define role ZDCL_INTERCOCOMPANYRELPRODRATE {
+    grant 
+        select
+            on
+                ZI_INTERCOCOMPANYRELPRODRATE
+                    where
+                    ( Isdeleted is initial );
+//                    or () = aspect pfcg_auth( ZFI_IC_LVL, ZFI_IC_LVV = '3' );                        
+}

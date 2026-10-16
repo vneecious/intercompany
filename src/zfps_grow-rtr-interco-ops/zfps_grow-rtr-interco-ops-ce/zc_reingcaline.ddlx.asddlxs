@@ -1,0 +1,538 @@
+//----------------------------------------------------------------------
+// Created by     : Oscar Augusto Leal Dominguez (EXT_OSCUGALD)
+// Change ID      : V001
+// Date           : 10.07.2026
+// Description    : App CA - F6-05 Object Page CalcLine: headerInfo,
+//                  lineItem columnas, fieldGroups de detalle y facets
+//                  con tabs (Montos, Shares, Diferimiento, Estado,
+//                  apertura CeBe, Steps, Log). Patron ET §9.3.
+// Transport      : DS4K9B5XZC
+// Reference      : 5000049390
+//----------------------------------------------------------------------
+// Begin Change ID V001 (10.07.2026 | EXT_OSCUGALD)
+// Descripcion : Creacion inicial DDLX ZC_ReingCALine para F6-05.
+//               Habilita el panel de detalle de cada linea de calculo.
+// End Change ID V001 (10.07.2026 | EXT_OSCUGALD)
+//----------------------------------------------------------------------
+// Change ID V005 (18.09.2026 | EXT_GONZALCA): ET-REING-CA-001 v50 SS9.3 --
+// new "Origen del Delta" section of the object page. Four values, of which
+// three already existed as elements (DeltaSeq, DeltaBaseAmt, BrutoAmt) and
+// one is new (TotalEfectivo, derived in ZI_ReingCALine V006 and propagated
+// by ZC_ReingCALine V005).
+// The three existing fields are NOT moved: a second entry is appended to
+// their @UI.fieldGroup array, so they keep the group they already belong to
+// (Referencia for the two delta ones, Conversion for BrutoAmt) and gain the
+// new one. Moving them would have silently emptied those sections.
+// Per-entry labels are used instead of @EndUserText.label so the ET wording
+// ("Delta #", "Base contabilizada", "Delta aplicado") applies ONLY inside
+// this section. A data-element label would have renamed BrutoAmt everywhere
+// -- including the "Bruto" header KPI and the Conversion section -- which is
+// not what the ET asks for. Same mechanism already in use by the 'Delta'
+// label of the IsDelta lineItem in the DDLX of ZC_ReingCALineAll.
+// NOT IMPLEMENTED HERE, pending a decision: the ET says the section is
+// visible "solo si IS_DELTA = X". HideDeltaFields already exists for exactly
+// this. See the closing note at the end of this file.
+//----------------------------------------------------------------------
+@Metadata.layer: #CUSTOMER
+
+// Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+// Descripcion : headerInfo - title pasa de LineNum a BukrsRecv, description pasa de LineStatus a BpName
+// (pedido de Frontend para el Object Page de CalcLineType)
+// Begin Change ID V004 (17.09.2026 | EXT_GONZALCA)
+// Bug tracker #81 -- "incluir el numero del contrato externo en la linea de
+// calculo": al lado de la sociedad receptora del titulo hay que ver el
+// N. Contrato Externo del contrato IC (ZREING_CT2_A-EXT_CONTRACT, el mismo
+// dato que la app "Gestion de Contratos - IC" muestra en Datos Generales).
+// title pasa de BukrsRecv al elemento concatenado HeaderTitle, que se calcula
+// en ZI_ReingCALine (V005) via la asociacion _Contract2 y se propaga por
+// ZC_ReingCALine (V004). Por que un elemento concatenado y no dos campos:
+// headerInfo.title admite UN solo elemento. Y por que no reusar description:
+// esa lleva BpName, que es justamente el fix del bug #65 (fixes-027), asi que
+// pisarla reintroduciria un bug ya cerrado. description queda intacta.
+// End Change ID V004 (17.09.2026 | EXT_GONZALCA)
+@UI.headerInfo: {
+  typeName: 'Linea de Calculo',
+  typeNamePlural: 'Lineas de Calculo',
+  title:          { type: #STANDARD, value: 'HeaderTitle' },
+  description:    { type: #STANDARD, value: 'BpName' }
+}
+
+// Presentation Variant a nivel de entidad - agrupa por los campos de negocio de la clave compuesta de
+// contrato/material/operacion/sociedad prestadora (mismo patron ya en produccion en ZC_ReingCALineAll).
+// visualizations es obligatorio - sin el, el runtime ignora todo el PresentationVariant.
+@UI.presentationVariant: [
+  {
+    groupBy: [ 'CtId', 'Matnr', 'OpType', 'OpInstanceNum', 'BukrsPrest' ],
+    sortOrder: [ { by: 'CtId' } ],
+    visualizations: [ { type: #AS_LINEITEM } ]
+  }
+]
+// End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+annotate view ZC_ReingCALine with
+{
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : CalcRunId/LineNum quedan solo en fieldGroup Contrato - LineNum sale de lineItem (mismo
+  // criterio ya aplicado en F6-05: claves tecnicas solo en fieldGroup, no en columna, salvo pedido expreso)
+  @UI.fieldGroup: [{ qualifier: 'Contrato', position: 10 }]
+  CalcRunId;
+
+  @UI.fieldGroup: [{ qualifier: 'Contrato', position: 20 }]
+  LineNum;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : CtId - selectionField nuevo, lineItem HIGH (renumeracion completa), Value Help reutilizando
+  // ZI_ReingCMContractVH (misma entidad ya activa en ZC_ReingCALineAll), fieldGroup Contrato (antes LineHeader)
+  @UI.selectionField: [{ position: 10 }]
+  @UI.lineItem:       [{ position: 10, importance: #HIGH }]
+  @UI.fieldGroup:     [{ qualifier: 'Contrato', position: 30 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingCMContractVH', element: 'CtId' } }]
+  CtId;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V004 (17.09.2026 | EXT_GONZALCA)
+  // Bug #81: el numero de contrato externo tambien se expone como campo propio
+  // de la seccion Contrato, no solo concatenado en el titulo, para que se pueda
+  // leer y copiar completo (el titulo lo muestra pegado al BUKRS).
+  // position 35 para quedar inmediatamente despues de CtId (30) sin renumerar
+  // los 9 campos siguientes del qualifier - mismo criterio que la position 65 de
+  // CtCurrency en el fieldGroup Conversion.
+  // El label va aca y no en el DDIC: el data element ZREING_CT_EXT_NUM es del
+  // paquete cross ...-EX y sus labels estan en ingles ("Contract Number"); ese
+  // paquete no se toca desde la app CA.
+  // HeaderTitle NO se anota en este bloque a proposito. Es el elemento que
+  // consume headerInfo.title, y la unica anotacion que le corresponderia como
+  // campo tecnico seria @UI.hidden -- que lo ocultaria TAMBIEN en el header y
+  // anularia el fix. @UI.hiddenFilter no es alternativa: no esta soportada en
+  // esta version on-premise (ver la nota de StatusCriticality mas abajo).
+  @EndUserText.label: 'N. Contrato Externo'
+  @UI.fieldGroup: [{ qualifier: 'Contrato', position: 35 }]
+  ExtContract;
+  // End Change ID V004 (17.09.2026 | EXT_GONZALCA)
+
+  @UI.fieldGroup: [{ qualifier: 'Contrato', position: 40 }]
+  Lifnr;
+
+  @UI.fieldGroup: [{ qualifier: 'Contrato', position: 50 }]
+  BpName;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : BukrsPrest - lineItem MEDIUM (renumeracion completa), fieldGroup Contrato (antes LineHeader)
+  @UI.lineItem:   [{ position: 50, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'Contrato', position: 90 }]
+  BukrsPrest;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : Matnr - selectionField nuevo, lineItem HIGH (renumeracion completa), Value Help reutilizando
+  // ZI_ReingCTMatVH (misma entidad ya activa en ZC_ReingCALineAll), fieldGroup Contrato (antes LineHeader)
+  @UI.selectionField: [{ position: 20 }]
+  @UI.lineItem:       [{ position: 20, importance: #HIGH }]
+  @UI.fieldGroup:     [{ qualifier: 'Contrato', position: 60 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingCTMatVH', element: 'Product' } }]
+  Matnr;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : OpType - selectionField nuevo, lineItem HIGH (renumeracion completa). Sin Value Help -
+  // confirmado en vivo que tampoco existe en ZC_ReingCALineAll, se deja solo selectionField
+  @UI.selectionField: [{ position: 30 }]
+  @UI.lineItem:       [{ position: 30, importance: #HIGH }]
+  @UI.fieldGroup:     [{ qualifier: 'Contrato', position: 70 }]
+  OpType;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : OpInstanceNum - lineItem nuevo MEDIUM (renumeracion completa), fieldGroup Contrato (antes LineHeader)
+  @UI.lineItem:   [{ position: 40, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'Contrato', position: 80 }]
+  OpInstanceNum;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : restructura de fieldGroups - ParentOpType/OriginRunId/OriginLineNum/ParentNetAmt/
+  // ParentCurrency/DeferPct/DeferCuotaNum/DeferCuotaTotal/DeferFrom/DeferTo pasan de fieldGroup LineDefer a Origen
+  @UI.fieldGroup: [{ qualifier: 'Origen', position: 10 }]
+  ParentOpType;
+
+  @UI.fieldGroup: [{ qualifier: 'Origen', position: 20 }]
+  OriginRunId;
+
+  @UI.fieldGroup: [{ qualifier: 'Origen', position: 30 }]
+  OriginLineNum;
+
+  @UI.fieldGroup: [{ qualifier: 'Origen', position: 40 }]
+  ParentNetAmt;
+
+  @UI.fieldGroup: [{ qualifier: 'Origen', position: 50 }]
+  ParentCurrency;
+
+  @UI.fieldGroup: [{ qualifier: 'Origen', position: 60 }]
+  DeferPct;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : DeferCuotaNum - lineItem nuevo LOW (renumeracion completa), fieldGroup Origen (antes LineDefer)
+  @UI.lineItem:   [{ position: 120, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'Origen', position: 70 }]
+  DeferCuotaNum;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.fieldGroup: [{ qualifier: 'Origen', position: 80 }]
+  DeferCuotaTotal;
+
+  @UI.fieldGroup: [{ qualifier: 'Origen', position: 90 }]
+  DeferFrom;
+
+  @UI.fieldGroup: [{ qualifier: 'Origen', position: 100 }]
+  DeferTo;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : BukrsRecv - selectionField nuevo, lineItem MEDIUM (renumeracion completa), Value Help
+  // reutilizando I_CompanyCode (misma entidad ya activa en ZC_ReingCALineAll), fieldGroup Contrato (antes LineHeader)
+  @UI.selectionField: [{ position: 40 }]
+  @UI.lineItem:       [{ position: 60, importance: #MEDIUM }]
+  @UI.fieldGroup:     [{ qualifier: 'Contrato', position: 100 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCode', element: 'CompanyCode' } }]
+  BukrsRecv;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : Country - lineItem nuevo LOW (renumeracion completa), fieldGroup Contrato (antes LineHeader)
+  @UI.lineItem:   [{ position: 70, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'Contrato', position: 110 }]
+  Country;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : BaseAmt - lineItem MEDIUM (renumeracion completa), fieldGroup Conversion (antes LineAmounts)
+  @UI.lineItem:   [{ position: 110, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 10 }]
+  BaseAmt;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : SharePct/SharePaisPct/ShareCombPct - lineItem nuevo LOW (renumeracion completa), fieldGroup
+  // Distribucion (antes LineShares)
+  @UI.lineItem:   [{ position: 80, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'Distribucion', position: 10 }]
+  SharePct;
+
+  @UI.lineItem:   [{ position: 90, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'Distribucion', position: 20 }]
+  SharePaisPct;
+
+  @UI.lineItem:   [{ position: 100, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'Distribucion', position: 30 }]
+  ShareCombPct;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 20 }]
+  CalcAmt;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : BrutoAmt - lineItem MEDIUM (renumeracion completa), fieldGroup Conversion (antes LineAmounts),
+  // dataPoint KpiBruto (sin criticidad, ADR-006) + facet HEADER
+  @UI.lineItem:   [{ position: 130, importance: #MEDIUM }]
+  // Begin Mod V005 (18.09.2026 | EXT_GONZALCA)
+  // ET v50 SS9.3: BrutoAmt es el "Delta aplicado" de la seccion Origen del
+  // Delta. Se AGREGA una segunda entrada al array; la de Conversion (30)
+  // queda intacta, porque el campo sigue siendo el monto bruto de la linea en
+  // esa otra seccion y sacarlo de ahi seria una regresion.
+  // El label va en la entrada, no en el data element: ZREING_CA_BRUTO_AMT se
+  // usa tambien en el KPI de cabecera "Bruto" y en Conversion, y renombrarlo
+  // globalmente cambiaria los tres lugares.
+  // Original: @UI.fieldGroup: [{ qualifier: 'Conversion', position: 30 }]
+  @UI.fieldGroup: [{ qualifier: 'Conversion',  position: 30 },
+                   { qualifier: 'OrigenDelta', position: 30,
+                     label: 'Delta Aplicado' }]
+  // End Mod V005 (18.09.2026 | EXT_GONZALCA)
+  @UI.dataPoint:  { qualifier: 'KpiBruto', title: 'Bruto' }
+  BrutoAmt;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 40 }]
+  GrossUpAmt;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : TaxAmt - lineItem nuevo MEDIUM en posicion 140 (mantenido, decision confirmada por el humano
+  // pese a la inconsistencia detectada en el normalized-spec - ver Desviacion #2 del blueprint), fieldGroup
+  // Conversion (antes LineAmounts), dataPoint KpiImpuesto (criticidad #CRITICAL fija, ADR-006) + facet HEADER
+  @UI.lineItem:   [{ position: 140, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 50 }]
+  @UI.dataPoint:  { qualifier: 'KpiImpuesto', title: 'Impuesto', criticality: 'CritCriticalFix' }
+  TaxAmt;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : NetAmt - lineItem HIGH (renumeracion completa),
+  // fieldGroup Conversion (antes LineAmounts), dataPoint KpiNetoCto (criticidad #POSITIVE fija, ADR-006) + facet HEADER
+  @UI.lineItem:   [{ position: 150, importance: #HIGH }]
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 60 }]
+  @UI.dataPoint:  { qualifier: 'KpiNetoCto', title: 'Neto Cto.', criticality: 'CritPositiveFix' }
+  NetAmt;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : CtCurrency - reintegro de @UI.fieldGroup Conversion (qualifier perdido en iteracion #1,
+  // ver OB-003 reviewer-feedback.md); posicion 65 elegida para quedar entre NetAmt (60) y NetLocalAmt (70),
+  // sin colisionar con LocalCurrency (80) ya asignada
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 65 }]
+  CtCurrency;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : NetLocalAmt - lineItem MEDIUM (renumeracion completa), fieldGroup Conversion (antes
+  // LineAmounts), dataPoint KpiNetoLocal (criticidad #POSITIVE fija, ADR-006) + facet HEADER
+  @UI.lineItem:   [{ position: 160, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 70 }]
+  @UI.dataPoint:  { qualifier: 'KpiNetoLocal', title: 'Neto Local', criticality: 'CritPositiveFix' }
+  NetLocalAmt;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 80 }]
+  LocalCurrency;
+
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 90 }]
+  ExchRate;
+
+  // Begin Change ID V003 (16.09.2026 | EXT_GONZALCA)
+  // Bug tracker #71 -- "colocar el dato de tipo de cambio P, cambiar descripcion
+  // como ICRG". fixes-032 cambio el texto del valor fijo P del dominio
+  // ZREING_EXRT_TYPE de "Promedio Mes" a "ICRG", pero el campo seguia mostrando
+  // el ID crudo: no tenia NINGUNA anotacion de texto, asi que Fiori Elements
+  // renderizaba EXCHRATETYPE tal cual y nunca consultaba la descripcion.
+  // La cadena completa del fix es: asociacion _ExrtType a ZI_ReingExrtTypeVH
+  // declarada en ZI_ReingCALine (V004) pero DELIBERADAMENTE NO EXPUESTA -> el
+  // texto se resuelve como ELEMENTO, ExchRateTypeDesc, via
+  // @ObjectModel.text.element sobre ExchRateType -> la proyeccion propaga ese
+  // ELEMENTO y no la asociacion (ZC_ReingCALine V003) -> este textArrangement.
+  // OJO al mantener: la variante con @ObjectModel.text.association se probo
+  // primero y se DESCARTO. Activa limpio, pero el ATC la rechaza con PRIORIDAD 1
+  // sobre esta vista de consumo ("Use of annotation
+  // OBJECTMODEL.TEXT.ASSOCIATION is not allowed for element EXCHRATETYPE", check
+  // SADL Runtime Checks): no esta permitida en una projection view, que es lo
+  // que es ZC_ReingCALine, y un P1 bloquea la liberacion de la OT. NO "corregir"
+  // esto hacia text.association.
+  // #TEXT_ONLY y no #TEXT_LAST por decision funcional del 16.09.2026: se
+  // muestra "ICRG" a secas, sin el codigo entre parentesis. Los otros dos
+  // valores del dominio pasan a verse "Manual" y "Heredado".
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 100 }]
+  @UI.textArrangement: #TEXT_ONLY
+  ExchRateType;
+  // End Change ID V003 (16.09.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V002 (03.08.2026 | EXT_GONZALCA)
+  // Descripcion : Delta v2 CA-05 - HasPcBreakdown retirado de ZC_ReingCALine (step_pc_split ahora
+  // siempre genera apertura); IsDelta/DeltaSeq/DeltaBaseAmt van al fieldGroup Referencia
+  @UI.fieldGroup: [{ qualifier: 'Referencia', position: 30 }]
+  IsDelta;
+
+  // Begin Mod V005 (18.09.2026 | EXT_GONZALCA)
+  // ET v50 SS9.3: DeltaSeq es el "Delta #" de la seccion Origen del Delta.
+  // Segunda entrada en el array; la de Referencia (31) queda intacta.
+  // Original: @UI.fieldGroup: [{ qualifier: 'Referencia', position: 31 }]
+  @UI.fieldGroup: [{ qualifier: 'Referencia',  position: 31 },
+                   { qualifier: 'OrigenDelta', position: 10,
+                     label: 'Delta #' }]
+  // End Mod V005 (18.09.2026 | EXT_GONZALCA)
+  DeltaSeq;
+
+  // Begin Change (27.08.2026 | EXT_AGFAGINA) - signo explicito del importe delta
+  // DeltaAmtCriticality: negativo = 1 (rojo), positivo = 3 (verde), cero = 0.
+  // NOTA: el ocultamiento condicional de los 3 campos delta NO se pudo hacer aca:
+  // en esta release @UI.hidden solo admite un booleano literal, no una referencia
+  // a un elemento. Se expone HideDeltaFields en ZC_ReingCALine para que el
+  // frontend resuelva la visibilidad de su lado.
+  // Begin Mod V005 (18.09.2026 | EXT_GONZALCA)
+  // ET v50 SS9.3: DeltaBaseAmt es la "Base contabilizada" de la seccion Origen
+  // del Delta. Segunda entrada en el array; la de Referencia (32) queda
+  // intacta, con su criticality. La entrada nueva NO lleva criticality: en la
+  // seccion del delta lo que se colorea es el importe aplicado, no la base.
+  // Original:
+  //   @UI.fieldGroup: [{ qualifier: 'Referencia', position: 32,
+  //                      criticality: 'DeltaAmtCriticality' }]
+  @UI.fieldGroup: [{ qualifier: 'Referencia',  position: 32,
+                     criticality: 'DeltaAmtCriticality' },
+                   { qualifier: 'OrigenDelta', position: 20,
+                     label: 'Base Contabilizada' }]
+  // End Mod V005 (18.09.2026 | EXT_GONZALCA)
+  DeltaBaseAmt;
+  // End Change (27.08.2026 | EXT_AGFAGINA)
+  // End Change ID V002 (03.08.2026 | EXT_GONZALCA)
+
+  // Begin Insert V005 (18.09.2026 | EXT_GONZALCA)
+  // ET v50 SS9.3, cuarto valor de la seccion: "Total efectivo", el acumulado
+  // de la receptora despues de aplicar este delta. Elemento derivado nuevo,
+  // calculado en ZI_ReingCALine (V006) y propagado por ZC_ReingCALine (V005).
+  // Unico campo de la seccion que no pertenece a ningun otro fieldGroup, asi
+  // que su array tiene una sola entrada.
+  @UI.fieldGroup: [{ qualifier: 'OrigenDelta', position: 40,
+                     label: 'Total Efectivo' }]
+  TotalEfectivo;
+  // End Insert V005 (18.09.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : LineStatus - lineItem HIGH con criticality basada en StatusCriticality (WITH_ICON), Value
+  // Help reutilizando ZI_ReingCALineStatusVH (misma entidad ya activa en ZC_ReingCALineAll), fieldGroup
+  // Referencia (antes fieldGroup "LineStatus", homonimo del campo - no confundir)
+  @UI.selectionField: [{ position: 50 }]
+  @UI.lineItem: [{ position: 170, importance: #HIGH, criticality: 'StatusCriticality', criticalityRepresentation: #WITH_ICON }]
+  @UI.fieldGroup: [{ qualifier: 'Referencia', position: 10 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingCALineStatusVH', element: 'LineStatus' } }]
+  LineStatus;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.fieldGroup: [{ qualifier: 'Referencia', position: 20 }]
+  SimMessage;
+
+  @UI.fieldGroup: [{ qualifier: 'Referencia', position: 40 }]
+  ProcStartedAt;
+
+  @UI.fieldGroup: [{ qualifier: 'Referencia', position: 50 }]
+  ProcHeartbeatAt;
+
+  @UI.fieldGroup: [{ qualifier: 'Referencia', position: 60 }]
+  ProcJobId;
+
+  @UI.fieldGroup: [{ qualifier: 'Referencia', position: 70 }]
+  InsumoCheckAt;
+
+  @UI.fieldGroup: [{ qualifier: 'Referencia', position: 80 }]
+  FiAwkey;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : Iteracion #4 - fix post-activacion (ERR-002): el elemento debe tener al menos una
+  // anotacion; se agrega @UI.hidden ya que es un campo tecnico sin uso en UI
+  @UI.hidden: true
+  LocalLastChangedAt;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : StatusCriticality - campo tecnico de apoyo a la criticidad de LineStatus, oculto como
+  // columna (@UI.hidden), no se agrega a ningun fieldGroup. Iteracion #4 - fix post-activacion (ERR-002):
+  // se quita @UI.hiddenFilter, anotacion no soportada/desconocida en esta version on-premise del sistema
+  @UI.hidden: true
+  StatusCriticality;
+
+  // Descripcion : Iteracion #4 - fix post-activacion (ERR-002): 2 campos calculados constantes de
+  // criticidad fija (Impuesto=critico, NetoCto/NetoLocal=positivo, ADR-006), ocultos como columna y
+  // filtro - son campos tecnicos de apoyo, no deben aparecer en la UI
+  @UI.hidden: true
+  CritCriticalFix;
+
+  @UI.hidden: true
+  CritPositiveFix;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : reorden (OB-004, reviewer-feedback.md) - el bloque @UI.facet queda pegado a HasParent,
+  // que pasa a ser el campo "ancla" del facet (igual que LocalLastChangedAt lo era en el source original),
+  // en vez de quedar huerfano al final del annotate view. HasParent se deja sin @UI.hidden explicito (ver
+  // ONB-001): expuesto via OData sin uso backend activo en esta fase (Desviacion #4 del blueprint); no se
+  // agrega a fieldGroup ni a lineItem; el frontend lo consume directo para decidir si oculta Origen/Diferimiento.
+  // ---- Facets del body: Detalles (COLLECTION padre) con 5 sub-collections (Contrato/Distribucion/
+  // Conversion/Referencia/Origen) reemplazando los 5 fieldGroup qualifiers viejos, + los 3 tabs anidados
+  // sin cambios (LinePCTab/LineStepTab/LineLogTab) + facets HEADER de los 4 dataPoint (no compiten en
+  // position con los facets de body, purpose: #HEADER) ----
+  @UI.facet: [
+    { id: 'KpiBrutoF',     type: #DATAPOINT_REFERENCE, targetQualifier: 'KpiBruto',     purpose: #HEADER, position: 10 },
+    { id: 'KpiImpuestoF',  type: #DATAPOINT_REFERENCE, targetQualifier: 'KpiImpuesto',  purpose: #HEADER, position: 20 },
+    { id: 'KpiNetoCtoF',   type: #DATAPOINT_REFERENCE, targetQualifier: 'KpiNetoCto',   purpose: #HEADER, position: 30 },
+    { id: 'KpiNetoLocalF', type: #DATAPOINT_REFERENCE, targetQualifier: 'KpiNetoLocal', purpose: #HEADER, position: 40 },
+
+    { id: 'Detalles',
+      type: #COLLECTION,
+      label: 'Detalles',
+      position: 10 },
+      { id: 'Contrato',       type: #COLLECTION, label: 'Contrato',              parentId: 'Detalles', position: 10 },
+        { id: 'ContratoF',      type: #FIELDGROUP_REFERENCE, targetQualifier: 'Contrato',      parentId: 'Contrato',      position: 10 },
+      { id: 'Distribucion',   type: #COLLECTION, label: 'Distribución',          parentId: 'Detalles', position: 20 },
+        { id: 'DistribucionF', type: #FIELDGROUP_REFERENCE, targetQualifier: 'Distribucion',  parentId: 'Distribucion', position: 10 },
+      { id: 'Conversion',     type: #COLLECTION, label: 'Conversión',            parentId: 'Detalles', position: 30 },
+        { id: 'ConversionF',   type: #FIELDGROUP_REFERENCE, targetQualifier: 'Conversion',    parentId: 'Conversion',   position: 10 },
+      { id: 'Referencia',     type: #COLLECTION, label: 'Referencia',            parentId: 'Detalles', position: 40 },
+        { id: 'ReferenciaF',   type: #FIELDGROUP_REFERENCE, targetQualifier: 'Referencia',    parentId: 'Referencia',  position: 10 },
+      { id: 'Origen',         type: #COLLECTION, label: 'Origen',                parentId: 'Detalles', position: 50 },
+        { id: 'OrigenF',       type: #FIELDGROUP_REFERENCE, targetQualifier: 'Origen',        parentId: 'Origen',      position: 10 },
+      // Begin Insert V005 (18.09.2026 | EXT_GONZALCA)
+      // ET v50 SS9.3. position 60 para quedar despues de Origen (50) sin
+      // renumerar ninguna de las 5 sub-collections existentes.
+      // OJO: 'Origen' (50) y 'OrigenDelta' (60) son DOS secciones distintas.
+      // La primera es el origen padre/cuota de diferimiento (ParentOpType,
+      // OriginRunId, DeferPct...); esta es el origen del DELTA. No fusionarlas.
+      { id: 'OrigenDelta',    type: #COLLECTION, label: 'Origen del Delta',      parentId: 'Detalles', position: 60 },
+        { id: 'OrigenDeltaF', type: #FIELDGROUP_REFERENCE, targetQualifier: 'OrigenDelta',   parentId: 'OrigenDelta', position: 10 },
+      // End Insert V005 (18.09.2026 | EXT_GONZALCA)
+
+    { id: 'LinePCTab',
+      type: #LINEITEM_REFERENCE,
+      label: 'Apertura por Dimensiones',
+      position: 20,
+      targetElement: '_LinePC' },
+    { id: 'LineStepTab',
+      type: #LINEITEM_REFERENCE,
+      label: 'Secuencia de Calculo',
+      position: 30,
+      targetElement: '_Step' },
+    { id: 'LineLogTab',
+      type: #LINEITEM_REFERENCE,
+      label: 'Log de Eventos',
+      position: 40,
+      targetElement: '_Log' },
+    // Begin Change (27.08.2026 | EXT_AGFAGINA) - documento contable en app CA
+    // Tab de documentos FI generados por CONTAB. position 50 para no renumerar
+    // los tabs existentes (20/30/40).
+    { id: 'ContabDocTab',
+      type: #LINEITEM_REFERENCE,
+      label: 'Documentos Contables',
+      position: 50,
+      targetElement: '_ContabDocC' }
+    // End Change (27.08.2026 | EXT_AGFAGINA)
+  ]
+  // NOTA: @UI.hidden condicional a nivel de facet (ocultar Origen cuando HasParent = abap_false) fue
+  // evaluado por el Architect y descartado por inviabilidad tecnica confirmada (el vocabulario @UI.facet
+  // no expone ninguna propiedad hidden/path-based a nivel de facet). Ver Desviacion #5 del blueprint.
+  // No implementado - responsabilidad de Frontend via manifest/controller extension.
+  // CORRECCION (16.09.2026 | EXT_GONZALCA): la afirmacion de arriba es FALSA.
+  // Verificado contra el compilador de DS4-200 con un syntax check no
+  // persistente: "hidden: true" (literal) y "hidden: #(HasParent)" (path
+  // dinamico) pasan AMBOS sin mensaje. Ver la nota equivalente en la cabecera
+  // de la DDLX de ZC_ReingCALineAll. Lo que sigue SIN verificar es si
+  // $metadata emite UI.Hidden con Path dentro del record del facet y si
+  // SAPUI5 1.120 lo honra -- ese es el POC pendiente.
+  // V005 (18.09.2026): la seccion nueva 'OrigenDelta' queda SIN hidden por la
+  // misma razon, y a la espera de la misma decision. La ET v50 SS9.3 dice que
+  // la seccion se ve "solo si IS_DELTA = X", y el campo que lo resuelve
+  // (HideDeltaFields) ya existe y ya esta expuesto. Las dos opciones son
+  // anotar "hidden: #(HideDeltaFields)" aca, o que el frontend la oculte por
+  // manifest como ya hace con 'Origen' via HasParent. Se deja la decision
+  // abierta a proposito: elegir la primera sin el POC arriesga una seccion
+  // que no se oculta en runtime, y elegirla en silencio rompe el acuerdo
+  // vigente con Frontend.
+  HasParent;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  // V001 (CC) - CA-11 (Brazil): transaction-currency fields.
+  @EndUserText.label: 'Moneda de transacción'
+  @UI.lineItem: [{ position: 300, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 110 }]
+  TransCurrency;
+
+  @EndUserText.label: 'Neto en moneda de transacción'
+  @UI.lineItem: [{ position: 310, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 120 }]
+  NetTransAmt;
+
+  @EndUserText.label: 'Tasa contrato a transacción'
+  @UI.lineItem: [{ position: 320, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 130 }]
+  ExchRate1;
+
+  @EndUserText.label: 'Tipo tasa contrato a transacción'
+  @UI.lineItem: [{ position: 330, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'Conversion', position: 140 }]
+  ExchRate1Type;
+}
+

@@ -1,0 +1,69 @@
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: {
+  typeName: 'Metrica IC',
+  typeNamePlural: 'Metricas IC',
+  title: { type: #STANDARD, value: 'MetricCode' },
+  description: { type: #STANDARD, value: 'VersionNum' }
+}
+
+annotate view ZC_ReingCTMetric2 with
+{
+  @UI.hidden: true
+  MetUuid;
+
+  @EndUserText.label: 'N Secuencia'
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 10, qualifier: 'MetricInfo' }]
+  MetricSeq;
+
+  @EndUserText.label: 'Codigo Metrica'
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 20, qualifier: 'MetricInfo' }]
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZI_ReingCTMetricVH', element: 'MetricCode' },
+    additionalBinding: [{ localElement: 'VersionNum', element: 'VersionNum', usage: #RESULT }]
+  }]
+  MetricCode;
+
+  @EndUserText.label: 'Descripcion Metrica'
+  @UI.lineItem: [{ position: 25, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 25, qualifier: 'MetricInfo' }]
+  MetricDesc;
+
+  @EndUserText.label: 'Version'
+  @UI.lineItem: [{ position: 30, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 30, qualifier: 'MetricInfo' }]
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZI_ReingCTMetricVH', element: 'VersionNum' },
+    additionalBinding: [{ localElement: 'MetricCode', element: 'MetricCode', usage: #FILTER_AND_RESULT }]
+  }]
+  VersionNum;
+
+
+
+
+  @EndUserText.label: 'Vigencia Desde'
+  @UI.lineItem: [{ position: 50, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 50, qualifier: 'MetricInfo' }]
+  ValidFrom;
+
+  @EndUserText.label: 'Vigencia Hasta'
+  @UI.lineItem: [{ position: 60, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 60, qualifier: 'MetricInfo' }]
+  ValidTo;
+
+  @EndUserText.label: 'Estado'
+  @UI.lineItem: [{ position: 70, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 70, qualifier: 'MetricInfo' }]
+  MetStatus;
+
+
+
+  @EndUserText.label: 'Modificado El'
+  @UI.facet: [
+    { id: 'MetricInfo', type: #COLLECTION, label: 'Datos de la Metrica', position: 10 },
+    { id: 'MetricInfoFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'MetricInfo', parentId: 'MetricInfo', position: 10 }
+  ]
+  ChangedAt;
+}

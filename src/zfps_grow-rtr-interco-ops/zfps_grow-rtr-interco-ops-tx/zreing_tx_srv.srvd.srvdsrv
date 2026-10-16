@@ -1,0 +1,5 @@
+@EndUserText.label: 'TX - Reglas Fiscales (Service)'
+define service ZREING_TX_SRV {
+  expose ZC_ReingTXRule    as TxRule;
+  expose ZI_ReingTXTypeVH  as TaxTypeVH;
+}

@@ -1,0 +1,125 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Intercompany Relationship',
+        typeNamePlural: 'Intercompanies Relationship',
+        title: { type: #STANDARD }
+  },
+  presentationVariant: [{
+        sortOrder: [
+            {
+                by: 'ProviderCountry',
+                direction: #ASC
+            }
+        ],
+        visualizations: [{
+            type: #AS_LINEITEM
+        }]
+    }],
+    textArrangement: #TEXT_SEPARATE
+}
+annotate entity ZC_IntercoRelationship with
+{
+  @UI.facet: [ {  id: 'Providers',
+                 purpose: #STANDARD,
+                 type: #FIELDGROUP_REFERENCE,
+                 label: 'Provider',
+                 position: 10,
+                 targetQualifier: 'ProviderGroup'
+                },
+                {
+                  id: 'Recipients',
+                  purpose: #STANDARD,
+                  type: #FIELDGROUP_REFERENCE,
+                  label: 'Recipient',
+                  position: 20,
+                  targetQualifier: 'RecipientGroup'
+                }
+            ]
+
+  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ]}
+  @Consumption.valueHelpDefinition: [{ entity: { name:'I_CountryVH', element: 'Country' } }]
+  @UI.selectionField: [{ position: 10  }]
+  @EndUserText.label: 'Provider Country'
+  @UI.fieldGroup: [{ qualifier: 'ProviderGroup', position: 10 }]
+  @UI.textArrangement: #TEXT_LAST
+  ProviderCountry;
+
+  @UI: { lineItem: [ { position: 15 } ],identification:[ { position: 15 } ]}
+  @EndUserText.label: 'Provider Country Name'
+ // @UI.hidden: true
+  @UI.fieldGroup: [{ qualifier: 'ProviderGroup', position: 15 }]
+  ProviderCountryName;
+
+  @UI: { lineItem: [ { position: 20 }] ,identification:[ { position: 20 } ]}
+  @Consumption.valueHelpDefinition: [{ entity: { name:'I_CompanyCodeVH', element: 'CompanyCode' } }]
+  @UI.selectionField: [{ position: 20 }]
+  @EndUserText.label: 'Provider Company Code'
+  @UI.fieldGroup: [{ qualifier: 'ProviderGroup', position: 20 }]
+  ProviderCompanyCode;
+
+  @UI: { lineItem: [ { position: 25 } ],identification:[ { position: 25 } ]}
+  @EndUserText.label: 'Provider Company Name'
+//  @UI.hidden: true
+  @UI.fieldGroup: [{ qualifier: 'ProviderGroup', position: 25 }]
+  ProviderCompanyCodeName;
+
+  @UI: { lineItem: [ { position: 40 } ],identification:[ { position: 40 } ]}
+  @EndUserText.label: 'Provider Business Partner'
+  @UI.fieldGroup: [{ qualifier: 'ProviderGroup', position: 40 }]
+  ProviderBusinessPartner;
+
+  @UI: { lineItem: [ { position: 50 } ],identification:[ { position: 50 } ]}
+  @EndUserText.label: 'Provider Customer'
+  @UI.fieldGroup: [{ qualifier: 'ProviderGroup', position: 50 }]
+  ProviderCustomer;
+
+  @UI: { lineItem: [ { position: 60 } ],identification:[ { position: 60 } ]}
+  @EndUserText.label: 'Provider Vendor'
+  @UI.fieldGroup: [{ qualifier: 'ProviderGroup', position: 60 }]
+  ProviderVendor;
+
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 70 } ]}
+  @Consumption.valueHelpDefinition: [{ entity: { name:'I_CountryVH', element: 'Country' } }]
+  @UI.selectionField: [{ position: 30  }]
+  @EndUserText.label: 'Recipient Country'
+  @UI.fieldGroup: [{ qualifier: 'RecipientGroup', position: 10 }]
+  //@UI.textArrangement: #TEXT_LAST
+  RecipientCountry;
+
+  @UI: { lineItem: [ { position: 75 } ],identification:[ { position: 75 } ]}
+  @EndUserText.label: 'Recipient Country Name'
+  //@UI.hidden: true
+  @UI.fieldGroup: [{ qualifier: 'RecipientGroup', position: 20 }]
+  RecipientCountryName;
+
+  @UI: { lineItem: [ { position: 80 } ],identification:[ { position: 80 } ]}
+  @Consumption.valueHelpDefinition: [{ entity: { name:'I_CompanyCodeVH', element: 'CompanyCode' } }]
+  @UI.selectionField: [{ position: 40 }]
+  @EndUserText.label: 'Recipient Company Code'
+  @UI.fieldGroup: [{ qualifier: 'RecipientGroup', position: 30 }]
+  RecipientCompanyCode;
+
+  @UI: { lineItem: [ { position: 85 } ],identification:[ { position: 85 } ]}
+  @EndUserText.label: 'Recipient Company Name'
+  //@UI.hidden: true
+  @UI.fieldGroup: [{ qualifier: 'RecipientGroup', position: 40 }]
+  RecipientCompanyCodeName;
+
+  @UI: { lineItem: [ { position: 100 } ],identification:[ { position: 100 } ]}
+  @EndUserText.label: 'Recipient Business Partner'
+  @UI.fieldGroup: [{ qualifier: 'RecipientGroup', position: 50 }]
+  RecipientBusinessPartner;
+
+
+  @UI: { lineItem: [ { position: 110 } ],identification:[ { position: 110 } ]}
+  @EndUserText.label: 'Recipient Customer'
+  @UI.fieldGroup: [{ qualifier: 'RecipientGroup', position: 60 }]
+  RecipientCustomer;
+
+  @UI: { lineItem: [ { position: 120 } ],identification:[ { position: 120 } ]}
+  @EndUserText.label: 'Recipient Vendor'
+  @UI.fieldGroup: [{ qualifier: 'RecipientGroup', position: 70 }]
+  RecipientVendor;
+
+}

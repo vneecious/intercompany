@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZREING_CA_CALC_STRATEGY</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ZREING_CA_CALC_STRATEGY</DOMNAME>
+    <HEADLEN>43</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>20</SCRLEN2>
+    <SCRLEN3>21</SCRLEN3>
+    <DDTEXT>Calculation Strategy</DDTEXT>
+    <REPTEXT>Calculation Strategy</REPTEXT>
+    <SCRTEXT_S>Calc.</SCRTEXT_S>
+    <SCRTEXT_M>Calculation Strat.</SCRTEXT_M>
+    <SCRTEXT_L>Calculation Strategy</SCRTEXT_L>
+    <DTELMASTER>E</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Estrategia de calculo (dispatch Factory CA)</DDTEXT>
+     <REPTEXT>Estrategia de calculo (dispatch Factory CA)</REPTEXT>
+     <SCRTEXT_S>Calc.</SCRTEXT_S>
+     <SCRTEXT_M>Estrategia de calc.</SCRTEXT_M>
+     <SCRTEXT_L>Estrategia de calculo</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

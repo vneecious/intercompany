@@ -1,0 +1,60 @@
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: {
+  typeName: 'Linea GL',
+  typeNamePlural: 'Lineas GL',
+  title: { type: #STANDARD, value: 'GlRole' }
+}
+
+annotate view ZC_ReingCTGL2 with
+{
+  @UI.hidden: true
+  GlUuid;
+
+
+  @EndUserText.label: 'Rol Contable'
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 20, qualifier: 'GLInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingGLRoles', element: 'GlRole' } }]
+  GlRole;
+
+  @EndUserText.label: 'Descripcion Rol'
+  @UI.lineItem: [{ position: 25, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 25, qualifier: 'GLInfo' }]
+  GlRoleDescr;
+
+  @EndUserText.label: 'Cuenta GL'
+  @UI.lineItem: [{ position: 30, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 30, qualifier: 'GLInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingGLAccountVH', element: 'GLAccount' } }]
+  Saknr;
+
+  @UI.hidden: true
+  OpType;
+
+  @EndUserText.label: 'Reclasificable'
+  @UI.lineItem: [{ position: 60, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 60, qualifier: 'GLInfo' }]
+  Reclassify;
+
+  @EndUserText.label: 'Rol Destino'
+  @UI.lineItem: [{ position: 70, importance: #LOW }]
+  @UI.fieldGroup: [{ position: 70, qualifier: 'GLInfo' }]
+  RoleReclas;
+
+  @EndUserText.label: 'Det. Automatica'
+  @UI.fieldGroup: [{ position: 80, qualifier: 'GLInfo' }]
+  AutoDeterm;
+
+  @EndUserText.label: 'Estado'
+  @UI.lineItem: [{ position: 90, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 90, qualifier: 'GLInfo' }]
+  GlStatus;
+
+  @EndUserText.label: 'Modificado El'
+  @UI.facet: [
+    { id: 'GLInfo', type: #COLLECTION, label: 'Datos de la Linea GL', position: 10 },
+    { id: 'GLInfoFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'GLInfo', parentId: 'GLInfo', position: 10 }
+  ]
+  ChangedAt;
+}

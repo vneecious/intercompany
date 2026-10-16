@@ -1,0 +1,25 @@
+projection;
+strict ( 2 );
+use draft;
+use side effects;
+define behavior for ZC_INTERCOCLASSIFICATIONRULE alias ClassificationRule
+use etag
+
+
+{
+  use create;
+  use update;
+  use delete;
+  use action Delimit;
+  use action Restore;
+  use action Delete;
+  use action CopyClassificationRule;
+
+  use function DefaultForCreate;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+}

@@ -1,0 +1,193 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Data for billing calculation',
+        typeNamePlural: 'Data for billing calculation',
+        title: { type: #STANDARD }
+  },
+  presentationVariant: [{
+//        sortOrder: [
+//            { by: 'ProviderCompanyCode', direction: #ASC },
+//            { by: 'Recipientcompanycode', direction: #ASC },
+//            { by: 'Product', direction: #ASC },
+//            { by: 'Validfrom', direction: #ASC },
+//            { by: 'Validto', direction: #ASC }
+//        ],
+        visualizations: [{
+            type: #AS_LINEITEM
+        }]
+    }]
+}
+annotate entity ZC_IntercoCompanyRelProdRate with
+{
+  @UI.facet: [ {
+                    id: 'HeaderProvidercompany',
+                    purpose: #HEADER,
+                    type: #DATAPOINT_REFERENCE,
+                    position: 10,
+                    targetQualifier: 'ProviderComp'
+                },
+                {
+                    id: 'HeaderRecipientcompanycode',
+                    purpose: #HEADER,
+                    type: #DATAPOINT_REFERENCE,
+                    position: 20,
+                    targetQualifier: 'RecipientComp'
+                 },
+                {
+                    id: 'HeaderProduct',
+                    purpose: #HEADER,
+                    type: #DATAPOINT_REFERENCE,
+                    position: 30,
+                    targetQualifier: 'Prod'
+                 },
+                 { id:            'Header',
+                 purpose:         #STANDARD,
+                 type:            #COLLECTION,
+                 label:           'Data',
+                 position:        10 } ,
+               { id:              'Log',
+                 purpose:         #STANDARD,
+                 type:            #LINEITEM_REFERENCE,
+                 label:           'Change History',
+                 position:        20,
+                 targetElement:   '_log'},
+                   {
+                    id: 'Data',
+                    purpose: #STANDARD,
+                    type: #FIELDGROUP_REFERENCE,
+                    parentId: 'Header',
+                    label: 'Data',
+                    position: 10,
+                    targetQualifier: 'DataGroup'
+                   },
+                   {
+                    id: 'Dates',
+                    purpose: #STANDARD,
+                    type: #FIELDGROUP_REFERENCE,
+                    parentId: 'Header',
+                    label: 'Dates',
+                    position: 30,
+                    targetQualifier: 'DatesGroup'
+                   },
+                   {
+                    id: 'Percentage',
+                    purpose: #STANDARD,
+                    type: #FIELDGROUP_REFERENCE,
+                    parentId: 'Header',
+                    label: 'Percentage',
+                    position: 20,
+                    targetQualifier: 'PercentageGroup'
+                   }
+
+                            ]
+
+  @UI: { lineItem: [ { position: 10 },
+   { type: #FOR_ACTION, dataAction: 'ZetDelete' , label: 'Set Delete' }
+   ],
+   identification:[ { position: 10 } ] }
+  @UI.hidden: true
+  Uuid;
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 }               ]}
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoProviderCompany_SH', element: 'ProviderCompanyCode' } }]
+  @UI.selectionField: [{ position: 10 }]
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @EndUserText.label: 'Provider Company'
+  @UI.dataPoint: { qualifier: 'ProviderComp', title: 'Provider '}
+  @UI.fieldGroup: [{ qualifier: 'DataGroup', position: 10 }]
+  Providercompanycode;
+
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoProviderCompany_SH', element: 'ProviderCompanyCodeName' } }]
+  @UI: { lineItem: [ { position: 25 } ],identification:[ { position: 25 }               ]}
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @EndUserText.label: 'Provider Company Name'
+  @UI.fieldGroup: [{ qualifier: 'DataGroup', position: 20 }]
+  ProvidercompanycodeName;
+
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoRecipientCompany_SH', element: 'RecipientCompanyCode' } }]
+  @UI: { lineItem: [ { position: 30 } ],selectionField: [{ position: 20 }],identification:[ { position: 30 } ]}
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @EndUserText.label: 'Recipient Company'
+  @UI.dataPoint: { qualifier: 'RecipientComp', title: 'Recipient'}
+  @UI.fieldGroup: [{ qualifier: 'DataGroup', position: 30 }]
+  Recipientcompanycode;
+
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoRecipientCompany_SH', element: 'RecipientCompanyCodeName' } }]
+  @UI: { lineItem: [ { position: 35 } ],identification:[ { position: 35 } ]}
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @EndUserText.label: 'Recipient Company Name'
+  @UI.fieldGroup: [{ qualifier: 'DataGroup', position: 40 }]
+  RecipientCompanyName;
+
+
+  @UI: { lineItem: [ { position: 40 } ],selectionField: [{ position: 30 }],identification:[ { position: 40 } ]}
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoProduct_SH', element: 'Product' } }]
+  @EndUserText.label: 'Product'
+  @UI.dataPoint: { qualifier: 'Prod', title: 'Product'}
+  @UI.fieldGroup: [{ qualifier: 'DataGroup', position: 50 }]
+  Product;
+
+  @UI: { lineItem: [ { position: 45 } ],identification:[ { position: 45 } ]}
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoProduct_SH', element: 'ProductName' } }]
+  @EndUserText.label: 'Product Name'
+  @UI.fieldGroup: [{ qualifier: 'DataGroup', position: 60 }]
+  ProductName;
+
+  @UI: { lineItem: [ { position: 50 } ],selectionField: [{ position: 40 }],identification:[ { position: 50 } ]}
+  //  @Consumption.filter.selectionType: #SINGLE
+  @EndUserText.label: 'Valid From'
+  @UI.fieldGroup: [{ qualifier: 'DatesGroup', position: 10 }]
+  Validfrom;
+  @UI: { lineItem: [ { position: 60 } ],selectionField: [{ position: 50 }],identification:[ { position: 60 } ]}
+  //  @Consumption.filter.selectionType: #SINGLE
+  @EndUserText.label: 'Valid To'
+  @UI.fieldGroup: [{ qualifier: 'DatesGroup', position: 20 }]
+  Validto;
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 70 } ]}
+  @EndUserText.label: 'Markup'
+  @UI.fieldGroup: [{ qualifier: 'PercentageGroup', position: 10 }]
+  Markup;
+  @UI: { lineItem: [ { position: 80 } ],identification:[ { position: 80 } ]}
+  @UI.fieldGroup: [{ qualifier: 'PercentageGroup', position: 20 }]
+  @EndUserText.label: 'Grossing up base'
+  Grossingupbase;
+  @UI: { lineItem: [ { position: 90 } ],identification:[ { position: 90 } ]}
+  @UI.fieldGroup: [{ qualifier: 'PercentageGroup', position: 30 }]
+  @EndUserText.label: 'Grossing up margin'
+  Grossingupmargin;
+  @UI: { lineItem: [ { position: 100 } ],identification:[ { position: 100 } ]}
+  @UI.fieldGroup: [{ qualifier: 'PercentageGroup', position: 40 }]
+  @UI.hidden: true
+  Latepaymentinterest;
+  @UI: { lineItem: [ { position: 110 } ],identification:[ { position: 110 } ]}
+  @UI.fieldGroup: [{ qualifier: 'PercentageGroup', position: 50 }]
+  Providergrossingup;
+  @UI: { lineItem: [ { position: 120 } ],identification:[ { position: 120 } ]}
+  @UI.fieldGroup: [{ qualifier: 'PercentageGroup', position: 60 }]
+  @EndUserText.label: 'Fixed rate'
+  Fixedrate;
+  @UI: { lineItem: [ { position: 130 } ],identification:[ { position: 130 } ]}
+  //  @EndUserText.label: 'Tax Credit'
+  @UI.fieldGroup: [{ qualifier: 'PercentageGroup', position: 70 }]
+  Taxcredit;
+  @UI: { lineItem: [ { position: 140 } ],identification:[ { position: 140 } ]}
+  @EndUserText.label: 'Is Deleted'
+  @UI.fieldGroup: [{ qualifier: 'DataGroup', position: 70 }]
+  Isdeleted;
+  @UI.hidden: true
+  AuthorizationGroup;
+  @UI: { lineItem: [ { position: 150 } ],identification:[ { position: 150 } ]}
+  @UI.fieldGroup: [{ qualifier: 'DatesGroup', position: 50 }]
+  Createdat;
+  @UI: { lineItem: [ { position: 160 } ],selectionField: [{ position: 60 }],identification:[ { position: 160 } ]}
+  @UI.fieldGroup: [{ qualifier: 'DatesGroup', position: 60 }]
+  Createdby;
+  @UI: { lineItem: [ { position: 170 } ],identification:[ { position: 170 } ]}
+  @UI.fieldGroup: [{ qualifier: 'DatesGroup', position: 70 }]
+  LastChangedAt;
+
+}

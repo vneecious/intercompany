@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZREING_CA_SIM_MSG</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <HEADLEN>10</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>18</SCRLEN2>
+    <SCRLEN3>21</SCRLEN3>
+    <DDTEXT>Simulation Message</DDTEXT>
+    <REPTEXT>Simul.Msg.</REPTEXT>
+    <SCRTEXT_S>Simul.Msg.</SCRTEXT_S>
+    <SCRTEXT_M>Simulation Message</SCRTEXT_M>
+    <SCRTEXT_L>Simulation Message</SCRTEXT_L>
+    <DTELMASTER>S</DTELMASTER>
+    <DATATYPE>CHAR</DATATYPE>
+    <LENG>000220</LENG>
+    <OUTPUTLEN>000220</OUTPUTLEN>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>CA - Mensaje de Simulacion</DDTEXT>
+     <REPTEXT>Msj.Simul.</REPTEXT>
+     <SCRTEXT_S>Msj.Simul.</SCRTEXT_S>
+     <SCRTEXT_M>Mensaje Simulacion</SCRTEXT_M>
+     <SCRTEXT_L>Mensaje de Simulacion</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,418 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZT2_WITHT</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>WITHT</DOMNAME>
+    <LOGFLAG>X</LOGFLAG>
+    <HEADLEN>16</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>16</SCRLEN2>
+    <SCRLEN3>20</SCRLEN3>
+    <DDTEXT>Indicator for Withholding Tax Type</DDTEXT>
+    <REPTEXT>WTax Type</REPTEXT>
+    <SCRTEXT_S>WTax Type</SCRTEXT_S>
+    <SCRTEXT_M>WTax Type</SCRTEXT_M>
+    <SCRTEXT_L>Withholding Tax Type</SCRTEXT_L>
+    <DTELMASTER>D</DTELMASTER>
+    <REFKIND>D</REFKIND>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>D</LANGU>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>D</DDLANGUAGE>
+     <DDTEXT>Kennzeichen für Quellensteuertyp</DDTEXT>
+     <REPTEXT>Quellensteuertyp</REPTEXT>
+     <SCRTEXT_S>QSt.Typ</SCRTEXT_S>
+     <SCRTEXT_M>Quellensteuertyp</SCRTEXT_M>
+     <SCRTEXT_L>Quellensteuertyp</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>P</DDLANGUAGE>
+     <DDTEXT>Código para categoria de imposto retido na fonte</DDTEXT>
+     <REPTEXT>Ctg.imp.ret.fon.</REPTEXT>
+     <SCRTEXT_S>Ctg.IRF</SCRTEXT_S>
+     <SCRTEXT_M>Ctg.imp.ret.fon.</SCRTEXT_M>
+     <SCRTEXT_L>Ctg.impos.ret.fonte</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Indicador para tipo de retenciones</DDTEXT>
+     <REPTEXT>Tipo retenciones</REPTEXT>
+     <SCRTEXT_S>Tp.retenc.</SCRTEXT_S>
+     <SCRTEXT_M>Tipo retenciones</SCRTEXT_M>
+     <SCRTEXT_L>Tipo de retenciones</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+   <LONGTEXTS>
+    <item>
+     <DOKIL>
+      <ID>DE</ID>
+      <OBJECT>ZT2_WITHT</OBJECT>
+      <LANGU>D</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0007</VERSION>
+      <MASTERLANG>X</MASTERLANG>
+      <TXTLINES>00017</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZT2_WITHT</TDNAME>
+      <TDID>DE</TDID>
+      <TDSPRAS>D</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00007</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DEFINITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Dient der Klassifizierung verschiedener Quellensteuern.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>/</TDFORMAT>
+       <TDLINE>Dem Quellensteuertyp sind bestimmte Eigenschaften der Quellensteuer</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>zugeordnet, z.B.:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>Zeitpunkt der Buchung</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>Grundlage für die Basisberechnung</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>Grundlage für eine eventuelle Akkumulierung</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Der Quellensteuertyp ist vom Quellensteuerkennzeichen abzugrenzen, dem</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>beispielsweise der Prozentsatz einer Quellensteuer zugeordnet ist.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Nicht immer ist eindeutig bestimmt, ob eine Quellensteuer mittels eines</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>neuen Codes zu einem bestehenden Typ definiert wird oder ob ein neuer</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>Typ definiert werden muß.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Beachten Sie, daß einem Geschäftsvorfall nur ein</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>Quellensteuerkennzeichen pro Quellensteuertyp zugewiesen werden kann.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>Unterliegt der Geschäftsvorfall mehreren Quellensteuern gleichzeitig,</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>sind diese mittels verschiedener Typen abzubilden.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Dies ist z.B. in Argentinien der Fall, wo bis zu vier Quellensteuern</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>pro Geschäftsvorfall möglich sind.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+    <item>
+     <DOKIL>
+      <ID>DE</ID>
+      <OBJECT>ZT2_WITHT</OBJECT>
+      <LANGU>E</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0007</VERSION>
+      <TXTLINES>00019</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZT2_WITHT</TDNAME>
+      <TDID>DE</TDID>
+      <TDSPRAS>E</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00007</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DEFINITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>This indicator is used to classify the different types of withholding</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>tax.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>/</TDFORMAT>
+       <TDLINE>Withholding tax types classify particular features of a withholding tax</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>including:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>The time at which the withholding tax is posted</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>The basis on which the base amount is calculated</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>The basis for accumulation (if applicable)</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Withholding tax types are to be distinguished from withholding tax</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>codes, to which are allocated the withholding tax percentage rate</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>example.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Whether a withholding tax can be defined as an existing type by means</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>of a new code, or if a new type needs to be defined will depend on the</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>type of transaction (see below).</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Note that a business transaction can only be assigned one withholding</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>tax code per withholding tax type. If the business transaction is</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>subject to several withholding taxes simultaneously, these must be</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>represented by different types.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>This is the case in Argentina for example, where up to four kinds of</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>withholding tax per business transaction are possible.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+    <item>
+     <DOKIL>
+      <ID>DE</ID>
+      <OBJECT>ZT2_WITHT</OBJECT>
+      <LANGU>P</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0007</VERSION>
+      <TXTLINES>00019</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZT2_WITHT</TDNAME>
+      <TDID>DE</TDID>
+      <TDSPRAS>P</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00007</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DEFINITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Serve para a classificação de diversos impostos retidos na fonte.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>/</TDFORMAT>
+       <TDLINE>À categoria do imposto retido na fonte estão atribuídas determinadas</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>características do imposto retido na fonte, p.ex.:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>Momento do lançamento</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>Base para o cálculo de base</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>Base para uma eventual acumulação</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>A categoria do imposto retido na fonte deve ser delimitada do código do</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>imposto retido na fonte, ao qual se encontra, p.ex., atribuída a</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>porcentagem de um imposto retido na fonte.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Nem sempre se encontra determinado univocamente se um imposto retido na</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>fonte é definido para uma categoria existente mediante um código novo,</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>ou se é necessário definir uma categoria nova.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Considerar que a uma transação contábil somente pode ser atribuído um</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>código do imposto retido na fonte por categoria de imposto retido na</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>fonte. Caso a transação contábil esteja sujeita a vários impostos</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>retidos na fonte, estes devem ser reproduzidos mediante várias</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>categorias.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Isto é o caso, p.ex., da Argentina, onde existem até quatro impostos</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>retidos na fonte por transação contábil.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+    <item>
+     <DOKIL>
+      <ID>DE</ID>
+      <OBJECT>ZT2_WITHT</OBJECT>
+      <LANGU>S</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0007</VERSION>
+      <TXTLINES>00017</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZT2_WITHT</TDNAME>
+      <TDID>DE</TDID>
+      <TDSPRAS>S</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00007</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DEFINITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Sirve para la clasificación de distintas retenciones.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>/</TDFORMAT>
+       <TDLINE>El tipo de retención tiene asignadas algunas características de la</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>retención, por ejemplo:</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>fecha/hora de contabilización</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>base para el cálculo básico</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>B2</TDFORMAT>
+       <TDLINE>base para un acumulado eventual.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>El tipo de retención debe delimitarse a través del código de retención</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>al que, por ejemplo, está asignado el porcentaje de una retención.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>No siempre se encuentra determinado unívocamente si una retención se</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>define a través de un nuevo código para un tipo existente o si debe</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>definirse un nuevo tipo.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Debe tenerse en cuenta que sólo puede asignarse un código de retención</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>por tipo de retención a una operación empresarial. Si se encuentran</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>supeditadas simultáneamente varias retenciones a una operación</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>empresarial, éstas deberán diferenciarse mediante diferentes tipos.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Éste es por ejemplo el caso de Argentina, donde son posibles hasta</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>cuatro retenciones por operación empresarial.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+   </LONGTEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

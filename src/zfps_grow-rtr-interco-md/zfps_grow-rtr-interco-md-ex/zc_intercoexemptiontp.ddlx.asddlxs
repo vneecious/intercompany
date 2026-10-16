@@ -1,0 +1,243 @@
+@Metadata.layer: #CORE
+@UI: {
+  /* Header Information */
+  headerInfo: {
+    typeName: 'Exemption',
+    typeNamePlural: 'Exemptions',
+     title: {
+        label: 'Exemption',
+        value: 'ExternalID'
+    }
+  },
+
+  /* Presentation Variant */
+  presentationVariant: [{
+    sortOrder: [
+      { by: 'CompanyCode',  direction: #ASC },
+//      { by: 'Product', direction: #ASC },
+      { by: 'ValidFrom', direction: #DESC }
+    ],
+    visualizations: [{ type: #AS_LINEITEM }],
+    requestAtLeast: [
+      'ExternalID',
+      'CompanyCode'
+    ]
+   }],
+  textArrangement: #TEXT_LAST
+}
+@Consumption.semanticObject: 'IntercoExemption'
+annotate entity ZC_IntercoExemptionTP with
+{
+  @UI.facet: [
+               {
+            id: 'GeneralInformation',
+            position: 10,
+            purpose: #STANDARD,
+            type: #COLLECTION,
+            label: '{@i18n>GeneralInformation}'
+        },
+        {
+            id: 'HeaderFacet',
+            purpose: #HEADER,
+            type: #COLLECTION,
+            label: '{@i18n>ClassificationRule}',
+            targetQualifier: 'HeaderItems'
+        },
+        {
+            id: 'HeaderBasicData',
+            label: '{@i18n>BasicData}',
+            position: 10,
+            purpose: #HEADER,
+            type: #FIELDGROUP_REFERENCE,
+            targetQualifier: 'HeaderBasicData'
+        },
+        {
+            id: 'HeaderLog',
+            label: '{@i18n>Log}',
+            position: 30,
+            purpose: #HEADER,
+            type: #FIELDGROUP_REFERENCE,
+            targetQualifier: 'HeaderLog'
+        },
+        {
+            id: 'BasicData',
+            label: '{@i18n>BasicData}',
+            position: 10,
+            purpose: #STANDARD,
+            type: #FIELDGROUP_REFERENCE,
+            targetQualifier: 'BasicData',
+            parentId: 'GeneralInformation'
+        },
+        {
+            id: 'Validity',
+            label: '{@i18n>Validity}',
+            position: 20,
+            purpose: #STANDARD,
+            type: #FIELDGROUP_REFERENCE,
+            targetQualifier: 'Validity',
+            parentId: 'GeneralInformation'
+        },
+                {
+            id: 'RuleDefinition',
+            label: '{@i18n>RuleDefinition}',
+            position: 20,
+            purpose: #STANDARD,
+            type: #COLLECTION
+        },
+              {
+            id: 'RuleParameters',
+            label: '{@i18n>RuleParameters}',
+            position: 10,
+            purpose: #STANDARD,
+            type: #COLLECTION,
+            parentId: 'RuleDefinition'
+        },
+        {
+            type: #FIELDGROUP_REFERENCE,
+            position: 10,
+            purpose: #STANDARD,
+            targetQualifier: 'RuleParameters',
+            parentId: 'RuleParameters'
+        },
+              {
+            id: 'Rules',
+            label: '{@i18n>Rules}',
+            importance: #HIGH,
+            position: 20,
+            purpose: #STANDARD,
+            type: #COLLECTION,
+            parentId: 'RuleDefinition'
+        },
+        {
+          type: #LINEITEM_REFERENCE,
+          position: 10,
+          purpose: #STANDARD,
+          targetElement: '_ExemptionRules',
+          parentId: 'Rules'
+        }]
+
+  @UI.hidden: true
+  ID;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 10 ,
+        importance: #HIGH
+    }],
+    selectionField: [{ position: 10 }],
+    // Object Page
+    identification: [{
+        position: 10
+    }],
+    fieldGroup: [{ qualifier: 'BasicData', position: 10 }, { qualifier: 'HeaderBasicData', position: 10 }]
+  }
+  ExternalID;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 20 ,
+        importance: #HIGH
+    }],
+    selectionField: [{ position: 20 }],
+    // Object Page
+    identification: [{
+        position: 20
+    }],
+    fieldGroup: [{ qualifier: 'BasicData', position: 20 }, { qualifier: 'HeaderBasicData', position: 20 }]
+  }
+  ExemptionName;
+
+  @UI: {
+    lineItem: [
+        { importance: #HIGH } ,
+        { type: #FOR_ACTION, dataAction: 'Delimit', label: '{@i18n>Delimit}' },
+        { type: #FOR_ACTION, dataAction: 'CopyExemption', label: '{@i18n>CopyExemption}' }
+        ],
+    identification: [{
+        importance: #HIGH,
+        label: '{@i18n>DelimitExemption}',
+        inline: true,
+        dataAction: 'Delimit',
+        type: #FOR_ACTION,
+        position: 15 }] }
+
+  @EndUserText.label: '{@i18n>CompanyCode}'
+  @Consumption.valueHelpDefinition: [{ entity.name: 'ZI_IntercoCompanyCodeVH', entity.element: 'CompanyCode', useForValidation: true }]
+  @UI: {
+    lineItem: [ { position: 25 } ],
+     textArrangement: #TEXT_LAST,
+     selectionField: [{ position: 25 }],
+     fieldGroup: [{ qualifier: 'RuleParameters', position: 10 }]
+  }
+  CompanyCode;
+
+  -- Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C13F: muestra PaymentType y asigna value help
+  @EndUserText.label: 'Payment Type'
+  @Consumption.valueHelpDefinition: [{
+    entity: {
+      name: 'ZI_IntercoPaymentTypeVH',
+      element: 'PaymentType'
+    },
+    distinctValues: true,
+    useForValidation: true
+  }]
+  @UI: {
+    lineItem: [{ position: 27 }],
+    selectionField: [{ position: 30 }],
+    fieldGroup: [{ qualifier: 'RuleParameters', position: 20 }]
+  }
+  PaymentType;
+  -- Fin EXT_OSCUGALD 06.10.2026 - C13F
+
+  @UI: {
+    hidden: true // NOT USED ANYMORE
+  }
+  Product;
+
+  @EndUserText.label: '{@i18n>ValidFrom}'
+  @UI: {
+    lineItem: [ { position: 30 } ],
+    identification:[ { position: 30 } ],
+    selectionField: [{exclude: true}],
+    fieldGroup: [{ qualifier: 'Validity', position: 10 }]
+  }
+  ValidFrom;
+  @EndUserText.label: '{@i18n>ValidTo}'
+  @UI: {
+    lineItem: [ { position: 40 } ],
+    identification:[ { position: 40 } ],
+    selectionField: [{exclude: true}],
+    fieldGroup: [{ qualifier: 'Validity', position: 20 }]
+  }
+  ValidTo;
+  @EndUserText.label: '{@i18n>OnlyValid}'
+  @Consumption.filter.defaultValue: 'X'
+  IsValid;
+  @UI.fieldGroup: [{ qualifier: 'HeaderLog' }]
+  @UI.selectionField: [{ exclude: true }]
+  @UI.lineItem: [{ position: 50 }]
+  @EndUserText.label: '{@i18n>CreatedAt}'
+  CreatedAt;
+  @UI.fieldGroup: [{ qualifier: 'HeaderLog' }]
+  @UI.selectionField: [{exclude: true}]
+  @UI.lineItem: [{ position: 60 }]
+  @EndUserText.label: '{@i18n>CreatedBy}'
+  CreatedBy;
+  @UI.fieldGroup: [{ qualifier: 'HeaderLog' }]
+  @UI.selectionField: [{exclude: true}]
+  @UI.lineItem: [{ position: 70 }]
+  @EndUserText.label: '{@i18n>LastChangedAt}'
+  LastChangedAt;
+  @UI.fieldGroup: [{ qualifier: 'HeaderLog' }]
+  @UI.selectionField: [{exclude: true}]
+  @UI.lineItem: [{ position: 80 }]
+  @EndUserText.label: '{@i18n>LastChangedBy}'
+  LastChangedBy;
+  @UI.hidden: true
+  Today;
+  @UI.hidden: true
+  Yesterday;
+
+}

@@ -1,0 +1,72 @@
+managed implementation in class ZBP_R_IntercoGLAcctDeterminat unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_INTERCOGLACCTDETERMINATION alias GLAccountDetermination
+persistent table zint_a_md_glacct
+draft table zint_d_md_glacc
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( global )
+
+{
+  field ( numbering : managed, readonly )
+  ID;
+
+  validation ValidateDuplicated on save { create; update; }
+  // ============================================================================
+  // INICIO CORRECCION - DF-461 - DS4K9B6E12 - 07.10.2026
+  // Descripcion: se agrega validacion del intervalo de vigencia (Desde/Hasta
+  // obligatorios y Desde <= Hasta). Complementa ValidateDuplicated, que ahora
+  // considera el solapamiento de periodos.
+  // ============================================================================
+  validation ValidateValidTo on save { create; field ValidFrom, ValidTo; }
+  // ============================================================================
+  // FIN CORRECCION - DF-461 - DS4K9B6E12 - 07.10.2026
+  // ============================================================================
+  field ( readonly )
+  CreatedAt,
+  CreatedBy,
+  LastChangedAt,
+  LastChangedBy,
+  LocalLastChangedAt;
+
+  create;
+  update;
+  delete;
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  //  draft determine action Prepare;
+  draft determine action Prepare
+  {
+    validation ValidateDuplicated;
+    validation ValidateValidTo;  // DF-461 - DS4K9B6E12 - 07.10.2026
+  }
+
+  mapping for zint_a_md_glacct
+    {
+      ID                   = id;
+      ValidFrom            = valid_from;
+      ValidTo              = valid_to;
+      DocType              = doc_type;
+      ProviderCompanyCode  = provider_company_code;
+      RecipientCompanyCode = recipient_company_code;
+      Product              = product;
+      Depto                = depto;
+      PAndLID              = p_and_l_id;
+      PAndLLevel           = p_and_l_level;
+      TariffType           = tariff_type;
+      OperationType        = operation_type;
+      GlAccount1           = gl_account1;
+      GlAccount2           = gl_account2;
+      IsDeleted            = is_deleted;
+      CreatedAt            = created_at;
+      CreatedBy            = created_by;
+      LastChangedAt        = last_changed_at;
+      LocalLastChangedAt   = local_last_changed_at;
+      LastChangedBy        = last_changed_by;
+    }
+}

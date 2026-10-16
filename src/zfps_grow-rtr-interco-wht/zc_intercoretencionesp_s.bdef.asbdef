@@ -1,0 +1,27 @@
+projection;
+strict;
+use draft;
+
+define behavior for ZC_IntercoRetencionesP_S alias IntercoRetencionAll
+
+{
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+  use action SelectCustomizingTransptReq;
+
+  use association _IntercoRetencionesP { create; with draft; }
+}
+
+define behavior for ZC_IntercoRetencionesP alias IntercoRetencionesP
+
+{
+  use update;
+  use delete;
+
+  use action CopyIntercoRetencionesP;
+
+  use association _IntercoRetencionAll { with draft; }
+}

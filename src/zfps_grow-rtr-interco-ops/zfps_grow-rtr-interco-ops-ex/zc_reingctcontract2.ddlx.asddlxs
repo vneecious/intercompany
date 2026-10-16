@@ -1,0 +1,126 @@
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: {
+  typeName: 'Contrato IC',
+  typeNamePlural: 'Contratos IC',
+  title: { type: #STANDARD, value: 'CtId' },
+  description: { type: #STANDARD, value: 'SupplierName' }
+}
+
+annotate view ZC_ReingCTContract2 with
+{
+  // Mod 25.09.2026 EXT_AGFAGINA - Ajustes Sprint 3: muestra "IC-0018 (Proveedor)".
+  // El text element esta declarado en la proyeccion ZC_ReingCTContract2.
+  @UI.textArrangement: #TEXT_LAST
+  @EndUserText.label: 'ID Contrato'
+  @UI.lineItem: [
+    { position: 10, importance: #HIGH },
+    { type: #FOR_ACTION, dataAction: 'ActivateContract',   label: 'Activar',   position: 910 },
+    { type: #FOR_ACTION, dataAction: 'InactivateContract', label: 'Inactivar', position: 920 },
+    { type: #FOR_ACTION, dataAction: 'ReactivateContract', label: 'Reactivar', position: 930 },
+    { type: #FOR_ACTION, dataAction: 'ArchiveContract',    label: 'Archivar',  position: 940 }
+  ]
+  @UI.selectionField: [{ position: 10 }]
+  @UI.fieldGroup: [{ position: 10, qualifier: 'ContractHeader' }]
+  @UI.identification: [
+    { position: 10 },
+    { type: #FOR_ACTION, dataAction: 'ActivateContract',   label: 'Activar',   position: 910 },
+    { type: #FOR_ACTION, dataAction: 'InactivateContract', label: 'Inactivar', position: 920 },
+    { type: #FOR_ACTION, dataAction: 'ReactivateContract', label: 'Reactivar', position: 930 },
+    { type: #FOR_ACTION, dataAction: 'ArchiveContract',    label: 'Archivar',  position: 940 }
+  ]
+   @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingCTContract2', element: 'CtId' } }]
+  CtId;
+
+  @EndUserText.label: 'Proveedor'
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.selectionField: [{ position: 20 }]
+  @UI.fieldGroup: [{ position: 20, qualifier: 'ContractHeader' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingCTSupplierVH', element: 'Supplier' } }]
+  Lifnr;
+
+  @EndUserText.label: 'Nombre Proveedor'
+  @UI.lineItem: [{ position: 25, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 25, qualifier: 'ContractHeader' }]
+  SupplierName;
+
+  @EndUserText.label: 'Sociedad de Origen'
+  @UI.lineItem: [{ position: 30, importance: #HIGH }]
+  @UI.selectionField: [{ position: 30 }]
+  @UI.fieldGroup: [{ position: 30, qualifier: 'ContractHeader' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_intercoCompanyCodeVH', element: 'CompanyCode' } }]
+  Bukrs;
+
+  @EndUserText.label: 'N. Contrato Externo'
+  @UI.fieldGroup: [{ position: 40, qualifier: 'ContractHeader' }]
+  ExtContract;
+
+  @EndUserText.label: 'Vigencia Desde'
+  @UI.lineItem: [{ position: 40, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 50, qualifier: 'ContractHeader' }]
+  ValidFrom;
+
+  @EndUserText.label: 'Vigencia Hasta'
+  @UI.lineItem: [{ position: 50, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 60, qualifier: 'ContractHeader' }]
+  ValidTo;
+
+  @EndUserText.label: 'Moneda'
+  @UI.fieldGroup: [{ position: 70, qualifier: 'ContractHeader' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_Currency', element: 'Currency' } }]
+  Waers;
+
+  @EndUserText.label: 'Responsable'
+  @UI.lineItem: [{ position: 60, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 80, qualifier: 'ContractHeader' }]
+  Responsible;
+
+  @EndUserText.label: 'Correo Contacto'
+  @UI.fieldGroup: [{ position: 90, qualifier: 'ContractHeader' }]
+  EmailContact;
+
+  @EndUserText.label: 'Alerta Renovacion (dias)'
+  @UI.fieldGroup: [{ position: 100, qualifier: 'ContractHeader' }]
+  RenewalDays;
+
+  @EndUserText.label: 'Monto Total'
+  @UI.lineItem: [{ position: 70, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 110, qualifier: 'ContractHeader' }]
+  @UI.hidden: true
+  TotalAmount;
+
+  @EndUserText.label: 'Estado'
+  @UI.lineItem: [{ position: 80, importance: #HIGH }]
+  @UI.selectionField: [{ position: 40 }]
+  @UI.fieldGroup: [{ position: 120, qualifier: 'ContractHeader' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_REING_CT_STATUS_VH', element: 'CtStatus' } }]
+  CtStatus;
+
+  @EndUserText.label: 'Comentarios'
+  @UI.fieldGroup: [{ position: 130, qualifier: 'ContractHeader' }]
+  Comments;
+
+  @EndUserText.label: 'Creado Por'
+  @UI.fieldGroup: [{ position: 10, qualifier: 'AdminData' }]
+  CreatedBy;
+
+  @EndUserText.label: 'Creado El'
+  @UI.fieldGroup: [{ position: 20, qualifier: 'AdminData' }]
+  CreatedAt;
+
+  @EndUserText.label: 'Modificado Por'
+  @UI.fieldGroup: [{ position: 30, qualifier: 'AdminData' }]
+  ChangedBy;
+
+  @EndUserText.label: 'Modificado El'
+  @UI.fieldGroup: [{ position: 40, qualifier: 'AdminData' }]
+  @UI.facet: [
+    { id: 'ContractHeader', type: #COLLECTION, label: 'Datos Generales', position: 10 },
+    { id: 'ContractHeaderFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'ContractHeader', parentId: 'ContractHeader', position: 10 },
+    { id: 'Materials', type: #LINEITEM_REFERENCE, label: 'Materiales', position: 20, targetElement: '_Materials' },
+    { id: 'AdminData', type: #COLLECTION, label: 'Datos Administrativos', position: 30 },
+   { id: 'AdminDataFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'AdminData', parentId: 'AdminData', position: 10 },
+    { id: 'Historial', type: #LINEITEM_REFERENCE, label: 'Historial de Cambios', position: 40, targetElement: '_History' }
+  ]
+  ChangedAt;
+}

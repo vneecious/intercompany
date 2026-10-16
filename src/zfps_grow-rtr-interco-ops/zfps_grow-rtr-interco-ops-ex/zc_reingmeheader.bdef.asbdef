@@ -1,0 +1,39 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_ReingMEHeader
+{
+  use create;
+  use update;
+  use delete;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use action CalcularShare;
+  use action Enviar;
+  use action Devolver;
+  use action Liberar;
+  use action Reabrir;
+  use action NovaVersaoCarga;
+  //Begin Insert V001 (CC) - FX-XLS - expose static export action
+  use action ExportTemplate;
+
+  // V001 (CC) - ME-17 (Delta v2)
+  use action Upload;
+  //End Insert V001 (CC) - FX-XLS
+
+  use association _Item { create; with draft; }
+}
+
+define behavior for ZC_ReingMEItem
+{
+  use update;
+  use delete;
+
+  use association _Header { with draft; }
+}

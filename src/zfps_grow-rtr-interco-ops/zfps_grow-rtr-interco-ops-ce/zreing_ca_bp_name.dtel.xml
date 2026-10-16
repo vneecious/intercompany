@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZREING_CA_BP_NAME</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <HEADLEN>16</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>19</SCRLEN2>
+    <SCRLEN3>19</SCRLEN3>
+    <DDTEXT> Supplier Name</DDTEXT>
+    <REPTEXT> Supplier Name</REPTEXT>
+    <SCRTEXT_S> Supplier</SCRTEXT_S>
+    <SCRTEXT_M> Supplier Name</SCRTEXT_M>
+    <SCRTEXT_L> Supplier Name</SCRTEXT_L>
+    <DTELMASTER>S</DTELMASTER>
+    <DATATYPE>CHAR</DATATYPE>
+    <LENG>000080</LENG>
+    <OUTPUTLEN>000080</OUTPUTLEN>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>CA - Nombre de Proveedor</DDTEXT>
+     <REPTEXT>Nombre Proveedor</REPTEXT>
+     <SCRTEXT_S>Nombre Pr.</SCRTEXT_S>
+     <SCRTEXT_M>Nombre de Proveedor</SCRTEXT_M>
+     <SCRTEXT_L>Nombre de Proveedor</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,5 @@
+CLASS zbp_reingctcontract DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_reingctcontract.
+ENDCLASS.
+
+CLASS zbp_reingctcontract IMPLEMENTATION.
+ENDCLASS.

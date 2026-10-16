@@ -1,0 +1,12 @@
+@EndUserText.label: 'Conceptos Facturables por Empresa Prestadora'
+@MappingRole: true
+define role ZDCL_INTERCOCOMPANYRELPRODBILL {
+    grant 
+        select
+            on
+                ZI_INTERCOCOMPANYRELPRODBILL
+                    where
+                    ( Isdeleted is initial ); 
+//                    or () = aspect pfcg_auth( ZFI_IC_LVL, ZFI_IC_LVV = '3' );    
+                        
+}

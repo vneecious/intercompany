@@ -1,0 +1,126 @@
+//----------------------------------------------------------------------
+// Created by     : Oscar Augusto Leal Dominguez (EXT_OSCUGALD)
+// Change ID      : V001
+// Date           : 10.07.2026
+// Description    : App CA - F6-05 Tab Apertura por CeBe: columnas de
+//                  la tabla anidada LinePC en el Object Page CalcLine.
+//                  Muestra Profit Center, shares y montos por CeBe.
+//                  Solo visible cuando HAS_PC_BREAKDOWN = X (ET §9.3).
+// Transport      : DS4K9B5XZC
+// Reference      : 5000049390
+//----------------------------------------------------------------------
+// Begin Change ID V001 (10.07.2026 | EXT_OSCUGALD)
+// Descripcion : Creacion inicial DDLX ZC_ReingCALinePC para F6-05.
+// End Change ID V001 (10.07.2026 | EXT_OSCUGALD)
+//----------------------------------------------------------------------
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: {
+  typeName:       'Apertura',
+  typeNamePlural: 'Apertura por Dimensiones',
+  title:          { type: #STANDARD, value: 'Prctr' },
+  description:    { type: #STANDARD, value: 'NetAmt' }
+}
+
+annotate view ZC_ReingCALinePC with
+{
+  @UI.fieldGroup: [{ qualifier: 'PCHeader', position: 10 }]
+  CalcRunId;
+
+  @UI.fieldGroup: [{ qualifier: 'PCHeader', position: 20 }]
+  LineNum;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : PcSeq - baja de importancia de HIGH a LOW (pedido de Frontend); posicion y fieldGroup
+  // PCHeader sin cambios
+  @UI.lineItem:   [{ position: 10, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'PCHeader', position: 30 }]
+  PcSeq;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.lineItem:   [{ position: 20, importance: #HIGH }]
+  @UI.fieldGroup: [{ qualifier: 'PCHeader', position: 40 }]
+  Prctr;
+
+  // Begin Change (26.08.2026 | EXT_AGFAGINA) - apertura multidimensional
+  // Descripcion : Campana/RoleCategory/Allocation ya existian en tabla, CDS y BDEF
+  // (CA-01 / V002 / V011) pero nunca se anotaron aca, por lo que Fiori Elements
+  // no las dibujaba y la apertura se veia igual que antes del cambio.
+  // Se agregan como columnas junto a Prctr (posiciones 22/24/26, sin renumerar
+  // las existentes) y al fieldGroup PCHeader para el Object Page.
+  // V001 (CC) - #116 (Delta v2): keep the functional column spelling.
+  @EndUserText.label: 'Campana'
+  @UI.lineItem:   [{ position: 22, importance: #MEDIUM, label: 'Campana' }]
+  @UI.fieldGroup: [{ qualifier: 'PCHeader', position: 50 }]
+  Campana;
+
+  @UI.lineItem:   [{ position: 24, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'PCHeader', position: 60 }]
+  RoleCategory;
+
+  @UI.lineItem:   [{ position: 26, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'PCHeader', position: 70 }]
+  Allocation;
+  // End Change (26.08.2026 | EXT_AGFAGINA)
+
+  @UI.lineItem:   [{ position: 30, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'PCAmounts', position: 10 }]
+  ShareAbs;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : CalcAmt - baja de importancia de MEDIUM a LOW; posicion y fieldGroup PCAmounts sin cambios
+  @UI.lineItem:   [{ position: 40, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'PCAmounts', position: 20 }]
+  CalcAmt;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.lineItem:   [{ position: 50, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'PCAmounts', position: 30 }]
+  BrutoAmt;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : TaxAmt - alta como columna lineItem en position 45 (hoy solo tenia fieldGroup PCAmounts,
+  // posicion 40 dentro del grupo). Mantener TaxAmt como columna lineItem confirmado explicitamente por el
+  // humano para esta fase. fieldGroup PCAmounts sin cambios
+  @UI.lineItem:   [{ position: 45, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'PCAmounts', position: 40 }]
+  TaxAmt;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.lineItem:   [{ position: 60, importance: #HIGH }]
+  @UI.fieldGroup: [{ qualifier: 'PCAmounts', position: 50 }]
+  NetAmt;
+
+  @UI.fieldGroup: [{ qualifier: 'PCAmounts', position: 60 }]
+  CtCurrency;
+
+  @UI.lineItem:   [{ position: 70, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'PCAmounts', position: 70 }]
+  NetLocalAmt;
+
+  @UI.facet: [
+    { id: 'PCHeader', type: #COLLECTION, label: 'Profit Center', position: 10 },
+    { id: 'PCHeaderFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'PCHeader', parentId: 'PCHeader', position: 10 },
+    { id: 'PCAmounts', type: #COLLECTION, label: 'Montos por CeBe', position: 20 },
+    { id: 'PCAmountsFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'PCAmounts', parentId: 'PCAmounts', position: 10 }
+  ]
+  LocalCurrency;
+
+  // V001 (CC) - CA-11 (Brazil): transaction-currency fields.
+  @EndUserText.label: 'Moneda de transacción'
+  @UI.lineItem: [{ position: 300, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'PCAmounts', position: 110 }]
+  TransCurrency;
+
+  @EndUserText.label: 'Bruto en moneda de transacción'
+  @UI.lineItem: [{ position: 310, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'PCAmounts', position: 120 }]
+  BrutoTransAmt;
+
+  @EndUserText.label: 'Neto en moneda de transacción'
+  @UI.lineItem: [{ position: 320, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'PCAmounts', position: 130 }]
+  NetTransAmt;
+}
+
+

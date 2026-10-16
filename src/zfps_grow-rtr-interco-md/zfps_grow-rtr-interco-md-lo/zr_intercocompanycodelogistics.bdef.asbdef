@@ -1,0 +1,53 @@
+managed implementation in class ZBP_R_IntercoCompanyCodeLogist unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_INTERCOCOMPANYCODELOGISTICS alias CompanyCodeLogistics
+persistent table zint_a_md007
+draft table ZINT_D_MD007
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master( global )
+
+{
+  field ( mandatory : create )
+   CompanyCode,
+   ValidFrom;
+
+  field ( readonly )
+   CreatedAt,
+   CreatedBy,
+   LastChangedAt,
+   LastChangedBy,
+   LocalLastChangedAt;
+
+  field ( readonly : update )
+   CompanyCode,
+   ValidFrom;
+
+
+  create;
+  update;
+  delete;
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+
+  mapping for ZINT_A_MD007
+  {
+    CompanyCode = bukrs;
+    ValidFrom = valid_from;
+    ValidTo = valid_to;
+    SalesOrganization = vkorg;
+    PurchasingOrganization = ekorg;
+    Plant = werks;
+    CreatedAt = created_at;
+    CreatedBy = created_by;
+    LocalLastChangedAt = local_last_changed_at;
+    LastChangedAt = last_changed_at;
+    LastChangedBy = last_changed_by;
+  }
+}

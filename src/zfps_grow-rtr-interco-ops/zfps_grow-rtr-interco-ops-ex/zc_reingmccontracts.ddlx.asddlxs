@@ -1,0 +1,21 @@
+@Metadata.layer: #CUSTOMER
+
+annotate view ZC_ReingMCContracts with
+{
+  @EndUserText.label: 'Contrato'
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  CtId;
+
+  @EndUserText.label: 'Material'
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  Matnr;
+
+  @EndUserText.label: 'Proveedor'
+  @UI.lineItem: [{ position: 30, importance: #HIGH }]
+  Lifnr;
+
+
+  @EndUserText.label: 'Estado CT'
+  @UI.lineItem: [{ position: 50, importance: #HIGH }]
+  CtStatus;
+}

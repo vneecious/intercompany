@@ -1,0 +1,126 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Document Generated',
+        typeNamePlural: 'Documents Generated',
+        title: { label: 'Item',
+                 value: 'Id',
+                 type: #STANDARD }
+  }
+  }
+@UI.lineItem: [{criticality: 'StatusCriticality'}]
+annotate entity ZC_INTRC_CPD with
+{
+  @UI.facet: [  {
+                    id: 'Base',
+                    purpose: #STANDARD,
+                    type: #LINEITEM_REFERENCE,
+                    label: 'Logs',
+                    position: 10 ,
+                    targetElement: '_log'
+                }
+             ]
+  @UI.hidden: true
+  Id;
+  @UI: { lineItem: [ { position: 10 } ]}
+  @EndUserText.label: 'Document Key'
+  Documentkey;
+
+  @UI: { lineItem: [ { position: 20 } ]}
+  @EndUserText.label: 'Document Type'
+  Documenttype;
+
+  @UI: { //lineItem: [ { position: 60 } ],
+         hidden : true }
+  //  @EndUserText.label: 'Document Name'
+  @Consumption.filter.hidden: true
+  DocumentName;
+
+  @UI: { lineItem: [ { position: 30 } ],
+         hidden: true }
+  CompanyCode;
+
+  @UI: { lineItem: [ { position: 40 } ],
+         hidden: true }
+  FiscalYear;
+
+  @UI: { lineItem: [ { position: 50 } ]}
+  @EndUserText.label: 'Provider Company Code'
+  ProviderCompanyCode;
+
+  @UI: { //lineItem: [ { position: 60 } ],
+     hidden : true }
+  @Consumption.filter.hidden: true
+  @EndUserText.label: 'Provider Company Name'
+  ProviderCompanyName;
+
+  @UI: { lineItem: [ { position: 60 } ]}
+  @EndUserText.label: 'Recipient Company Code'
+  recipientcompanycode;
+
+  @UI: { //lineItem: [ { position: 60 } ],
+   hidden : true }
+  @Consumption.filter.hidden: true
+  @EndUserText.label: 'Recipient Company Name'
+  RecipientCompanyName;
+  
+  @UI: { lineItem: [ { position: 70 } ]}
+  @EndUserText.label: 'Concept'
+  Product;
+  
+  @UI: { //lineItem: [ { position: 60 } ],
+   hidden : true }
+  @Consumption.filter.hidden: true
+  @EndUserText.label: 'Concept Name'
+  ProductName;
+  
+  @UI: { lineItem: [ { position: 80 } ]}
+  @EndUserText.label: 'Parent Document Key'
+  ParentDocumentKey;
+  @UI: { lineItem: [ { position: 90 } ]}
+  @EndUserText.label: 'Parent Document Type'
+  ParentDocumentType;
+  @UI: { //lineItem: [ { position: 60 } ],
+         hidden : true }
+  //  @EndUserText.label: 'Document Name'
+  @Consumption.filter.hidden: true
+  ParentDocumentName;
+  @UI: { lineItem: [ { position: 100 } ]}
+  @EndUserText.label: 'Category id'
+  Category_id;
+  @UI: { //lineItem: [ { position: 100 } ],
+         hidden : true }
+  //  @EndUserText.label: 'Category Name'
+  @Consumption.filter.hidden: true
+  CategoryName;
+  @UI:{ lineItem: [ { position: 105 } ] }
+  accountingdocumenttype;
+  @UI: { lineItem: [ { position: 110 } ]}
+  @EndUserText.label: 'Is Adjusment'
+  Isadjustment;
+  @UI: { lineItem: [ { position: 120, criticality: 'StatusCriticality' } ],
+         dataPoint: {
+                       criticality: 'StatusCriticality',
+                       criticalityRepresentation: #WITH_ICON
+         //                qualifier: 'HeaderStatus'
+                    }
+       }
+  @EndUserText.label: 'Status'
+  Status;
+  @UI: { //lineItem: [ { position: 130 } ],
+         hidden: true }
+  //  @EndUserText.label: 'Status Name'
+  @Consumption.filter.hidden: true
+  StatusName;
+  @UI: { //lineItem: [ { position: 131} ],
+         hidden: true }
+  //  @EndUserText.label: 'Status Criticality'
+  @Consumption.filter.hidden: true
+  StatusCriticality;
+  @UI: { lineItem: [ { position: 140 } ]}
+  @EndUserText.label: 'Executed by'
+  Createdby;
+  @UI: { lineItem: [ { position: 150 } ]}
+  @EndUserText.label: 'Executed on'
+  Createdat;
+}

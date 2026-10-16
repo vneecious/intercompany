@@ -1,0 +1,12 @@
+abstract;
+strict ( 2 );
+
+define behavior for ZD_IntercoProposalVDocFlow //alias <alias_name>
+{
+  association Categories;
+}
+
+define behavior for ZD_IntercoProposalVDocFlowC
+{
+  association _Parent;
+}

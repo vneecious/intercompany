@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DDLS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DDLS>
+    <DDLNAME>ZE_I_PURCHASEORDERTP_2</DDLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <PARENTNAME>I_PURCHASEORDERTP_2</PARENTNAME>
+    <DDTEXT>Extension I_PurchaseOrderTP_2</DDTEXT>
+    <SOURCE_TYPE>X</SOURCE_TYPE>
+   </DDLS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

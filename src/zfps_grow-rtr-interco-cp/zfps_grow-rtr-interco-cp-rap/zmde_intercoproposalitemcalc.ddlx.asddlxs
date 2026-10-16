@@ -1,0 +1,110 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+    headerInfo: {
+        typeName: 'Item',
+        typeNamePlural: 'Items',
+        title: { type: #STANDARD }
+    },
+    createHidden: true,
+    updateHidden: true,
+    deleteHidden: true
+}
+annotate entity ZC_IntercoProposalItemCalcTP with
+{
+  @UI: {    lineItem: [ { position: 10 } ],
+             hidden: true }
+  @EndUserText.label: 'Id'
+  id;
+  @UI: {    lineItem: [ { position: 20 } ],
+            hidden: true }
+  @EndUserText.label: 'Item ID'
+  item_id;
+  @UI: {    lineItem: [ { position: 30 } ],
+            hidden: true }
+  @EndUserText.label: 'Base ID'
+  itembasis_id;
+  @UI: {    lineItem: [ { position: 40 } ]}
+  @EndUserText.label: 'Calc ID'
+  itemcalc_id;
+  @UI: {    lineItem: [ { position: 50 } ]
+  }
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_INTERCOPROPSTATUSCALC_SH', element: 'Status' } }]
+  @EndUserText.label: 'Status'
+  commitstatus;
+
+  @UI: { lineItem: [ { position: 60} ],
+         hidden: true }
+  @EndUserText.label: 'Status Name'
+  StatusName;
+
+  @UI: { lineItem: [ { position: 70} ] }
+  //  @EndUserText.label: 'Markup'
+  markup;
+  @UI: { lineItem: [ { position: 80} ] }
+  //  @EndUserText.label: 'Grossing up margin'
+  grossingupmargin;
+  @UI: { lineItem: [ { position: 90} ] }
+  //  @EndUserText.label: 'Late Payment Interest'
+  latepaymentinterest;
+
+  @UI: { lineItem: [ { position: 100} ] }
+  //  @EndUserText.label: 'Provider Grossing up'
+  providergrossingup;
+
+  @UI: { lineItem: [ { position: 110} ] }
+  //  @EndUserText.label: 'Provider Grossing up'
+  markupamount;
+  
+  @UI: { lineItem: [ { position: 115} ] }
+  markupamntinlocal;
+
+  @UI: { lineItem: [ { position: 120} ] }
+  //  @EndUserText.label: 'Provider Grossing up'
+  grossingupbaseamount;
+  
+  @UI: { lineItem: [ { position: 125} ] }
+  grossingupbaseamntinlocal;
+  
+  @UI: { lineItem: [ { position: 130} ] }
+  grossingupmarginamount;
+  
+  @UI: { lineItem: [ { position: 135} ] }
+  grossingupmarginamntinlocal;
+
+  @UI: { lineItem: [ { position: 140} ] }
+  //  @EndUserText.label: 'Late Payment Interest Amount'
+  latepaymentinterestamount;
+  
+  @UI: { lineItem: [ { position: 145} ] }
+  latepaymentinterestamntinlocal;
+  
+  @UI: { lineItem: [ { position: 150} ] }
+  //  @EndUserText.label: 'Provider Grossing up Amount'
+  providergrossingupamount;
+  
+  @UI: { lineItem: [ { position: 155} ] }
+  providergrossingupamntinlocal;
+  
+  @UI: { lineItem: [ { position: 160} ] }
+  TotalInGlobalAmount;
+  
+  @UI: { lineItem: [ { position: 165} ] }
+  c_TotalInCompanyCodeAmount;
+  
+  @UI: {    lineItem: [ { position: 170 } ],
+            hidden: true
+  }
+  CodeCurrency;
+  
+  @UI: { lineItem: [ { position: 175} ] }
+  CodeCurrencyCompanyCode;
+  
+  @UI: { lineItem: [ { position: 180} ] }
+  //  @EndUserText.label: 'Created At'
+  createdat;
+
+  @UI: { lineItem: [ { position: 190} ] }
+  //  @EndUserText.label: 'Created By'
+  createdby;
+
+}

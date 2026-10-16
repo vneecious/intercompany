@@ -1,0 +1,22 @@
+@EndUserText.label: 'Intercompany: Datos Maestros'
+define service Z_IntercompanyMasterData {
+  expose ZC_IntercoCompanyCode        as CompanyCode;
+  expose I_CompanyCodeVH;
+  expose I_CountryVH;
+  expose ZI_AddlCompanyCodeInfoVH;
+  expose ZC_IntercoRelationship       as CompanyRelationships;
+  expose ZC_IntercoProduct            as Products;
+  expose ZC_IntercoCompanyRelProduct  as CompanyRelationshipProduct;
+  expose ZC_IntercoCompanyRelProdRate as CompanyRelationshipProdRate;
+  expose ZC_IntercoCompanyRelProdBill as CompanyRelationshipProductBill;
+  expose ZC_TEST_INTERCO_STATEMENT_2  as TestBRFExemptions2;
+  expose zc_intercorelproduct_log     as CompanyRelProductLog;
+  expose zc_intercorelprodbill_log    as CompanyRelProductBillLog;
+  expose zc_intercorelprodrate_log    as CompanyRelProdRateLog;
+  expose ZC_IntercoProfitCenterProd   as ProfitCenter;
+  expose ZC_INTERCOPROFITCENTEREXT    as BusinessUnitProfitCenterRelati;
+  expose ZC_IntercoExemptionTP        as Exemptions;
+  expose ZC_IntercoExemptionRuleTP    as ExemptionRules;
+  expose ZI_intercoCompanyCodeVH;
+  expose ZC_INTERCOCEBE               as CebesEquivalentes;
+}

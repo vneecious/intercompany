@@ -1,0 +1,35 @@
+managed implementation in class zbp_r_intercojeitemclassbgtp unique;
+strict ( 2 );
+
+define behavior for ZR_IntercoJEItemClassBGTP alias Header
+persistent table zint_a_jeh
+lock master
+authorization master ( instance )
+with additional save
+//etag master <field_name>
+{
+  field ( numbering : managed ) ID;
+  field ( readonly : update ) id, CompanyCode, Ledger, FIscalYear, FIscalPeriod, PaymentTYpe;
+
+  create;
+  update;
+  delete;
+  association _Results { create; }
+
+  mapping
+       for zint_a_jeh corresponding;
+    }
+
+  define behavior for ZR_IntercoJEItemClassBGResulTP alias Results
+  persistent table zint_a_jei
+  lock dependent by _Header
+  authorization dependent by _Header
+  //etag master <field_name>
+  {
+    update;
+    delete;
+    field ( readonly : update ) id, Companycode, Fiscalyear, Fiscalperiod, Ledger, PaymentType, accountingdocument, ledgergllineitem;
+    association _Header;
+    mapping
+         for zint_a_jei corresponding;
+      }

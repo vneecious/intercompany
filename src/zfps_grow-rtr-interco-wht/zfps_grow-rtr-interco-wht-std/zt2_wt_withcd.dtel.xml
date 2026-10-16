@@ -1,0 +1,261 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZT2_WT_WITHCD</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>WT_WITHCD</DOMNAME>
+    <LOGFLAG>X</LOGFLAG>
+    <HEADLEN>03</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>16</SCRLEN2>
+    <SCRLEN3>24</SCRLEN3>
+    <DDTEXT>Withholding Tax Code</DDTEXT>
+    <REPTEXT>WTx</REPTEXT>
+    <SCRTEXT_S>WTax Code</SCRTEXT_S>
+    <SCRTEXT_M>W/Tax Code</SCRTEXT_M>
+    <SCRTEXT_L>Withholding Tax Code</SCRTEXT_L>
+    <DTELMASTER>D</DTELMASTER>
+    <REFKIND>D</REFKIND>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>D</LANGU>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>D</DDLANGUAGE>
+     <DDTEXT>Quellensteuerkennzeichen</DDTEXT>
+     <REPTEXT>QSt</REPTEXT>
+     <SCRTEXT_S>QSt.Kz.</SCRTEXT_S>
+     <SCRTEXT_M>QSt.Kennzeichen</SCRTEXT_M>
+     <SCRTEXT_L>Quellensteuerkennzeichen</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>P</DDLANGUAGE>
+     <DDTEXT>Código de imposto retido na fonte</DDTEXT>
+     <REPTEXT>IRF</REPTEXT>
+     <SCRTEXT_S>Código IRF</SCRTEXT_S>
+     <SCRTEXT_M>Código IRF</SCRTEXT_M>
+     <SCRTEXT_L>Código IRF</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Indicador de retención</DDTEXT>
+     <REPTEXT>Ret</REPTEXT>
+     <SCRTEXT_S>Ind.ret.</SCRTEXT_S>
+     <SCRTEXT_M>Indicador ret.</SCRTEXT_M>
+     <SCRTEXT_L>Indicador de retención</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+   <LONGTEXTS>
+    <item>
+     <DOKIL>
+      <ID>DE</ID>
+      <OBJECT>ZT2_WT_WITHCD</OBJECT>
+      <LANGU>D</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0003</VERSION>
+      <MASTERLANG>X</MASTERLANG>
+      <TXTLINES>00007</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZT2_WT_WITHCD</TDNAME>
+      <TDID>DE</TDID>
+      <TDSPRAS>D</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00003</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DEFINITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Einem Quellensteuertyp sind jeweils ein oder mehrere</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>&quot;Quellensteuerkennzeichen&quot; zugeordnet, die u.a. verschiedene</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>Prozentsätze für den Quellensteuertyp festlegen.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Es ist zu beachten, daß bei einem Geschäftsvorfall immer nur &lt;ZH&gt;ein&lt;/&gt;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>Quellensteuerkennzeichen pro Quellensteuertyp zugewiesen werden kann.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>Unterliegt der Geschäftsvorfall mehreren Quellensteuern gleichzeitig,</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>so sind diese mittels verschiedener Typen abzubilden.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+    <item>
+     <DOKIL>
+      <ID>DE</ID>
+      <OBJECT>ZT2_WT_WITHCD</OBJECT>
+      <LANGU>E</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0003</VERSION>
+      <TXTLINES>00008</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZT2_WT_WITHCD</TDNAME>
+      <TDID>DE</TDID>
+      <TDSPRAS>E</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00003</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DEFINITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>One or more &quot;withholding tax codes&quot; are assigned to each withholding</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>tax type. One of the things these codes determine is the various</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>percentage rates for the withholding tax type.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Note that when processing a business transaction, no more than</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>&lt;ZH&gt;one&lt;/&gt; withholding tax code can be assigned per withholding tax</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>type. If the business transaction is subject to more than one</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>withholding taxes, these must be represented in the system by defining</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>various withholding tax types.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+    <item>
+     <DOKIL>
+      <ID>DE</ID>
+      <OBJECT>ZT2_WT_WITHCD</OBJECT>
+      <LANGU>P</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0003</VERSION>
+      <TXTLINES>00007</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZT2_WT_WITHCD</TDNAME>
+      <TDID>DE</TDID>
+      <TDSPRAS>P</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00003</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DEFINITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>A uma categoria de IRF está atribuído um ou vários &quot;Códigos de IRF&quot;, os</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>quais determinam, entre outros, diversas porcentagens para a categoria</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>de IRF.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Deve-se considerar que somente pode ser atribuído sempre &lt;ZH&gt;um&lt;/&gt;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>código de IRF em uma transação contábil por categoria de IRF. Caso a</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>transação contábil esteja sujeita a vários IRFs simultaneamente, estes</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>devem ser representados mediante categorias diferentes.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+    <item>
+     <DOKIL>
+      <ID>DE</ID>
+      <OBJECT>ZT2_WT_WITHCD</OBJECT>
+      <LANGU>S</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0003</VERSION>
+      <TXTLINES>00007</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZT2_WT_WITHCD</TDNAME>
+      <TDID>DE</TDID>
+      <TDSPRAS>S</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00003</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DEFINITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>A un tipo de retención de impuestos están asignados uno o varios</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>&quot;Indicadores de retención&quot; que, entre otros, establecen diferentes</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>porcentajes para los tipos de retención.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Cabe tener en cuenta que en una operación contable sólo puede</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>adjudicarse &lt;ZH&gt;un&lt;/&gt; indicador de retención por tipo de retención. En</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>caso de que la operación contable cuente con varios impuestos</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>simultáneamente, éstos deberán reproducirse mediante diferentes tipos.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+   </LONGTEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

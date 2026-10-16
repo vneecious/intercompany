@@ -1,0 +1,7 @@
+@EndUserText.label: 'Intercompany: Master Data / Tax Brazil'
+@ObjectModel.leadingEntity.name: 'ZC_IntercoTaxBRTP'
+define service ZUI_IntercoTaxBR {
+  expose ZC_IntercoTaxBRTP;
+  expose ZC_IntercoTaxBRItemTP;
+  expose ZI_DomainFixedValueVH;
+}

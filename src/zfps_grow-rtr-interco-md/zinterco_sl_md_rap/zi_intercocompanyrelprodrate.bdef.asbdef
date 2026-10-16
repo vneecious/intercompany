@@ -1,0 +1,52 @@
+managed implementation in class zbp_i_intercocompanyrelprodrat unique;
+strict ( 2 );
+
+with draft;
+
+define behavior for ZI_INTERCOCOMPANYRELPRODRATE //alias <alias_name>
+persistent table zint_a_md003
+draft table zint_d_md003
+with additional save
+//with unmanaged save with full data //{ Begin ext_richroja
+lock master total etag LastChangedAt
+authorization master ( global, instance )
+etag master LastChangedAt
+{
+  create ;
+  update ;
+  delete ( features : instance, precheck );
+
+  draft action Resume;
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  action ZetDelete result [1] $self;
+
+  field ( readonly, numbering : managed ) uuid;
+  field ( readonly ) Createdat, Createdby, LastChangedAt, Isdeleted;
+  field ( mandatory ) Providercompanycode, Recipientcompanycode, Product, Validfrom, Validto;
+  field ( readonly ) ProvidercompanycodeName, RecipientCompanyName, ProductName;
+
+  determination GetProductName on modify { field Product; }
+  determination GetCompanyNames on save { field Providercompanycode, Recipientcompanycode; }
+
+  determination DeterValidFrom on modify { field ValidFrom; }
+  determination DeterValidTo on modify { field validTo; }
+
+  side effects { field ValidFrom affects $self, messages; field ValidTo affects $self, messages; }
+
+  validation validateData on save { create; update; }
+
+  validation validateDates on save { field Validfrom, Validto; create; update; }
+  validation validateMandatory on save { field Providercompanycode, Recipientcompanycode, Validfrom, Validto; create; update; }
+  validation ValidateProduct on save { field Product; create; update; }
+  validation ValidateCompany on save { field Providercompanycode, Recipientcompanycode; create; update; }
+
+  draft determine action Prepare
+  {
+
+  }
+
+  mapping
+       for zint_a_md003 corresponding;
+    }

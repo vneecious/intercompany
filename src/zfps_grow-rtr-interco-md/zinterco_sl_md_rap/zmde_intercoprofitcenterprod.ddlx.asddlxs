@@ -1,0 +1,50 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Concept',
+        typeNamePlural: 'Concepts',
+        title: { type: #STANDARD }
+  },
+    presentationVariant: [{
+          visualizations: [{
+            type: #AS_LINEITEM
+        }]
+     }]
+   }
+
+annotate entity ZC_IntercoProfitCenterProd with
+{
+  @UI.facet: [ {
+                  id: 'Header',
+                  purpose: #STANDARD,
+                  type: #IDENTIFICATION_REFERENCE,
+                  label: 'Concept/Product',
+                  position: 10
+               }
+             ]
+
+  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ]}
+  @UI.selectionField: [{ position: 10 }]
+  @EndUserText.label: 'Profit Center'
+  @UI.textArrangement: #TEXT_FIRST
+  ProfitCenter;
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 } ]}
+  @EndUserText.label: 'Product'
+  Product;
+  @UI: { lineItem: [ { position: 30 } ],identification:[ { position: 20 } ]}
+  @EndUserText.label: 'Product Name'  
+  ProductName;  
+  @UI: { lineItem: [ { position: 40 } ],identification:[ { position: 20 } ]}
+  @EndUserText.label: 'SubBu'
+  Subbu;
+  @UI: { lineItem: [ { position: 50 } ],identification:[ { position: 30 } ]}
+  @EndUserText.label: 'SubBu Name'
+  SubbuName;
+  @UI: { lineItem: [ { position: 60 } ],identification:[ { position: 40 } ]}
+  @EndUserText.label: 'Business Unit'
+  BusinessUnit;
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 50 } ]}
+  @EndUserText.label: 'Business Unit Name'
+  BusinessUnitName;
+
+}

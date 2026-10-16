@@ -1,0 +1,7 @@
+@EndUserText.label: 'Service Def - Log Posting Interes Mora'
+define service ZUI_FINT_POST_LOG {
+  expose ZI_FINT_RUN      as FintRun;
+  expose ZI_FINT_CONS_DOC as FintConsDoc;
+  expose ZI_FINT_SRC_INV  as FintSrcInv;
+  expose ZC_FINT_POST_LOG as FintPostLog;
+}

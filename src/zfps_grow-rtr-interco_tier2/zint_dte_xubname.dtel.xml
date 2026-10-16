@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZINT_DTE_XUBNAME</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>XUBNAME</DOMNAME>
+    <MEMORYID>XUS</MEMORYID>
+    <HEADLEN>12</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>15</SCRLEN2>
+    <SCRLEN3>20</SCRLEN3>
+    <DDTEXT>User Name in User Master Record</DDTEXT>
+    <REPTEXT>User Name</REPTEXT>
+    <SCRTEXT_S>User</SCRTEXT_S>
+    <SCRTEXT_M>User</SCRTEXT_M>
+    <SCRTEXT_L>User</SCRTEXT_L>
+    <APPLCLASS>SUSR</APPLCLASS>
+    <DTELMASTER>D</DTELMASTER>
+    <REFKIND>D</REFKIND>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>D</LANGU>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>D</DDLANGUAGE>
+     <DDTEXT>Benutzername im Benutzerstamm</DDTEXT>
+     <REPTEXT>Benutzername</REPTEXT>
+     <SCRTEXT_S>Benutzer</SCRTEXT_S>
+     <SCRTEXT_M>Benutzer</SCRTEXT_M>
+     <SCRTEXT_L>Benutzer</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>P</DDLANGUAGE>
+     <DDTEXT>Nome do usuário no mestre de usuários</DDTEXT>
+     <REPTEXT>Nome usuário</REPTEXT>
+     <SCRTEXT_S>Usuário</SCRTEXT_S>
+     <SCRTEXT_M>Usuário</SCRTEXT_M>
+     <SCRTEXT_L>Usuário</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Nombre de usuario en el maestro de usuarios</DDTEXT>
+     <REPTEXT>Usuario</REPTEXT>
+     <SCRTEXT_S>Usuario</SCRTEXT_S>
+     <SCRTEXT_M>Usuario</SCRTEXT_M>
+     <SCRTEXT_L>Usuarios</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+   <LONGTEXTS>
+    <item>
+     <DOKIL>
+      <ID>DE</ID>
+      <OBJECT>ZINT_DTE_XUBNAME</OBJECT>
+      <LANGU>S</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0002</VERSION>
+      <TXTLINES>00001</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>ZINT_DTE_XUBNAME</TDNAME>
+      <TDID>DE</TDID>
+      <TDSPRAS>S</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00002</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;DEFINITION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+       <TDLINE>Campo de entrada/de salida.</TDLINE>
+      </TLINE>
+     </LINES>
+    </item>
+   </LONGTEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

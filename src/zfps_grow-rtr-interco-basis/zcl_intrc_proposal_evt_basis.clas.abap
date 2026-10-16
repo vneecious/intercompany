@@ -1,0 +1,14 @@
+CLASS zcl_intrc_proposal_evt_basis DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC
+  FOR EVENTS OF zi_intercoproposal.
+
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_intrc_proposal_evt_basis IMPLEMENTATION.
+ENDCLASS.

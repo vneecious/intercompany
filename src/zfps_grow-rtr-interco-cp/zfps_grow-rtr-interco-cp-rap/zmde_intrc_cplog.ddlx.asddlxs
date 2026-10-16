@@ -1,0 +1,104 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Proposal Log',
+        typeNamePlural: 'Proposal Log',
+        title: { type: #STANDARD }
+    }
+    }
+@UI.lineItem: [{criticality: 'StatusCriticality'}]
+annotate entity ZC_INTRC_CPLog
+    with 
+{
+  @UI.facet: [ { id:              'ProposalLog',
+                 purpose:         #STANDARD,
+                 type:            #IDENTIFICATION_REFERENCE,
+                 label:           'Log',
+                 position:        10 } ]
+
+  @UI.hidden: true
+  Id;
+  
+  @UI.hidden: true
+  IntercoBasisId;
+  
+  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ]}
+  Tstmpl;
+  
+  @UI: { hidden : true }
+  @EndUserText.label: 'Document key'
+  Documentkey;
+  
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 } ]}
+  @EndUserText.label: 'Document type'
+  Documenttype;
+  
+  @UI: { hidden : true }
+  @Consumption.filter.hidden: true
+  DocumentName;
+  
+  @UI: { lineItem: [ { position: 30 } ]}
+  @EndUserText.label: 'Provider Company Code'
+  ProviderCompanyCode;
+
+  @UI: { //lineItem: [ { position: 60 } ],
+     hidden : true }
+  @Consumption.filter.hidden: true
+  @EndUserText.label: 'Provider Company Name'
+  providercompanyname;
+
+  @UI: { lineItem: [ { position: 40 } ]}
+  @EndUserText.label: 'Recipient Company Code'
+  recipientcompanycode;
+
+  @UI: { //lineItem: [ { position: 60 } ],
+   hidden : true }
+  @Consumption.filter.hidden: true
+  @EndUserText.label: 'Recipient Company Name'
+  RecipientCompanyName;
+  
+  @UI: { lineItem: [ { position: 50 } ]}
+  @EndUserText.label: 'Concept'
+  Product;
+  
+  @UI: { //lineItem: [ { position: 60 } ],
+   hidden : true }
+  @Consumption.filter.hidden: true
+  @EndUserText.label: 'Concept Name'
+  ProductName;
+  
+  @UI: { lineItem: [ { position: 60 , criticality: 'StatusCriticality', criticalityRepresentation: #WITH_ICON  } ],
+         identification:[ { position: 50 } ]}
+  @EndUserText.label: 'Message ID-Nro'
+  MSGIDNO;
+  
+  
+  @EndUserText.label: 'Message Var.1'
+  msgv1;
+  
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 60 } ]}
+  @EndUserText.label: 'Message Var.2'
+  msgv2;
+
+  @EndUserText.label: 'Message Var.3'
+  msgv3;
+
+  @EndUserText.label: 'Message Var.4'
+  msgv4;
+  
+  @UI: { lineItem: [ { position: 80 } ],identification:[ { position: 60 } ]}
+  @EndUserText.label: 'Message'
+  message;
+  
+  @UI: { hidden: true }
+  @Consumption.filter.hidden: true
+  StatusCriticality;
+  
+  @UI.hidden: true
+  FiscalYear;
+  @UI.hidden: true
+  CompanyCode;
+  @UI.hidden: true
+  msgty;
+    
+}

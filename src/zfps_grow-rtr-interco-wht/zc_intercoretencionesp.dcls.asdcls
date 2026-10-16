@@ -1,0 +1,5 @@
+@MappingRole: true
+define role ZC_IntercoRetencionesP {
+  grant select on ZC_IntercoRetencionesP
+  where INHERITING CONDITIONS FROM ENTITY ZI_IntercoRetencionesP;
+}

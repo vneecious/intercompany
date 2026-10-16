@@ -1,0 +1,35 @@
+projection;
+strict ( 2 );
+
+define behavior for ZC_ReingCARun_V2 alias CalcRun
+{
+  use action InitializePeriod;
+  use action ExportExcel;
+  use association _Line;
+}
+
+define behavior for ZC_ReingCALine_V2 alias CalcLine
+{
+  use association _Run;
+  use association _LinePC { create; }
+  use association _Step   { create; }
+  use association _Log    { create; }
+}
+
+define behavior for ZC_ReingCALinePC_V2 alias CalcLinePC
+{
+  use association _Line;
+  use association _Run;
+}
+
+define behavior for ZC_ReingCAStep_V2 alias CalcStep
+{
+  use association _Line;
+  use association _Run;
+}
+
+define behavior for ZC_ReingCALog_V2 alias CalcLog
+{
+  use association _Line;
+  use association _Run;
+}

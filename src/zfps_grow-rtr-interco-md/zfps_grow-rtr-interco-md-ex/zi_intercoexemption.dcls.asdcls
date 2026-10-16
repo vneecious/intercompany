@@ -1,0 +1,17 @@
+@EndUserText.label: 'Intercompany: Access Control to ZI_IntercoExemption'
+@MappingRole: true
+define role ZI_INTERCOEXEMPTION {
+    grant 
+        select
+            on
+                ZI_INTERCOEXEMPTION
+                    where () = aspect pfcg_auth( ZFI_IC_LVL, ACTVT = '03' ) 
+                     // TEMP ->
+                     or $session.user like 'FF_%'
+                     or $session.user = 'EXT_FLMAJUL'
+                     or $session.user = 'EXT_NEIDRODR'
+                     or $session.user = 'EXT_ROMANTOV'
+                     or $session.user = 'EXT_VINBARRI';
+                     // TEMP <-
+                        
+}

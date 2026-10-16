@@ -1,0 +1,35 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Proposal Log',
+        typeNamePlural: 'Proposal Log',
+        title: { type: #STANDARD }
+    }
+    }
+@UI.lineItem: [{criticality: 'StatusCriticality'}]
+annotate entity ZC_INTRC_CPDLog with
+{
+  @UI.facet: [ { id:              'Log',
+                 purpose:         #STANDARD,
+                 type:            #IDENTIFICATION_REFERENCE,
+                 label:           'Log',
+                 position:        10 } ]
+
+  @UI.hidden: true
+  Id;
+  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ]}
+  Tstmpl;
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 } ]}
+  @EndUserText.label: 'Document type'
+  Documenttype;
+  @UI: { lineItem: [ { position: 30 } ],identification:[ { position: 30 } ]}
+  @EndUserText.label: 'Document key'
+  Documentkey;
+  @UI: { lineItem: [ { position: 40 , criticality: 'StatusCriticality', criticalityRepresentation: #WITH_ICON  } ],
+         identification:[ { position: 50 } ]}
+  @EndUserText.label: 'Message type'
+  msgty;
+  @UI: { lineItem: [ { position: 50 } ],identification:[ { position: 60 } ]}
+  @EndUserText.label: 'Message'
+  message;
+}

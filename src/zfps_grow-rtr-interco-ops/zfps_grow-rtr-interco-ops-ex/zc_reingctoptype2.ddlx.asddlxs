@@ -1,0 +1,95 @@
+@Metadata.layer: #CUSTOMER
+
+annotate view ZC_ReingCTOpType2 with
+{
+  @EndUserText.label: 'Tipo Operacion'
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 10, qualifier: 'OpTypeInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingOpTypesVH', element: 'OpType' } }]
+  @UI.textArrangement: #TEXT_FIRST
+  OpType;
+
+  @EndUserText.label: 'Descripcion'
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 11, qualifier: 'OpTypeInfo' }]
+  OpTypeDescr;
+
+  @EndUserText.label: 'N Instancia'
+  @UI.lineItem: [{ position: 15, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 15, qualifier: 'OpTypeInfo' }]
+  OpInstanceNum;
+
+  @EndUserText.label: 'Tipo de Cambio'
+  @UI.lineItem: [{ position: 40, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 40, qualifier: 'OpTypeInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingExrtTypeVH', element: 'ExchRateType' } }]
+  @UI.textArrangement: #TEXT_FIRST
+  ExchRateType;
+
+  @EndUserText.label: 'Desc. Tipo de Cambio'
+  @UI.lineItem: [{ position: 45, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 41, qualifier: 'OpTypeInfo' }]
+  ExchRateDescr;
+
+  @EndUserText.label: 'Subtipo'
+  @UI.hidden: true
+  OpSubtype;
+
+  @EndUserText.label: 'Tasa de Cambio (obsoleto)'
+  @UI.hidden: true
+  ExchRate;
+
+  @EndUserText.label: 'Tipo Cambio (obsoleto)'
+  @UI.hidden: true
+  ExchType;
+
+  @EndUserText.label: 'Fecha Inicio Dev.'
+  @UI.lineItem: [{ position: 50, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 50, qualifier: 'OpTypeInfo' }]
+  DeferFrom;
+
+  @EndUserText.label: 'Fecha Fin Dev.'
+  @UI.lineItem: [{ position: 60, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 60, qualifier: 'OpTypeInfo' }]
+  DeferTo;
+
+  @EndUserText.label: 'Distribucion'
+  @UI.lineItem: [{ position: 70, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 70, qualifier: 'OpTypeInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingDistTypeVH', element: 'DistType' } }]
+  DistType;
+
+  @EndUserText.label: 'Offset Periodo Metrica'
+  @UI.lineItem: [{ position: 75, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 75, qualifier: 'OpTypeInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingMePeriodOffsetVH', element: 'MePeriodOffset' } }]
+  MePeriodOffset;
+
+  @EndUserText.label: 'Cuotas'
+  @UI.fieldGroup: [{ position: 80, qualifier: 'OpTypeInfo' }]
+  Installments;
+
+  @EndUserText.label: 'Moneda'
+  @UI.fieldGroup: [{ position: 90, qualifier: 'OpTypeInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_Currency', element: 'Currency' } }]
+  Waers;
+
+  @EndUserText.label: '% Total Devengado'
+  @UI.lineItem: [{ position: 100, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 100, qualifier: 'OpTypeInfo' }]
+  TotalPct;
+
+  @EndUserText.label: 'Estado'
+  @UI.lineItem: [{ position: 110, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 110, qualifier: 'OpTypeInfo' }]
+  OpStatus;
+
+  @EndUserText.label: 'Modificado El'
+  @UI.facet: [
+    { id: 'OpTypeInfo', type: #COLLECTION, label: 'Datos del Tipo de Operacion', position: 10 },
+    { id: 'OpTypeInfoFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'OpTypeInfo', parentId: 'OpTypeInfo', position: 10 },
+    { id: 'Cron', type: #LINEITEM_REFERENCE, label: 'Cronograma Devengamiento', position: 20, targetElement: '_Cron' },
+    { id: 'OpRates', type: #LINEITEM_REFERENCE, label: 'Tasas Manuales x Receptora', position: 30, targetElement: '_OpRates' }
+  ]
+  ChangedAt;
+}

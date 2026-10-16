@@ -1,0 +1,843 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Message Class for Intercompany Master Data</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>Provider Company Code is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>Provider Company Code not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Recipient Company Code is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Recipient Company Code not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Company Code relationship not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Concept is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Concept not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Profit Center is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>Profit Center not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>Flow is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Flow not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Date From is required.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Date To is required.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Date To must be greater than Date From</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>Rate must be between 0 and 100</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>An active record with these propoerties already exists</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>The record is already blocked</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>018</MSGNR>
+     <TEXT>A deleted record cannot be locked</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>019</MSGNR>
+     <TEXT>It is not possible to release a locked record</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>020</MSGNR>
+     <TEXT>You can only delete records that are marked as deleted</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>021</MSGNR>
+     <TEXT>Combination not found in the Company Codes Relationship by Concept app.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>022</MSGNR>
+     <TEXT>Cost Center Sub Area is required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>023</MSGNR>
+     <TEXT>Cost Center Sub Area not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>024</MSGNR>
+     <TEXT>Cost Center Allocation not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>025</MSGNR>
+     <TEXT>P&amp;L is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>026</MSGNR>
+     <TEXT>P&amp;L not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>027</MSGNR>
+     <TEXT>Relationship betwen Provider, Reciept and Product not found (IC02D)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>028</MSGNR>
+     <TEXT>&amp;1 - Date From is required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>029</MSGNR>
+     <TEXT>&amp;1 - Date To is required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>030</MSGNR>
+     <TEXT>&amp;1 - Date To must be greater than Date From</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>031</MSGNR>
+     <TEXT>&amp;1 - Concept is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>032</MSGNR>
+     <TEXT>&amp;1 - Concept not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>033</MSGNR>
+     <TEXT>&amp;1 - Provider Company Code not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>034</MSGNR>
+     <TEXT>&amp;1 - P&amp;L is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>035</MSGNR>
+     <TEXT>&amp;1 - P&amp;L not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>036</MSGNR>
+     <TEXT>&amp;1 - Profit Center not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>037</MSGNR>
+     <TEXT>&amp;1 - Combination not found in the Company Codes Relationship Concept app.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>038</MSGNR>
+     <TEXT>&amp;1 - Cost Center Sub Area is required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>039</MSGNR>
+     <TEXT>&amp;1 - Cost Center Sub Area not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>040</MSGNR>
+     <TEXT>&amp;1 - Cost Center Allocation not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>041</MSGNR>
+     <TEXT>&amp;1 - An active record with these properties already exists</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>042</MSGNR>
+     <TEXT>&amp;1 - Lending Company is mandatory.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>043</MSGNR>
+     <TEXT>&amp;1 - Recipient Company Code is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>044</MSGNR>
+     <TEXT>&amp;1 - Recipient Company Code not found.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>045</MSGNR>
+     <TEXT>&amp;1 - Company Code relationship not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>046</MSGNR>
+     <TEXT>&amp;1 - Profit Center is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>047</MSGNR>
+     <TEXT>&amp;1 - Flow is mandatory</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>048</MSGNR>
+     <TEXT>&amp;1 - Flow not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>049</MSGNR>
+     <TEXT>&amp;1 - The Rate must be between 0 and 100.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>050</MSGNR>
+     <TEXT>&amp;1 - Duplicate records in file.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <MSGNR>051</MSGNR>
+     <TEXT>the file is empty or has an incorrect format</TEXT>
+    </T100>
+   </T100>
+   <I18N_LANGS>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <T100T>
+    <T100T>
+     <SPRSL>P</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <STEXT>Classe de mensagem para dados mestres intercompanhia</STEXT>
+    </T100T>
+    <T100T>
+     <SPRSL>S</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_MD</ARBGB>
+     <STEXT>Clase de mensaje para Data maestra Intercompany</STEXT>
+    </T100T>
+   </T100T>
+   <T100_TEXTS>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>001</MSGNR>
+     <TEXT>A empresa fornecedora é obrigatória.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>002</MSGNR>
+     <TEXT>Empresa fornecedora não encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>003</MSGNR>
+     <TEXT>A empresa receptora é obrigatória.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>004</MSGNR>
+     <TEXT>Empresa receptora não encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>005</MSGNR>
+     <TEXT>Relação de empresa não encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>006</MSGNR>
+     <TEXT>O conceito é obrigatório.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>007</MSGNR>
+     <TEXT>Conceito não encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>008</MSGNR>
+     <TEXT>O centro de lucro é obrigatório.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>009</MSGNR>
+     <TEXT>Centro de lucro não encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>010</MSGNR>
+     <TEXT>O fluxo é obrigatório.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>011</MSGNR>
+     <TEXT>Fluxo não encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>012</MSGNR>
+     <TEXT>A Data De é obrigatória</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>013</MSGNR>
+     <TEXT>A Data Até é obrigatória</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>014</MSGNR>
+     <TEXT>A data final deve ser posterior à data de início.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>015</MSGNR>
+     <TEXT>A taxa deve estar entre 0 e 100.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>016</MSGNR>
+     <TEXT>Já existe um registro ativo com essas propriedades.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>017</MSGNR>
+     <TEXT>O registro já está bloqueado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>018</MSGNR>
+     <TEXT>Um registro eliminado não pode ser bloqueado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>019</MSGNR>
+     <TEXT>Não é possível liberar um registro bloqueado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>020</MSGNR>
+     <TEXT>Você só pode excluir registros marcados como excluídos.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>021</MSGNR>
+     <TEXT>Combinação não encontrada no app Relação de empresas por conceito.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>022</MSGNR>
+     <TEXT>A subárea do centro de custo é obrigatória.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>023</MSGNR>
+     <TEXT>Subárea de centro de custo não encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>024</MSGNR>
+     <TEXT>Allocation de centro de custo não encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>025</MSGNR>
+     <TEXT>P&amp;L é obrigatório.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>026</MSGNR>
+     <TEXT>P&amp;L não encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>027</MSGNR>
+     <TEXT>Relação entre Provedor, Recibo e Produto não encontrada (IC02D)</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>028</MSGNR>
+     <TEXT>&amp;1 - Data De é obrigatório</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>029</MSGNR>
+     <TEXT>&amp;1 - Data Para é obrigatório</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>030</MSGNR>
+     <TEXT>&amp;1 - A data de início deve ser maior que a data de início</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>031</MSGNR>
+     <TEXT>&amp;1 - Conceito é obrigatório</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>032</MSGNR>
+     <TEXT>&amp;1 - Conceito não encontrado</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>033</MSGNR>
+     <TEXT>&amp;1 - Empresa provedora não encontrada</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>034</MSGNR>
+     <TEXT>&amp;1 - P&amp;L é obrigatório</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>035</MSGNR>
+     <TEXT>&amp;1 - P&amp;L não encontrado</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>037</MSGNR>
+     <TEXT>&amp;1 - Combinação não encontrada no aplicativo Relacionamento Conceito/Soc</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>038</MSGNR>
+     <TEXT>&amp;1 - Subárea do Centro de Custo é obrigatória</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>039</MSGNR>
+     <TEXT>&amp;1 - Subárea do centro de custo não encontrada</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>040</MSGNR>
+     <TEXT>&amp;1 - Alocação de centro de custo não encontrada</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>041</MSGNR>
+     <TEXT>&amp;1 - Já existe um registro ativo com essas propriedades</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>042</MSGNR>
+     <TEXT>&amp;1 - Empresa de empréstimo é obrigatória.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>043</MSGNR>
+     <TEXT>&amp;1 - Empresa destinatária é obrigatório</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>044</MSGNR>
+     <TEXT>&amp;1 - Empresa destinatária não encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>045</MSGNR>
+     <TEXT>&amp;1 - Relação do código da empresa não encontrada</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>046</MSGNR>
+     <TEXT>&amp;1 - O centro de lucro é obrigatório</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>047</MSGNR>
+     <TEXT>&amp;1 - O fluxo é obrigatório</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>048</MSGNR>
+     <TEXT>&amp;1 - Fluxo não encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>049</MSGNR>
+     <TEXT>&amp;1 - A taxa deve estar entre 0 e 100.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>050</MSGNR>
+     <TEXT>&amp;1 - Registros duplicados no arquivo.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>051</MSGNR>
+     <TEXT>o arquivo está vazio ou tem um formato incorreto</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>001</MSGNR>
+     <TEXT>Sociedad Prestadora es obligatoria.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>002</MSGNR>
+     <TEXT>Sociedad Prestadora no encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>003</MSGNR>
+     <TEXT>Sociedad Prestataria es obligatoria.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>004</MSGNR>
+     <TEXT>Sociedad Prestataria no encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>005</MSGNR>
+     <TEXT>Relación de sociedad no encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>006</MSGNR>
+     <TEXT>Concepto es obligatorio.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>007</MSGNR>
+     <TEXT>Concepto no encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>008</MSGNR>
+     <TEXT>Centro de Beneficio es obligatorio.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>009</MSGNR>
+     <TEXT>Centro de Beneficio no encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>010</MSGNR>
+     <TEXT>Flujo es obligatorio.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>011</MSGNR>
+     <TEXT>Flujo no encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>012</MSGNR>
+     <TEXT>Fecha Desde es obligatorio</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>013</MSGNR>
+     <TEXT>Fecha Hasta es obligatorio</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>014</MSGNR>
+     <TEXT>Fecha Hasta debe ser mayor que Fecha Desde.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>015</MSGNR>
+     <TEXT>La Tarifa debe ser entre 0 y 100.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>016</MSGNR>
+     <TEXT>Ya existe un registro activo con estas propiedades.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>017</MSGNR>
+     <TEXT>El registro ya está bloqueado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>018</MSGNR>
+     <TEXT>No es posible bloquear un registro eliminado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>019</MSGNR>
+     <TEXT>No es posible liberar un registro bloqueado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>020</MSGNR>
+     <TEXT>Sólo puede eliminar los registros que esta marcados como eliminado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>021</MSGNR>
+     <TEXT>Combinación no encontrada en app Relación de Sociedades por Concepto.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>022</MSGNR>
+     <TEXT>Subárea de Centro de Costo es obligatorio.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>023</MSGNR>
+     <TEXT>Subárea de Centro de Costo no encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>024</MSGNR>
+     <TEXT>Allocation de Centro de Costo no encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>025</MSGNR>
+     <TEXT>P&amp;L es obligatorio.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>026</MSGNR>
+     <TEXT>P&amp;L no encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>027</MSGNR>
+     <TEXT>Relación entre Proveedor, Receptor y Concepto no encontrado (IC02D)</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>028</MSGNR>
+     <TEXT>&amp;1 - La fecha desde es obligatoria</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>029</MSGNR>
+     <TEXT>&amp;1 - La fecha hasta es obligatoria</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>030</MSGNR>
+     <TEXT>&amp;1 - La fecha hasta debe ser mayor que la fecha desde</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>031</MSGNR>
+     <TEXT>&amp;1 - Concepto es obligatorio</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>032</MSGNR>
+     <TEXT>&amp;1 - Concepto no encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>033</MSGNR>
+     <TEXT>&amp;1 - Sociedad Prestadora no encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>034</MSGNR>
+     <TEXT>&amp;1 - P&amp;L es obligatorio.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>035</MSGNR>
+     <TEXT>&amp;1 - P&amp;L no encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>036</MSGNR>
+     <TEXT>&amp;1 - Centro de Beneficio no encontrado</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>037</MSGNR>
+     <TEXT>&amp;1 - Combinación no encontrada en la app Relación Concepto y sociedad.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>038</MSGNR>
+     <TEXT>&amp;1 - Subárea de Centro de Costo es obligatorio</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>039</MSGNR>
+     <TEXT>&amp;1 - Subárea de Centro de Costo no encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>040</MSGNR>
+     <TEXT>&amp;1 - Allocation de Centro de Costo no encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>041</MSGNR>
+     <TEXT>&amp;1 - Ya existe un registro activo con estas propiedades.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>042</MSGNR>
+     <TEXT>&amp;1 - Sociedad Prestadora es obligatoria.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>043</MSGNR>
+     <TEXT>&amp;1 - Sociedad Receptora es obligatoria.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>044</MSGNR>
+     <TEXT>&amp;1 - Sociedad Receptora no encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>045</MSGNR>
+     <TEXT>&amp;1 - No se encontró la relación del código de empresa</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>046</MSGNR>
+     <TEXT>&amp;1 - Centro de Beneficio es obligatorio.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>047</MSGNR>
+     <TEXT>&amp;1 - El flujo es obligatorio</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>048</MSGNR>
+     <TEXT>&amp;1 - Flujo no encontrado</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>049</MSGNR>
+     <TEXT>&amp;1 - La Tarifa debe ser entre 0 y 100.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>050</MSGNR>
+     <TEXT>&amp;1 - Registros duplicado en archivo.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>051</MSGNR>
+     <TEXT>El archivo está vacío o tiene un formato incorrecto.</TEXT>
+    </item>
+   </T100_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

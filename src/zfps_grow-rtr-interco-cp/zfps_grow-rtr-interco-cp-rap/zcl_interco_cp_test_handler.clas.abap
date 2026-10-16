@@ -1,0 +1,15 @@
+CLASS zcl_interco_cp_test_handler DEFINITION
+  PUBLIC
+  ABSTRACT
+  FINAL
+  FOR EVENTS OF ZI_IntercoProposal.
+
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_interco_cp_test_handler IMPLEMENTATION.
+ENDCLASS.

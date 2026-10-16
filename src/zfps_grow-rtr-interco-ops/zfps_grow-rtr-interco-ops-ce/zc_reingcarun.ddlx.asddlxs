@@ -1,0 +1,133 @@
+//----------------------------------------------------------------------
+// Created by     : Oscar Augusto Leal Dominguez (EXT_OSCUGALD)
+// Requirement N° :
+// Change ID      : V001
+// Date           : 10.07.2026
+// Description    : App CA - Motor de Calculo IC - F6-04 Anotaciones UI
+//                  CalcRun: headerInfo, toolbar de acciones (Calculate,
+//                  Release, Delete, InitializePeriod), lineItem KPIs,
+//                  selectionFields de filtro y facets del Object Page.
+//                  features:instance en BDEF controla habilitacion via
+//                  get_instance_features() de ZBP_ReingCARun.
+// Transport      : DS4K9B5XZC
+// Reference      : 5000049390
+//----------------------------------------------------------------------
+// Begin Change ID V001 (10.07.2026 | EXT_OSCUGALD)
+// Descripcion : Creacion inicial - habilita botones de accion en la
+//               toolbar del List Report (CalcRun) y Object Page.
+//               InitializePeriod como accion de coleccion (static factory)
+//               y Calculate/Release/Delete como acciones de instancia.
+// End Change ID V001 (10.07.2026 | EXT_OSCUGALD)
+//----------------------------------------------------------------------
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: {
+  typeName:       'Ejecucion de Calculo',
+  typeNamePlural: 'Ejecuciones de Calculo',
+  title:          { type: #STANDARD, value: 'CalcRunId' },
+  description:    { type: #STANDARD, value: 'FiscalPeriod' }
+}
+
+@UI.presentationVariant: [{
+  sortOrder: [{ by: 'FiscalYear',   direction: #DESC },
+              { by: 'FiscalPeriod', direction: #DESC }],
+  visualizations: [{ type: #AS_LINEITEM }]
+}]
+
+annotate view ZC_ReingCARun with
+{
+  // CalcRunId: ancla de todas las acciones del Run.
+  // InitializePeriod (factory/static) -> lineItem = toolbar de coleccion.
+  // Calculate / Release / Delete (instance) -> identification = por fila.
+  @UI.lineItem: [
+    { position: 10, importance: #HIGH },
+    // Begin Change ID V008 (15.07.2026 | EXT_GONZALCA)
+    // Fix 002: se retira InitializePeriod de la toolbar (queda dormida, sigue
+    // viva en el BDEF) y se coloca Calculate como accion de coleccion -- una
+    // static action se anota a nivel de lineItem, no de identification.
+    { type: #FOR_ACTION, dataAction: 'Calculate',
+      label: 'Calcular', emphasized: true }
+    // End Change ID V008 (15.07.2026 | EXT_GONZALCA)
+  ]
+  @UI.selectionField: [{ position: 10 }]
+  @UI.fieldGroup:     [{ qualifier: 'RunHeader', position: 10 }]
+  @UI.identification: [
+    { position: 10 },
+    // Begin Change ID V001 (10.07.2026 | EXT_OSCUGALD)
+    // Acciones de instancia; habilitacion controlada por get_instance_features().
+    // Begin Change ID V008 (15.07.2026 | EXT_GONZALCA)
+    // Fix 002: Calculate se movio a @UI.lineItem (ahora es static action).
+    // Release/Delete/ExportExcel siguen siendo de instancia -- sin cambios.
+    // End Change ID V008 (15.07.2026 | EXT_GONZALCA)
+    { type: #FOR_ACTION, dataAction: 'Release',
+      label: 'Liberar' },
+    { type: #FOR_ACTION, dataAction: 'Delete',
+      label: 'Eliminar Huerfanos' },
+    // Begin Change ID V005 (10.07.2026 | EXT_GONZALCA)
+    { type: #FOR_ACTION, dataAction: 'ExportExcel',
+      label: 'Exportar Excel' }
+    // End Change ID V005 (10.07.2026 | EXT_GONZALCA)
+    // End Change ID V001 (10.07.2026 | EXT_OSCUGALD)
+  ]
+  CalcRunId;
+
+  @UI.selectionField: [{ position: 20 }]
+  @UI.lineItem:       [{ position: 20, importance: #HIGH }]
+  @UI.fieldGroup:     [{ qualifier: 'RunHeader', position: 20 }]
+  FiscalYear;
+
+  @UI.selectionField: [{ position: 30 }]
+  @UI.lineItem:       [{ position: 30, importance: #HIGH }]
+  @UI.fieldGroup:     [{ qualifier: 'RunHeader', position: 30 }]
+  FiscalPeriod;
+
+  @UI.lineItem:   [{ position: 40, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'RunTotals', position: 10 }]
+  TotalLines;
+
+  @UI.lineItem:   [{ position: 50, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'RunTotals', position: 20 }]
+  TotalGroups;
+
+  @UI.fieldGroup: [{ qualifier: 'RunAdmin', position: 10 }]
+  CreatedBy;
+
+  @UI.fieldGroup: [{ qualifier: 'RunAdmin', position: 20 }]
+  CreatedAt;
+
+  @UI.facet: [
+    { id: 'RunHeader',
+      type: #COLLECTION,
+      label: 'Datos del Run',
+      position: 10 },
+    { id: 'RunHeaderFields',
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'RunHeader',
+      parentId: 'RunHeader',
+      position: 10 },
+    { id: 'RunTotals',
+      type: #COLLECTION,
+      label: 'Totales',
+      position: 20 },
+    { id: 'RunTotalsFields',
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'RunTotals',
+      parentId: 'RunTotals',
+      position: 10 },
+    { id: 'RunAdmin',
+      type: #COLLECTION,
+      label: 'Administracion',
+      position: 30 },
+    { id: 'RunAdminFields',
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'RunAdmin',
+      parentId: 'RunAdmin',
+      position: 10 },
+    { id: 'CalcLines',
+      type: #LINEITEM_REFERENCE,
+      label: 'Lineas de Calculo',
+      position: 40,
+      targetElement: '_Line' }
+  ]
+  LocalLastChangedAt;
+}

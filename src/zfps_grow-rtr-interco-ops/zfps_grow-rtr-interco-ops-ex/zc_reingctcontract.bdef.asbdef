@@ -1,0 +1,81 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_ReingCTContract alias Contract
+{
+  use create;
+  use update;
+  use delete;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use action ActivateContract;
+  use action InactivateContract;
+  use action ReactivateContract;
+  use action ArchiveContract;
+
+  use association _Materials { create; with draft; }
+}
+
+define behavior for ZC_ReingCTMaterial alias Material
+{
+  use update;
+  use delete;
+
+  use association _Contract  { with draft; }
+  use association _OpTypes   { create; with draft; }
+  use association _Receivers { create; with draft; }
+  use association _Metrics   { create; with draft; }
+  use association _GLLines   { create; with draft; }
+}
+
+define behavior for ZC_ReingCTOpType alias OpType
+{
+  use update;
+  use delete;
+
+  use association _Material { with draft; }
+  use association _Contract { with draft; }
+  use association _Cron     { create; with draft; }
+}
+
+define behavior for ZC_ReingCTCron alias Cron
+{
+  use update;
+  use delete;
+
+  use association _OpType   { with draft; }
+  use association _Contract { with draft; }
+}
+
+define behavior for ZC_ReingCTReceiver alias Receiver
+{
+  use update;
+  use delete;
+
+  use association _Material { with draft; }
+  use association _Contract { with draft; }
+}
+
+define behavior for ZC_ReingCTMetric alias Metric
+{
+  use update;
+  use delete;
+
+  use association _Material { with draft; }
+  use association _Contract { with draft; }
+}
+
+define behavior for ZC_ReingCTGL alias GL
+{
+  use update;
+  use delete;
+
+  use association _Material { with draft; }
+  use association _Contract { with draft; }
+}

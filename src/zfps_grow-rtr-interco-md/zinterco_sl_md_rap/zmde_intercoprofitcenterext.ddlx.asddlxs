@@ -1,0 +1,175 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Profit Center Relationship',
+        typeNamePlural: 'Profit Center Relationship',
+        title: { type: #STANDARD }
+  },
+    presentationVariant: [{
+          visualizations: [{
+            type: #AS_LINEITEM
+        }]
+     }]
+   }
+annotate entity ZC_INTERCOPROFITCENTEREXT with
+{
+  @UI.facet: [ {
+                  id: 'Header',
+                  purpose: #STANDARD,
+                  type: #IDENTIFICATION_REFERENCE,
+                  label: 'Profit Center Relationship',
+                  position: 10
+               }
+             ]
+  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ]}
+  @UI.selectionField: [{ position: 10 }]
+  @EndUserText.label: 'Controlling Area'
+  @UI.textArrangement: #TEXT_FIRST
+  ControllingArea;
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 } ]}
+  @EndUserText.label: 'Profit Center'
+  ProfitCenter;
+  @UI: { lineItem: [ { position: 30 } ],identification:[ { position: 30 } ]}
+  @EndUserText.label: 'Validity End Date'
+  ValidityEndDate;
+  @UI: { lineItem: [ { position: 40 } ],identification:[ { position: 40 } ]}
+  @EndUserText.label: 'SubBu'
+  Subbu;
+  @UI: { lineItem: [ { position: 50 } ],identification:[ { position: 50 } ]}
+  @EndUserText.label: 'SubBu Name'
+  SubbuName;
+  @UI: { lineItem: [ { position: 60 } ],identification:[ { position: 60 } ]}
+  @EndUserText.label: 'Business Unit'
+  BusinessUnit;
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 70 } ]}
+  @EndUserText.label: 'Business Unit Name'
+  BusinessUnitName;
+  @UI: { lineItem: [ { position: 80 } ],identification:[ { position: 80 } ]}
+  @EndUserText.label: 'Business Unit Product Name'
+  BusinessUnitProductName;
+  @UI: { lineItem: [ { position: 90 } ],identification:[ { position: 90 } ]}
+  @EndUserText.label: 'Profit Ctr Responsible Person Name'
+  ProfitCtrResponsiblePersonName;
+  @UI: { lineItem: [ { position: 100 } ],identification:[ { position: 100 } ]}
+  @EndUserText.label: 'Company Code'
+  CompanyCode;
+  @UI: { lineItem: [ { position: 110 } ],identification:[ { position: 110 } ]}
+  @EndUserText.label: 'Profit Ctr Responsible User'
+  ProfitCtrResponsibleUser;
+  @UI: { lineItem: [ { position: 120 } ],identification:[ { position: 120 } ]}
+  @EndUserText.label: 'Validity Start Date'
+  ValidityStartDate;
+  @UI: { lineItem: [ { position: 130 } ],identification:[ { position: 130 } ]}
+  @EndUserText.label: 'Department'
+  Department;
+  @UI: { lineItem: [ { position: 140 } ],identification:[ { position: 140 } ]}
+  @EndUserText.label: 'Profit Center Standard Hierarchy'
+  ProfitCenterStandardHierarchy;
+  @UI: { lineItem: [ { position: 150 } ],identification:[ { position: 150 } ]}
+  @EndUserText.label: 'Segment'
+  Segment;
+  @UI: { lineItem: [ { position: 160 } ],identification:[ { position: 160 } ]}
+  @EndUserText.label: 'Profit Center Is Blocked'
+  ProfitCenterIsBlocked;
+  @UI: { lineItem: [ { position: 170 } ],identification:[ { position: 170 } ]}
+  @EndUserText.label: 'Formula Planning Template'
+  FormulaPlanningTemplate;
+  @UI: { lineItem: [ { position: 180 } ],identification:[ { position: 180 } ]}
+  @EndUserText.label: 'Form Of Address'
+  FormOfAddress;
+  @UI: { lineItem: [ { position: 190 } ],identification:[ { position: 190 } ]}
+  @EndUserText.label: 'Address Name'
+  AddressName;
+  @UI: { lineItem: [ { position: 200 } ],identification:[ { position: 200 } ]}
+  @EndUserText.label: 'Additional Name'
+  AdditionalName;
+  @UI: { lineItem: [ { position: 210 } ],identification:[ { position: 210 } ]}
+  @EndUserText.label: 'Profit Center Addr Name 3'
+  ProfitCenterAddrName3;
+  @UI: { lineItem: [ { position: 220 } ],identification:[ { position: 220 } ]}
+  @EndUserText.label: 'Profit Center Addr Name 4'
+  ProfitCenterAddrName4;
+  @UI: { lineItem: [ { position: 230 } ],identification:[ { position: 230 } ]}
+  @EndUserText.label: 'Street Address Name'
+  StreetAddressName;
+  @UI: { lineItem: [ { position: 240 } ],identification:[ { position: 240 } ]}
+  @EndUserText.label: 'PO Box'
+  POBox;
+  @UI: { lineItem: [ { position: 250 } ],identification:[ { position: 250 } ]}
+  @EndUserText.label: 'City Name'
+  CityName;
+  @UI: { lineItem: [ { position: 260 } ],identification:[ { position: 260 } ]}
+  @EndUserText.label: 'Postal Code'
+  PostalCode;
+  @UI: { lineItem: [ { position: 270 } ],identification:[ { position: 270 } ]}
+  @EndUserText.label: 'PO Box Postal Code'
+  POBoxPostalCode;
+  @UI: { lineItem: [ { position: 280 } ],identification:[ { position: 280 } ]}
+  @EndUserText.label: 'District'
+  District;
+  @UI: { lineItem: [ { position: 290 } ],identification:[ { position: 290 } ]}
+  @EndUserText.label: 'Country'
+  Country;
+  @UI: { lineItem: [ { position: 300 } ],identification:[ { position: 300 } ]}
+  @EndUserText.label: 'Region'
+  Region;
+  @UI: { lineItem: [ { position: 310 } ],identification:[ { position: 310 } ]}
+  @EndUserText.label: 'Tax Jurisdiction'
+  TaxJurisdiction;
+  @UI: { lineItem: [ { position: 320 } ],identification:[ { position: 320 } ]}
+  @EndUserText.label: 'Language'
+  Language;
+  @UI: { lineItem: [ { position: 330 } ],identification:[ { position: 330 } ]}
+  @EndUserText.label: 'Phone Number 1'
+  PhoneNumber1;
+  @UI: { lineItem: [ { position: 340 } ],identification:[ { position: 340 } ]}
+  @EndUserText.label: 'Phone Number 2'
+  PhoneNumber2;
+  @UI: { lineItem: [ { position: 350 } ],identification:[ { position: 350 } ]}
+  @EndUserText.label: 'Telebox Number'
+  TeleboxNumber;
+  @UI: { lineItem: [ { position: 360 } ],identification:[ { position: 360 } ]}
+  @EndUserText.label: 'Telex Number'
+  TelexNumber;
+  @UI: { lineItem: [ { position: 370 } ],identification:[ { position: 370 } ]}
+  @EndUserText.label: 'Fax Number'
+  FaxNumber;
+  @UI: { lineItem: [ { position: 380 } ],identification:[ { position: 380 } ]}
+  @EndUserText.label: 'Teletex Number'
+  TeletexNumber;
+  @UI: { lineItem: [ { position: 390 } ],identification:[ { position: 390 } ]}
+  @EndUserText.label: 'Data Communication Phone Number'
+  DataCommunicationPhoneNumber;
+  @UI: { lineItem: [ { position: 400 } ],identification:[ { position: 400 } ]}
+  @EndUserText.label: 'Profit Center Printer Name'
+  ProfitCenterPrinterName;
+  @UI: { lineItem: [ { position: 410 } ],identification:[ { position: 410 } ]}
+  @EndUserText.label: 'Profit Center Created By User'
+  ProfitCenterCreatedByUser;
+  @UI: { lineItem: [ { position: 420 } ],identification:[ { position: 420 } ]}
+  @EndUserText.label: 'Profit Center Creation Date'
+  ProfitCenterCreationDate;
+  /* Associations */
+  @UI: { lineItem: [ { position: 430 } ],identification:[ { position: 430 } ]}
+  @EndUserText.label: '_Company'
+  _Company;
+  @UI: { lineItem: [ { position: 440 } ],identification:[ { position: 440 } ]}
+  @EndUserText.label: '_ControllingArea'
+  _ControllingArea;
+  @UI: { lineItem: [ { position: 450 } ],identification:[ { position: 450 } ]}
+  @EndUserText.label: '_Country'
+  _Country;
+  @UI: { lineItem: [ { position: 460 } ],identification:[ { position: 460 } ]}
+  @EndUserText.label: '_Language'
+  _Language;
+  @UI: { lineItem: [ { position: 470 } ],identification:[ { position: 470 } ]}
+  @EndUserText.label: '_PrftCtr Company Code Assignment'
+  _PrftCtrCompanyCodeAssignment;
+  @UI: { lineItem: [ { position: 480 } ],identification:[ { position: 480 } ]}
+  @EndUserText.label: '_Profit Center Hierarchy Node'
+  _ProfitCenterHierarchyNode;
+  @UI: { lineItem: [ { position: 490 } ],identification:[ { position: 490 } ]}
+  @EndUserText.label: '_Region'
+  _Region;
+
+}

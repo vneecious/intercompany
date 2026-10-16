@@ -1,0 +1,60 @@
+managed implementation in class zbp_i_intercocompanyrelproduct unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_IntercoCompanyRelProduct // alias CompanyRelationshipProduct
+//persistent table zint_a_md001
+draft table zint_d_md001
+with unmanaged save with full data
+lock master total etag LastChangedAt
+authorization master ( instance, global )
+etag master LastChangedAt
+{
+  create;
+  update;
+  delete ( features : instance, precheck );
+
+  static action uploadCompProducts parameter zinterco_str_params_relation;
+
+  field ( numbering : managed, readonly ) Id;
+  field ( readonly ) CreatedAt, CreatedBy, LastChangedAt, IsDeleted, IsBlocked, Metric;
+  //field ( features : instance ) IsDeleted, IsBlocked;
+  field ( mandatory ) ProviderCompanyCode, RecipientCompanyCode, Product, ProfitCenter, Flow, ValidFrom, ValidTo;
+  field ( features : instance ) ProviderCompanyCode, RecipientCompanyCode, Product, ProfitCenter, Flow, ValidFrom, ValidTo;
+
+  validation validateData on save { create; update; }
+
+
+  determination DeterValidFrom on modify { field ValidFrom; }
+  determination DeterValidTo on modify { field validTo; }
+
+  side effects {
+      field ProviderCompanyCode affects $self, messages;
+      field RecipientCompanyCode affects $self, messages;
+      field Product affects $self, messages;
+      field ProfitCenter affects $self, messages;
+      field Flow affects $self, messages;
+      field ValidFrom affects $self, messages;
+      field ValidTo affects $self, messages;
+      field Rate affects $self, messages;
+  }
+
+
+  action Block;
+  action Release;
+  action SetDelete;
+  static action deleteDraft;
+
+
+  draft action Resume;
+  draft action ( authorization : none ) Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft determine action Prepare
+  {
+
+  }
+
+  mapping
+       for zint_a_md001 corresponding;
+    }

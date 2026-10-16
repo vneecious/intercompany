@@ -1,0 +1,40 @@
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: {
+  typeName: 'Tasa Manual',
+  typeNamePlural: 'Tasas Manuales',
+  title: { type: #STANDARD, value: 'BukrsRecv' }
+}
+
+annotate view ZC_ReingCTOpRate2 with
+{
+  @UI.hidden: true
+  CtUuid;
+
+  @UI.hidden: true
+  MatUuid;
+
+  @UI.hidden: true
+  OpType;
+
+  @UI.hidden: true
+  OpInstanceNum;
+
+  @EndUserText.label: 'Sociedad Receptora'
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 10, qualifier: 'OpRateInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_intercoCompanyCodeVH', element: 'CompanyCode' } }]
+  BukrsRecv;
+
+  @EndUserText.label: 'Tasa Manual'
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 20, qualifier: 'OpRateInfo' }]
+  @UI.facet: [
+    { id: 'OpRateInfo', type: #COLLECTION, label: 'Datos Tasa Manual', position: 10 },
+    { id: 'OpRateInfoFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'OpRateInfo', parentId: 'OpRateInfo', position: 10 }
+  ]
+  ManualExchRate;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

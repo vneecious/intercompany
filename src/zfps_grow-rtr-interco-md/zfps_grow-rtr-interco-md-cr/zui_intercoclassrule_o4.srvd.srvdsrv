@@ -1,0 +1,7 @@
+@EndUserText.label: 'Service definition for ZC_INTERCOCLASSIFICATIONRULE'
+@ObjectModel.leadingEntity.name: 'ZC_INTERCOCLASSIFICATIONRULE'
+define service ZUI_INTERCOCLASSRULE_O4 {
+  expose ZC_INTERCOCLASSIFICATIONRULE as ClassificationRule;
+  expose ZC_IntercoMDLog              as Log;
+  expose ZI_IntercoPaymentTypeVH      as PaymentTypeVH;
+}

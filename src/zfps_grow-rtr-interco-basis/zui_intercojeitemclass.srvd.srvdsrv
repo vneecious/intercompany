@@ -1,0 +1,7 @@
+@EndUserText.label: 'Intercompany: Journal Entries Classification'
+@ObjectModel.leadingEntity.name: 'ZC_INTERCOJEITEMCLASS'
+define service ZUI_IntercoJEItemClass {
+  expose ZC_INTERCOJEITEMCLASS;
+  expose ZC_INTERCOBASIS;
+  expose ZC_IntercoJEItemClassHelper;
+}

@@ -1,0 +1,126 @@
+//@Metadata.layer: #CUSTOMER
+//@UI: {
+//  headerInfo: {
+//        typeName: 'Document Generated',
+//        typeNamePlural: 'Documents Generated',
+//        title: { label: 'Item',
+//                 value: 'Id',
+//                 type: #STANDARD }
+//  }
+//  }
+//@UI.lineItem: [{criticality: 'StatusCriticality'}]
+//@UI.presentationVariant: [{requestAtLeast: [ 'StatusCriticality' ]}]
+//annotate entity ZC_IntercoProposalItemDoc with
+//{
+//  @UI.hidden: true
+//  Id;
+//  @UI.hidden: true
+//  ItemId;
+//  @UI.hidden: true
+//  ItembasisId;
+//  @UI.hidden: true
+//  ItemcalcId;
+//  @UI: { lineItem: [
+//  { position: 40, type: #WITH_INTENT_BASED_NAVIGATION, semanticObject: 'AccountingDocument', semanticObjectAction: 'manage', semanticObjectBinding: [
+//    {element: 'AccountingDocument', localElement: 'Documentkey'},
+//    {element: 'FiscalYear', localElement: 'FiscalYear'},
+//    {element: 'CompanyCode', localElement: 'CompanyCode'}]
+//  }]}
+//  @EndUserText.label: 'Document Key'
+//  Documentkey;
+//  @EndUserText.label: 'Document Type'
+//  @UI.textArrangement: #TEXT_ONLY
+//  Documenttype;
+//  @UI.hidden: true
+//  DocumentName;
+//  @EndUserText.label: 'Parent Document Key'
+//  ParentDocumentKey;
+//  @EndUserText.label: 'Parent Document Type'
+//  @UI.textArrangement: #TEXT_ONLY
+//  ParentDocumentType;
+//  @UI.hidden: true
+//  Category_id;
+//  @UI.hidden: true
+//  CategoryName;
+//  @UI.hidden: true
+//  Isadjustment;
+//  @UI: { lineItem: [ { position: 120, criticality: 'StatusCriticality' } ],
+//         dataPoint: {
+//                       criticality: 'StatusCriticality',
+//                       criticalityRepresentation: #WITH_ICON
+//                    }
+//       }
+//  @EndUserText.label: 'Status'
+//  @UI.textArrangement: #TEXT_ONLY
+//  Status;
+//  @UI.hidden: true
+//  StatusName;
+//  @UI: { lineItem: [ { position: 998 }]}
+//  Createdat;
+//  @UI: { lineItem: [ { position: 999 }]}
+//  Createdby;
+//}
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Document Generated',
+        typeNamePlural: 'Documents Generated',
+        title: { label: 'Item',
+                 value: 'Id',
+                 type: #STANDARD }
+  }
+  }
+@UI.lineItem: [{criticality: 'StatusCriticality'}]
+@UI.presentationVariant: [{requestAtLeast: [ 'StatusCriticality' ]}]
+annotate entity ZC_IntercoProposalItemDoc with
+{
+  @UI.hidden: true
+  Id;
+  @UI.hidden: true
+  ItemId;
+  @UI.hidden: true
+  ItembasisId;
+  @UI.hidden: true
+  ItemcalcId;
+  @UI: { lineItem: [
+  { position: 40, type: #WITH_INTENT_BASED_NAVIGATION, semanticObject: 'AccountingDocument', semanticObjectAction: 'manage', semanticObjectBinding: [
+    {element: 'AccountingDocument', localElement: 'Documentkey'},
+    {element: 'FiscalYear', localElement: 'FiscalYear'},
+    {element: 'CompanyCode', localElement: 'CompanyCode'}]
+  }]}
+  @EndUserText.label: 'Document Key'
+  Documentkey;
+  @EndUserText.label: 'Document Type'
+  @UI.textArrangement: #TEXT_ONLY
+  Documenttype;
+  @UI.lineItem: [{ position: 50 }]
+  DocumentName;
+  @EndUserText.label: 'Parent Document Key'
+  @UI.lineItem: [{ position: 60 }]
+  ParentDocumentKey;
+  @EndUserText.label: 'Parent Document Type'
+  @UI.textArrangement: #TEXT_ONLY
+  @UI.lineItem: [{ position: 70 }]
+  ParentDocumentType;
+  @UI.lineItem: [{ position: 80 }]
+  Category_id;
+  @UI.lineItem: [{ position: 90 }]
+  CategoryName;
+  @UI.lineItem: [{ position: 100 }]
+  Isadjustment;
+  @UI: { lineItem: [ { position: 120, criticality: 'StatusCriticality' } ],
+         dataPoint: {
+                       criticality: 'StatusCriticality',
+                       criticalityRepresentation: #WITH_ICON
+                    }
+       }
+  @EndUserText.label: 'Status'
+  @UI.textArrangement: #TEXT_ONLY
+  Status;
+  @UI.lineItem: [{ position: 130 }]
+  StatusName;
+  @UI: { lineItem: [ { position: 998 }]}
+  Createdat;
+  @UI: { lineItem: [ { position: 999 }]}
+  Createdby;
+}

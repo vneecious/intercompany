@@ -1,0 +1,122 @@
+managed implementation in class zbp_i_intercoexemptiontp unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_INTERCOEXEMPTIONTP alias Exemption
+persistent table zint_a_md004
+draft table zint_d_md004
+lock master
+total etag LastChangedAt
+authorization master ( global )
+with additional save
+{
+  /*-----------------------------------------------------------------
+   * FIELDS & ASSOCIATIONS
+   -------------------------------------------------------------------*/
+  field ( numbering : managed )
+  ID;
+
+  field ( readonly )
+  ID,
+  CreatedAt,
+  LastChangedAt,
+  CreatedBy,
+  LastChangedBy,
+  Today,
+  Yesterday,
+  IsValid;
+
+  field ( mandatory )
+  ValidFrom,
+  ValidTo,
+  ExemptionName;
+
+  field ( readonly ) ExternalID;
+
+  association _ExemptionRules { create; with draft; }
+
+  /*-----------------------------------------------------------------
+   * OPERATIONS
+   -------------------------------------------------------------------*/
+  create;
+  update ( features : instance );
+  delete;
+
+  /*-----------------------------------------------------------------
+   * DETERMINATIONS
+   -------------------------------------------------------------------*/
+  determination SetExternalID on save { create; }
+
+  /*-----------------------------------------------------------------
+   * ACTIONS AND FUNCTIONS
+   -------------------------------------------------------------------*/
+  static function DefaultForCreate result [1] $self;
+  action ( features : instance ) Delimit deep parameter ZD_IntercoDelimit result [1] $self;
+  action ( features : instance ) Delete result [1] $self;
+  action ( features : instance ) Restore result [1] $self;
+  factory action CopyExemption parameter ZA_IntercoCopyExemption [1];
+
+  draft action Resume;
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft determine action Prepare
+  {
+    validation ValidateDateOverlap;
+    validation ValidateValidTo;
+    validation ValidateRequired;
+  }
+
+  /*-----------------------------------------------------------------
+   * VALIDATIONS
+   -------------------------------------------------------------------*/
+  validation ValidateDateOverlap on save { create; field ValidFrom, ValidTo; }
+  validation ValidateValidTo on save { create; update; field ValidFrom, ValidTo; }
+  validation ValidateRequired on save { create; update; }
+
+  mapping for zint_a_md004
+    {
+      ID            = id;
+      ExternalID    = exemption_id;
+      ExemptionName = exemption_name;
+      CompanyCode   = bukrs;
+      Product       = matnr;
+      // AGREGADO EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09: mapea PaymentType
+      PaymentType   = payment_type;
+      // Fin EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09
+      ValidFrom     = valid_from;
+      ValidTo       = valid_to;
+      LastChangedAt = last_changed_at;
+      LastChangedBy = last_changed_by;
+      CreatedAt     = created_at;
+      CreatedBy     = created_by;
+      isdeleted     = is_deleted;
+    }
+}
+
+define behavior for ZI_INTERCOEXEMPTIONRULETP alias ExemptionRule
+persistent table zint_a_md005
+draft table zint_d_md005
+
+lock dependent by _Exemption
+authorization dependent by _Exemption
+{
+
+  field ( readonly ) ID, RuleID;
+  field ( numbering : managed ) RuleID;
+
+  update;
+  delete;
+
+  association _Exemption { with draft; }
+
+  mapping for zint_a_md005
+    {
+      ID                     = id;
+      RuleID                 = rule_id;
+      AccountingDocumentType = blart;
+      GLAccount              = hkont;
+      ProfitCenter           = prctr;
+      CostCenter             = kostl;
+    }
+}

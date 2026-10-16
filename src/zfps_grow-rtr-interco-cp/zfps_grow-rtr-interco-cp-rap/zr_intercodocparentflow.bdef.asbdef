@@ -1,0 +1,12 @@
+abstract;
+strict ( 2 );
+with hierarchy;
+
+define behavior for ZR_INTERCODOCParentFLOW //alias <alias_name>
+{
+  association _child;
+}
+
+define behavior for ZR_IntercoDocChildFlow //alias <alias_name>
+{
+}

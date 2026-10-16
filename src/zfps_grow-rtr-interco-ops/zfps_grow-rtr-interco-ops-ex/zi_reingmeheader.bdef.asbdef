@@ -1,0 +1,161 @@
+managed implementation in class ZBP_ReingMEHeader unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_ReingMEHeader
+persistent table zreing_me_h_a
+draft table zreing_me_h_d
+lock master total etag LastChangedAt
+authorization master ( global, instance )
+etag master LocalLastChangedAt
+//Begin Insert V003 (10.09.2026 | EXT_GONZALCA) — Liberar has to refresh T-1/T-2 of the
+//following periods, which live outside the action scope. RAP rejects that in the
+//interaction phase, so it runs in lsc_zi_reingmeheader~save_modified instead.
+with additional save
+//End Insert V003 (10.09.2026 | EXT_GONZALCA)
+{
+  create;
+  //Begin Insert V001 (CC) — FX14 — entity-level update feature to enforce Updatable=false for ENVI/LIBD/LIBR
+  update ( features : instance );
+  //End Insert V001 (CC) — FX14
+  //Begin Mod V001 (CC) — FX19 — entity-level delete feature to lock Delete in ENVI/LIBD/LIBR
+  delete ( features : instance );
+  //End Mod V001 (CC) — FX19
+
+  field ( numbering : managed, readonly : update ) MeHId;
+  field ( readonly ) LoadVersion;
+  field ( readonly ) MeStatus;
+  field ( readonly ) MetricCode;
+  field ( readonly ) MetVersion;
+  field ( readonly ) CtExtNum;
+  field ( readonly ) TotalSharePct;
+  field ( readonly ) ReleasedBy;
+  field ( readonly ) ReleasedAt;
+  field ( readonly ) CreatedBy;
+  field ( readonly ) CreatedAt;
+  field ( readonly ) LastChangedBy;
+  field ( readonly ) LastChangedAt;
+  field ( readonly ) MatnrDesc;
+  field ( readonly ) Proveedor;
+
+  //Begin Insert V001 (CC) - FX12 - dynamic read-only for business key once header advances past editable states
+  field ( features : instance ) CtId;
+  field ( features : instance ) Matnr;
+  field ( features : instance ) PeriodYear;
+  field ( features : instance ) PeriodMonth;
+  //End Insert V001 (CC) - FX12
+
+  //Begin Mod V001 (CC) — FX20 — instance feature control for draft action Edit (disable Editar in ENVI/LIBD/LIBR)
+  draft action ( features : instance ) Edit;
+  //End Mod V001 (CC) — FX20
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation ValidateHeader;
+    validation ZI_ReingMEItem~ValidateItem;
+  }
+
+  validation ValidateHeader on save { create; update; }
+
+  determination SetLoadVersion on modify { create; }
+  determination DeriveMetFromCtMatnr on modify { create; field CtId, Matnr; }
+  determination DeriveCTExtNum on modify { create; field CtId; }
+  determination SetReleaseMetadata on modify { field MeStatus; }
+
+  action ( features : instance ) CalcularShare result [1] $self;
+  action ( features : instance ) Enviar result [1] $self;
+  action ( features : instance ) Devolver result [1] $self;
+  action ( features : instance ) Liberar result [1] $self;
+  action ( features : instance ) Reabrir result [1] $self;
+  action ( features : instance ) NovaVersaoCarga result [1] $self;
+  //Begin Insert V001 (CC) - FX-XLS - static export action (Plantilla Excel backend)
+  static action ExportTemplate parameter ZI_ReingMEPeriodParam
+    result [1] ZI_ReingMEExportResult;
+
+  // V001 (CC) - ME-17 (Delta v2)
+  static action Upload parameter ZI_ReingMEUploadParam
+    result [1..*] ZI_ReingMEUploadResult;
+  // V001 (CC) - ME-17 (Delta v2)
+  //End Insert V001 (CC) - FX-XLS
+
+  association _Item { create; with draft; }
+
+  mapping for zreing_me_h_a
+    {
+      MeHId              = me_h_id;
+      CtId               = ct_id;
+      CtExtNum           = ct_ext_num;
+      Matnr              = matnr;
+      PeriodYear         = period_year;
+      PeriodMonth        = period_month;
+      LoadVersion        = load_version;
+      MeStatus           = me_status;
+      MetricCode         = metric_code;
+      MetVersion         = met_version;
+      TotalSharePct      = total_share_pct;
+      ReleasedBy         = released_by;
+      ReleasedAt         = released_at;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LastChangedBy      = last_changed_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+}
+
+define behavior for ZI_ReingMEItem
+persistent table zreing_me_i_a
+draft table zreing_me_i_d
+lock dependent by _Header
+authorization dependent by _Header
+etag master LocalLastChangedAt
+{
+  //Begin Insert V001 (CC) — FX14 — entity-level update feature (inherited from header status)
+  update ( features : instance );
+  //End Insert V001 (CC) — FX14
+  //Begin Mod V001 (CC) — FX19 — entity-level delete feature (inherited from header status)
+  delete ( features : instance );
+  //End Mod V001 (CC) — FX19
+
+  field ( readonly ) MeHId;
+  field ( numbering : managed, readonly ) MeIId;
+  field ( readonly ) Country;
+  field ( readonly ) SharePct;
+  field ( readonly ) VarPct;
+  field ( readonly ) VarPct2;
+  field ( readonly ) VarFlag;
+  field ( readonly ) PrevValue;
+  field ( readonly ) Prev2Value;
+  field ( features : instance ) MeValue;
+
+  validation ValidateItem on save { create; update; }
+
+  determination SetStatusOnValueChange on modify { field MeValue; }
+  determination SetPrevValues on save { create; }
+  //Begin Mod V002 (CC) — FX15 removed: ON SAVE counterpart no longer needed; ON MODIFY now works correctly
+  //determination SetStatusOnValueChangeOnSave on save { create; update; }
+  //End Mod V002 (CC)
+
+  association _Header { with draft; }
+
+  mapping for zreing_me_i_a
+    {
+      MeHId              = me_h_id;
+      MeIId              = me_i_id;
+      Bukrs              = bukrs;
+      Prctr              = prctr;
+      Campana            = campana;
+      RoleCategory       = role_category;
+      Allocation         = allocation;
+      MeValue            = me_value;
+      PrevValue          = prev_value;
+      Prev2Value         = prev2_value;
+      SharePct           = share_pct;
+      VarPct             = var_pct;
+      VarPct2            = var_pct2;
+      VarFlag            = var_flag;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+}

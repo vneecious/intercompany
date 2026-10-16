@@ -1,0 +1,249 @@
+managed implementation in class ZBP_ReingCMPeriod unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_ReingCMPeriod alias Period
+persistent table zreing_cm_period
+draft table zreing_cm_per_d
+lock master total etag CreatedAt
+authorization master ( global )
+etag master CreatedAt
+with additional save
+{
+  create;
+  update;
+  delete;
+
+  field ( readonly ) PeriodYear, PeriodMonth, CreatedBy, CreatedAt;
+
+  association _Items { create; with draft; }
+
+  static action InitializePeriod parameter ZI_ReingCMPeriodParam
+    result [1] $self;
+
+  static action ExportTemplate parameter ZI_ReingCMPeriodParam
+    result [1] ZI_ReingCMExportResult;
+
+  action UploadExcel parameter ZI_ReingCMUploadParam
+    result [0..*] entity ZI_ReingCMHeader;
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation CMHeader~ValidateContract;
+    validation CMHeader~ValidateMaterial;
+    validation CMHeader~ValidateOpType;
+    validation CMHeader~ValidateAmount;
+    validation CMHeader~ValidateDeltaFlag;
+    validation CMHeader~ValidateUniqueness;
+    validation CMHeader~ValidateCeilingAmount;
+    validation CMHeader~ValidateOpInstance;
+    validation CMHeader~ValidateDeferType;
+    validation CMHeader~ValidateDeferTypeExistsInCT;
+    // Begin Mod 07.09.2026 EXT_GONZALCA - se agregan al Prepare las dos
+    // validaciones que quedaron fuera. Sin declararlas aca no corren durante
+    // la edicion del borrador, solo al activar: el usuario editaba un registro
+    // ya contabilizado o ya finalizado sin feedback y el error recien aparecia
+    // al guardar. Ambas son "on save" puras (solo leen y emiten mensaje), asi
+    // que ejecutarlas tambien en Prepare no tiene efecto colateral.
+    validation CMHeader~ValidateNoAccountingDoc;
+    validation CMHeader~ValidateNotFinalized;
+    // End Mod 07.09.2026 EXT_GONZALCA
+    validation CMRecv~ValidateBukrsRecv;
+  }
+
+  mapping for zreing_cm_period
+    {
+      PeriodYear  = period_year;
+      PeriodMonth = period_month;
+      CreatedBy   = created_by;
+      CreatedAt   = created_at;
+    }
+}
+
+define behavior for ZI_ReingCMHeader alias CMHeader
+persistent table zreing_cm_h_a
+draft table zreing_cm_h_d
+lock dependent by _Period
+authorization dependent by _Period
+etag master ChangedAt
+// Mod 02.10.2026 EXT_AGFAGINA - defecto 518 (historial de cambios, ET 7.9).
+// Sin esto el saver no recibe las altas, cambios y bajas de los registros, y el
+// log solo podia guardar lo que las acciones Enviar/Liberar/Devolver dejaban en
+// el buffer. Mismo patron que el historial de Contratos (ZREING_C2_HIST_A).
+with additional save
+{
+  update ( features : instance );
+  delete ( features : instance );
+
+  field ( numbering : managed, readonly ) CmHId;
+  field ( readonly ) PeriodYear, PeriodMonth,
+  LoadUser, LoadDate,
+  SentBy, SentAt,
+  ReleasedBy, ReleasedAt,
+  AccountingDoc,
+  CreatedBy, CreatedAt,
+  ChangedBy, ChangedAt,
+  StatusCriticality, CtWaers,
+  Lifnr,
+  CmStatus, CmStatusText;
+  // Begin Mod 12.09.2026 EXT_AGFAGINA - CtExtNum y Matnr dejan de ser readonly.
+  // La UI expone estos dos campos CON value help (ver ZC_ReingCMHeader) y oculta
+  // CtUuid / MatUuid, que son los que el BDEF esperaba que el usuario informara.
+  // Los dos disenos son razonables por separado pero se anulaban: la pantalla
+  // mostraba los campos donde hay que elegir y el BDEF los declaraba derivados,
+  // asi que salian grisados y el buscador no se podia abrir. Por eso una linea
+  // nueva no se podia completar.
+  // Ahora quedan bajo control de instancia, igual que CtUuid / MatUuid: editables
+  // mientras el registro sea nuevo o este en PEND/GRAV/ERR, bloqueados despues.
+  // El UUID lo devuelve el propio value help via additionalBinding usage: #RESULT.
+  field ( features : instance ) CtExtNum, Matnr;
+  field ( mandatory, features : instance ) CtUuid, MatUuid, OpType;
+  field ( features : instance ) DeferType, Amount, Currency, DeltaFlag;
+  // Mod 01.10.2026 EXT_AGFAGINA - defecto 109: numero de activacion (instancia).
+  field ( features : instance ) OpInstanceNum;
+
+
+
+  validation ValidateContract on save { create; update; field CtUuid; }
+  validation ValidateMaterial on save { create; update; field MatUuid; }
+  validation ValidateOpType on save { create; update; field OpType; }
+  validation ValidateAmount on save { field Amount; }
+  validation ValidateDeltaFlag on save { field DeltaFlag; }
+  validation ValidateUniqueness on save { create; update; }
+  // Mod 29.09.2026 EXT_AGFAGINA - CR-002 / BR-CM-14 (Ceiling Rule): la suma de un
+  // tipo con tope (ZREING_OP_TYPES-CEILING_OP_TYPE, ej. A -> F) no puede superar la
+  // del tope, y el tope no puede quedar por debajo del dependiente. Misma regla
+  // que el import (ZCL_REING_CM_UPLOAD_HDL), para la carga manual en pantalla.
+  validation ValidateCeilingAmount on save { create; update; field Amount, OpType, CtUuid, MatUuid; }
+  validation ValidateNoAccountingDoc on save { create; update; }
+  validation ValidateDeferType on save { create; update; field DeferType, OpType; }
+  validation ValidateDeferTypeExistsInCT on save { create; update; field DeferType; }
+  validation ValidateNotFinalized on save { field CtUuid, MatUuid, OpType, DeferType, Amount, Currency, DeltaFlag; }
+
+  determination DeriveContractData on modify { field CtUuid, MatUuid; }
+
+  // Begin Mod 01.10.2026 EXT_AGFAGINA - defecto 109: numero de activacion.
+  // DeriveOpInstance: si el contrato tiene UNA sola opcion de ese tipo para el
+  // material, la completa sola (cubre F/P/NC, que siempre son 001, y los
+  // contratos con una unica activacion). Con mas de una, la debe indicar el usuario.
+  // ValidateOpInstance: la instancia tiene que existir en el contrato. Se dispara
+  // solo al crear o al cambiar los campos que la definen: asi enviar, liberar o
+  // devolver un registro anterior al cambio (instancia 000) no se bloquea.
+  determination DeriveOpInstance on modify { create; field CtUuid, MatUuid, OpType; }
+  validation ValidateOpInstance on save { create; field OpInstanceNum, OpType, CtUuid, MatUuid; }
+  // End Mod 01.10.2026 EXT_AGFAGINA
+
+  // Begin Mod 12.09.2026 EXT_AGFAGINA - side effects de los campos derivados.
+  // Las determinaciones ya completaban Lifnr, CtWaers y Currency al informar el
+  // contrato, pero la pantalla no los refrescaba: sin side effects declarados el
+  // front no sabe que tiene que releer esos campos, y el usuario veia Proveedor
+  // y Moneda vacios hasta guardar.
+  // Es el mismo caso del campo Cuotas en Contratos (mod 01.09.2026).
+  // Se declaran sobre CtExtNum y Matnr, que son los campos que el usuario toca:
+  // el value help completa ademas CtUuid / MatUuid via usage: #RESULT, pero el
+  // side effect tiene que colgar del campo editable para que el front lo dispare.
+  // Los derivados por asociacion (SupplierName, MatDesc, DistType) no existen en
+  // esta vista: van en el BDEF de la proyeccion ZC_ReingCMPeriod.
+  side effects
+  {
+    field CtExtNum affects field CtUuid, field Lifnr, field Currency, field CtWaers;
+    field CtUuid   affects field Lifnr, field Currency, field CtWaers;
+    field Matnr    affects field MatUuid;
+    field OpType   affects field DeferType, field OpInstanceNum;
+  }
+  // End Mod 12.09.2026 EXT_AGFAGINA
+  determination DeriveCurrency on modify { field CtUuid; }
+  // Mod 01.10.2026 EXT_AGFAGINA - defecto 109: tambien con el cambio de instancia.
+  // En la carga manual la instancia se completa despues del create (DeriveOpInstance);
+  // los dos metodos ignoran registros sin instancia y se recalculan cuando llega.
+  determination DeriveLoadSeq on modify { create; field OpInstanceNum; }
+  determination DeriveSupersede on modify { create; field OpInstanceNum; }
+  determination DeriveStatus on save { create; update; field Amount; }
+
+  action ( features : instance ) Enviar result [1] $self;
+  action ( features : instance ) Liberar result [1] $self;
+  action ( features : instance ) Devolver result [1] $self;
+
+
+  association _Period { with draft; }
+  association _Receivers { create; with draft; }
+
+  mapping for zreing_cm_h_a
+    {
+      CmHId         = cm_h_id;
+      PeriodYear    = period_year;
+      PeriodMonth   = period_month;
+      CtUuid        = ct_uuid;
+      CtExtNum      = ct_ext_num;
+      MatUuid       = mat_uuid;
+      Matnr         = matnr;
+      OpType        = op_type;
+      OpInstanceNum = op_instance_num;
+      DeferType     = defer_type;
+      LoadSeq       = load_seq;
+      Amount        = amount;
+      Currency      = currency;
+      DeltaFlag     = delta_flag;
+      CmStatus      = cm_status;
+      CmStatusText  = cm_status_text;
+      LoadUser      = load_user;
+      LoadDate      = load_date;
+      SentBy        = sent_by;
+      SentAt        = sent_at;
+      ReleasedBy    = released_by;
+      ReleasedAt    = released_at;
+      AccountingDoc = accounting_doc;
+      CreatedBy     = created_by;
+      CreatedAt     = created_at;
+      ChangedBy     = changed_by;
+      ChangedAt     = changed_at;
+    }
+}
+
+define behavior for ZI_ReingCMRecv alias CMRecv
+persistent table zreing_cm_recv_a
+draft table zreing_cm_recv_d
+lock dependent by _Period
+authorization dependent by _Period
+etag master ChangedAt
+{
+  update;
+  delete;
+
+  field ( readonly ) CmHId, PeriodYear, PeriodMonth, CtUuid, MatUuid,
+                     CreatedBy, CreatedAt, ChangedBy, ChangedAt;
+  // Begin Mod 04.09.2026 EXT_AGFAGINA - se quita "mandatory : create".
+  // Con "mandatory : create" RAP RECHAZA la operacion de creacion cuando el campo
+  // no viene informado. La tabla de Sociedades Receptoras crea una fila vacia al
+  // renderizarse (inline creation row), asi que el error saltaba al ABRIR la
+  // solapa, sin que el usuario hiciera nada:
+  //   "At create the mandatory element 'BUKRSRECV' of entity 'CMRecv' was not provided"
+  // No se puede dejar "mandatory" a secas: RAP no lo admite junto a
+  // "readonly : update" (son contradictorios). Se conserva el readonly, que
+  // protege la clave de negocio despues del alta, y el valor obligatorio queda
+  // controlado por la validacion que ya existe:
+  //   ValidateBukrsRecv on save { create; update; field BukrsRecv; }
+  // Efecto visible: el campo pierde el asterisco de obligatorio en la UI, pero
+  // sigue siendo imposible guardar sin informarlo.
+  field ( readonly : update ) BukrsRecv;
+  // End Mod 04.09.2026 EXT_AGFAGINA
+
+  validation ValidateBukrsRecv on save { create; update; field BukrsRecv; }
+
+  association _Header { with draft; }
+  association _Period { with draft; }
+
+  mapping for zreing_cm_recv_a
+    {
+      CmHId     = cm_h_id;
+      BukrsRecv = bukrs_recv;
+      CreatedBy = created_by;
+      CreatedAt = created_at;
+      ChangedBy = changed_by;
+      ChangedAt = changed_at;
+    }
+}

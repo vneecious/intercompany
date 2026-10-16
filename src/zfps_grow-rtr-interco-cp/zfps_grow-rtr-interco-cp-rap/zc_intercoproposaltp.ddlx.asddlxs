@@ -1,0 +1,356 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+        typeName: 'Calculation Proposal',
+        typeNamePlural: 'Calculation Proposals',
+        title: {
+            value: 'Product',
+            type: #STANDARD
+        },
+        description: {
+            type: #STANDARD,
+            value: 'Id'
+        }
+  },
+  presentationVariant: [{
+        requestAtLeast: [ 'StatusCriticality' ],
+        sortOrder: [
+            { by: 'Id', direction: #ASC },
+            { by: 'Period', direction: #ASC },
+            { by: 'ProviderCompanyCode', direction: #ASC },
+            { by: 'Product', direction: #ASC },
+            { by: 'Status', direction: #ASC }
+        ],
+        visualizations: [{
+            type: #AS_LINEITEM
+        }]
+    }]
+}
+@Search.searchable: true
+@UI.lineItem: [{criticality: 'StatusCriticality'}]
+@UI.textArrangement: #TEXT_LAST
+annotate entity ZC_IntercoProposalTP with
+{
+  @UI.facet: [  {
+                  id: 'HeaderStatus',
+                  purpose: #HEADER,
+                  type: #DATAPOINT_REFERENCE,
+                  position: 10,
+                  targetQualifier: 'HeaderStatus'
+                },
+                {
+                  id: 'HeaderPeriod',
+                  purpose: #HEADER,
+                  type: #DATAPOINT_REFERENCE,
+                  position: 20,
+                  targetQualifier: 'HeaderPeriod'
+                },
+                {   id: 'HAmountGlb',
+                    purpose: #HEADER,
+                    type: #DATAPOINT_REFERENCE,
+                    position: 30,
+                    targetQualifier: 'HAmountGlb'
+                },
+                {
+                    id: 'HeaderIsDeleted',
+                    purpose: #HEADER,
+                    type: #DATAPOINT_REFERENCE,
+                    position: 90,
+                    label: 'Is Deleted',
+                    targetQualifier: 'HeaderIsDeleted',
+                    hidden: #( IsActive )
+                },
+    // Facet 1 - Detail
+                {
+                  id: 'General',
+                  purpose: #STANDARD,
+                  type: #COLLECTION,
+                  label: 'Detail',
+                  position: 10 ,
+                  targetQualifier: 'General'
+                },
+                {
+                  id: 'BasicData',
+                  purpose: #STANDARD,
+                  type: #FIELDGROUP_REFERENCE,
+                  parentId: 'General',
+                  label: 'Basic Data',
+                  position: 10,
+                  targetQualifier: 'BasicData'
+                },
+                {
+                  id: 'DetailData',
+                  purpose: #STANDARD,
+                  type: #FIELDGROUP_REFERENCE,
+                  parentId: 'General',
+                  label: 'Details',
+                  position: 20,
+                  targetQualifier: 'DetailData'
+                },
+    // Facet 2 - ItemsByCebe
+                {
+                  id: 'ItemsByCebe',
+                  purpose: #STANDARD,
+                  type: #LINEITEM_REFERENCE,
+                  label: 'Items By ProfitCenter',
+                  position: 20 ,
+                  targetElement: '_ItemsByProfitCenter'
+                },
+                {
+                  id: 'Items',
+                  purpose: #STANDARD,
+                  type: #LINEITEM_REFERENCE,
+                  label: 'Items',
+                  position: 30 ,
+                  targetElement: '_Items'
+                },
+
+    // Facet 4 - Items AQ
+                {
+                  id: 'ItemsAQ',
+                  purpose: #STANDARD,
+                  type: #LINEITEM_REFERENCE,
+                  label: 'Items AQ',
+                  position: 40,
+                  targetElement: '_ItemsAQ'
+                },
+
+    // Facet 5 - Items by Acc AQ
+                {
+                  id: 'ItemsBaOGLAccAQ',
+                  purpose: #STANDARD,
+                  type: #LINEITEM_REFERENCE,
+                  label: 'Items By Acc AQ',
+                  position: 50,
+                  targetElement: '_ItemsBaOGLAccAQ'
+                },
+    // Facet 6 - Document Flow
+                {
+                  id: 'Flow',
+                  purpose: #STANDARD,
+                  type: #COLLECTION,
+                  label: 'DocumentFlow',
+                  position: 60 ,
+                  targetQualifier: 'Flow'
+                },
+                {
+                  id: 'DocumentGenerate',
+                  purpose: #STANDARD,
+                  type: #LINEITEM_REFERENCE,
+                  parentId: 'Flow',
+                  label: 'Document Generated',
+                  position: 20,
+                  targetElement: '_ProposalDocs'
+                }
+             ]
+
+  @UI: { lineItem: [
+           { type: #FOR_ACTION, dataAction: 'SetDelete', label: 'Set Delete', importance: #HIGH},
+           { type: #FOR_ACTION, dataAction: 'Commit', label: 'Commit', importance: #HIGH },
+           { type: #FOR_ACTION, dataAction: 'CommitTest', label: 'CommitTest', importance: #HIGH },
+           { type: #FOR_ACTION, dataAction: 'AnulateTest', label: 'Anulation Test', importance: #HIGH}
+     ], identification:[
+           { type: #FOR_ACTION, dataAction: 'Calculate', label: 'Calculate', position: 2 },
+           { type: #FOR_ACTION, dataAction: 'Commit', label: 'Commit', position: 3, importance: #HIGH },
+           { type: #FOR_ACTION, dataAction: 'CommitTest', label: 'CommitTest', position: 4, importance: #HIGH },
+           { type: #FOR_ACTION, dataAction: 'SetDelete', label: 'Set Delete', position: 5, importance: #HIGH },
+           { type: #FOR_ACTION, dataAction: 'Reverse', label: 'Reverse', position: 6, importance: #HIGH},
+           { type: #FOR_ACTION, dataAction: 'AnulateTest', label: 'Anulation Test', position: 7, importance: #HIGH}
+     ],
+            selectionField: [{ element: 'ID', position: 10 }],
+            hidden: true
+  }
+  @EndUserText.label: 'Id'
+  Id;
+
+  @UI: {    lineItem: [ { position: 20 , criticality: 'StatusCriticality', criticalityRepresentation: #WITH_ICON } ],
+            dataPoint: {
+                criticality: 'StatusCriticality',
+                criticalityRepresentation: #WITH_ICON,
+                qualifier: 'HeaderStatus'
+            },
+            selectionField: [{ position: 20 }]
+  }
+  @Consumption.valueHelpDefinition: [{
+      entity: { name: 'ZI_DomainFixedValueVH', element: 'value_low' },
+      additionalBinding: [{ element: 'domain_name', localConstant: 'ZINT_DOM_CPH_STATUS', usage: #FILTER }],
+      distinctValues: true
+      }]
+  @EndUserText.label: 'Status'
+  @UI.textArrangement: #TEXT_ONLY
+  Status;
+
+  @Consumption.filter.hidden: true
+  StatusName;
+
+  @Consumption.filter.hidden: true
+  StatusCriticality;
+  @UI: {
+    lineItem: [
+      {
+        position: 10,
+        type: #WITH_INTENT_BASED_NAVIGATION,
+        semanticObject: 'billablebases',
+        semanticObjectAction: 'create',
+        semanticObjectBinding: [
+          {
+            element: 'P_CompanyCode',
+            localElement: 'ProviderCompanyCode'
+          }
+        ]
+      }
+    ],
+    selectionField: [ { position: 29 } ],
+    fieldGroup: [ { qualifier: 'BasicData', position: 39 } ]
+  }
+  @Consumption.valueHelpDefinition: [
+    {
+      entity: {
+        name: 'ZI_IntercoBasisVH',
+        element: 'Id'
+      },
+      distinctValues: true,
+      useForValidation: true,
+      additionalBinding: [
+        {
+          localElement: 'ProviderCompanyCode',
+          element: 'CompanyCode',
+          usage: #FILTER_AND_RESULT
+        },
+        {
+          localElement: 'FiscalYear',
+          element: 'Fiscalyear',
+          usage: #FILTER_AND_RESULT
+        },
+        {
+          localElement: 'FiscalPeriod',
+          element: 'Fiscalperiod',
+          usage: #FILTER_AND_RESULT
+        }
+      ]
+    }
+  ]
+
+  @UI.textArrangement: #TEXT_ONLY
+  @EndUserText.label: 'Base'
+  IntercoBasisId;
+  @UI.hidden: true
+  BasisDescription;
+
+  @UI:{ lineItem: [ { position: 49} ],
+            identification:[ { position: 49} ],
+            fieldGroup: [{ qualifier: 'BasicData', position: 39 } ]
+            }
+  @Consumption.filter.hidden: true
+  FiscalYear;
+
+  @UI:{ lineItem: [ { position: 50} ],
+            identification:[ { position: 50} ],
+            fieldGroup: [{ qualifier: 'BasicData', position: 40 } ]
+            }
+  @Consumption.filter.selectionType: #SINGLE
+  @Consumption.filter.hidden: true
+  FiscalPeriod;
+
+  @UI: {
+         dataPoint: { qualifier: 'HeaderPeriod' }
+       }
+  @EndUserText.label: 'Period'
+  @Consumption.filter.hidden: true
+  Period;
+
+  @UI: {    lineItem: [ { position: 60} ],
+            identification:[ { position: 60} ],
+            selectionField: [{ position: 30 }],
+            fieldGroup: [{ qualifier: 'BasicData', position: 20 }]
+  }
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_intercoCompanyCodeVH', element: 'CompanyCode' } }]
+  @EndUserText.label: 'Provider Company Code'
+  @UI.textArrangement: #TEXT_LAST
+  ProviderCompanyCode;
+
+  @UI.hidden: true
+  ProviderCompanyCodeName;
+
+  @UI: {    lineItem: [ { position: 80} ],
+            identification:[ { position: 80} ],
+            selectionField: [{ position: 40 }],
+            fieldGroup: [{ qualifier: 'BasicData', position: 10 }],
+            hidden: false
+  }
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoProduct_SH', element: 'Product' } }]
+  Product;
+
+  @UI: {    lineItem: [ { position: 85} ],
+            identification:[ { position: 85} ],
+            fieldGroup: [{ qualifier: 'BasicData', position: 15 }],
+            hidden: false
+  }
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_Ledger', element: 'Ledger' }, useForValidation: true }]
+  Ledger;
+
+  -- Ini Facturación Local CH/ARG EXT_OSCUGALD 08.10.2026 - C22: mostrar tipo de facturación
+  @UI: {
+    lineItem:        [ { position: 90, importance: #HIGH } ],
+    identification: [ { position: 90 } ],
+    selectionField: [ { position: 45 } ],
+    fieldGroup:     [ { qualifier: 'BasicData', position: 25 } ]
+  }
+  @Consumption.filter.selectionType: #SINGLE
+  @EndUserText.label: 'Tipo de facturación'
+  PaymentType;
+  -- Fin EXT_OSCUGALD 08.10.2026 - C22
+  //  @UI.hidden: true
+  //  GlobalCurrency;
+
+  @UI: { lineItem: [ { position: 110 } ],
+         identification:[ { position: 110 } ],
+         dataPoint: { qualifier: 'HAmountGlb' } }
+  @EndUserText.label: 'Amount in Global Currency'
+  AmountInGlobalCurrency;
+
+  // ══ AJUSTE MON/MTO LOCAL CPH: exponer moneda y monto local en lista y detalle ══
+  @UI.hidden: true
+  CompanyCodeCurrency;
+
+  @UI: { lineItem: [ { position: 115 } ],
+         identification:[ { position: 115 } ] }
+  @EndUserText.label: 'Amount in Local Currency'
+  AmountInCompanyCodeCurrency;
+  // ════════════════════════════════════════════════════════════════════════════
+
+  @UI: { lineItem: [ { position: 120 } ],
+         dataPoint: { qualifier: 'HeaderIsDeleted', criticality: 'IsDeletedCriticality', title: '{@i18n>IsDeleted}' },
+         selectionField: [{ position: 50 }] }
+  @EndUserText.label: 'Set Deleted'
+  IsDeleted;
+
+  @UI: { lineItem: [ { position: 130 } ],
+         identification:[ { position: 130 } ],
+         fieldGroup: [{ qualifier: 'DetailData', position: 20}] }
+  @Consumption.filter.selectionType: #INTERVAL
+  @EndUserText.label: 'Created on'
+  CreatedAt;
+
+  @UI: { lineItem: [ { position: 140 } ],
+         identification:[ { position: 140 } ],
+         fieldGroup: [{ qualifier: 'DetailData', position: 30}] }
+  @EndUserText.label: 'Created by'
+  CreatedBy;
+
+  @UI.hidden: true
+  IsDeletedCriticality;
+
+  @UI.hidden: true
+  IsActive;
+
+  @UI.hidden: true
+  _Items;
+  @UI.hidden: true
+  _ItemsByProfitCenter;
+
+}

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZINT_DTE_CECONAME</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>TEXT50</DOMNAME>
+    <HEADLEN>27</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>17</SCRLEN2>
+    <SCRLEN3>27</SCRLEN3>
+    <DDTEXT>Cost Center Allocation Name</DDTEXT>
+    <REPTEXT>Cost Center Allocation Name</REPTEXT>
+    <SCRTEXT_S>CecoA Name</SCRTEXT_S>
+    <SCRTEXT_M>Cost CenterA Name</SCRTEXT_M>
+    <SCRTEXT_L>Cost Center Allocation Name</SCRTEXT_L>
+    <DTELMASTER>S</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>P</DDLANGUAGE>
+     <DDTEXT>Nome da alocação do centro de custo</DDTEXT>
+     <REPTEXT>Nome Alocação do Ceco</REPTEXT>
+     <SCRTEXT_S>Nome ACeco</SCRTEXT_S>
+     <SCRTEXT_M>Nome Aloc. Ceco</SCRTEXT_M>
+     <SCRTEXT_L>Nome Alocação do Ceco</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Cost Center Allocation Name</DDTEXT>
+     <REPTEXT>Cost Center Allocation Name</REPTEXT>
+     <SCRTEXT_S>CecoA Name</SCRTEXT_S>
+     <SCRTEXT_M>Cost CenterA Name</SCRTEXT_M>
+     <SCRTEXT_L>Cost Center Allocation Name</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

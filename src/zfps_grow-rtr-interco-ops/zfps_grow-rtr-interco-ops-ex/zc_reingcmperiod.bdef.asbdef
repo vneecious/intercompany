@@ -1,0 +1,60 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_ReingCMPeriod alias Period
+{
+  use create;
+  use update;
+  use delete;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+  use action UploadExcel result entity ZC_ReingCMHeader;
+  use action InitializePeriod;
+  use action ExportTemplate;
+
+  use association _Items { create; with draft; }
+}
+
+define behavior for ZC_ReingCMHeader alias CMHeader
+{
+  // Begin Mod 12.09.2026 EXT_AGFAGINA - side effects de los campos por asociacion.
+  // SupplierName, MatDesc y DistType solo existen en esta proyeccion (vienen de
+  // _Supplier, _Material y _OpTypeDist), asi que su refresco tiene que declararse
+  // aca y no en el BDEF de interfaz.
+  // Sin esto, al elegir contrato o material el usuario no veia el Proveedor, la
+  // Descripcion del Material ni la Distribucion hasta despues de guardar.
+  side effects
+  {
+    field CtExtNum affects field SupplierName, field CtExtContract;
+    field Matnr    affects field MatDesc, field DistType;
+    field OpType   affects field DistType, field OpTypeDesc;
+  }
+  // End Mod 12.09.2026 EXT_AGFAGINA
+
+  use update;
+  use delete;
+
+  use action Enviar;
+  use action Liberar;
+  use action Devolver;
+
+
+  use association _Period { with draft; }
+  use association _Receivers { create; with draft; }
+
+  field ( suppress ) CmStatusEnviar, CmStatusLiberar, CmStatusDevolver;
+}
+
+define behavior for ZC_ReingCMRecv alias CMRecv
+{
+  use update;
+  use delete;
+
+  use association _Header { with draft; }
+  use association _Period { with draft; }
+}

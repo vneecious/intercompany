@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SXCI" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SXCI>
+    <IMPLEMENTATION_DATA>
+     <IMP_NAME>ZIM_FI_INT_SAP01</IMP_NAME>
+     <TEXT>Interés por Mora</TEXT>
+     <IMP_CLASS>ZCL_IM_IM_FI_INT_SAP01</IMP_CLASS>
+     <EXIT_NAME>FI_INT_SAP01</EXIT_NAME>
+     <INTER_NAME>IF_EX_FI_INT_SAP01</INTER_NAME>
+     <ACTIVE>X</ACTIVE>
+    </IMPLEMENTATION_DATA>
+    <FUNCTION_CODES>
+     <item>
+      <EXIT_NAME>FI_INT_SAP01</EXIT_NAME>
+      <GUI_PROG>SAPLFI_INT_USERCOMMAND</GUI_PROG>
+      <GUI_CODE>+SA1</GUI_CODE>
+      <SPRSL>E</SPRSL>
+      <GUI_TEXT>SAP Enhancement 1</GUI_TEXT>
+      <IMP_NAME>ZIM_FI_INT_SAP01</IMP_NAME>
+      <TEXT_TYPE>S</TEXT_TYPE>
+     </item>
+     <item>
+      <EXIT_NAME>FI_INT_SAP01</EXIT_NAME>
+      <GUI_PROG>SAPLFI_INT_USERCOMMAND</GUI_PROG>
+      <GUI_CODE>+SA2</GUI_CODE>
+      <SPRSL>E</SPRSL>
+      <GUI_TEXT>SAP Enhancement 2</GUI_TEXT>
+      <IMP_NAME>ZIM_FI_INT_SAP01</IMP_NAME>
+      <TEXT_TYPE>S</TEXT_TYPE>
+     </item>
+    </FUNCTION_CODES>
+   </SXCI>
+  </asx:values>
+ </asx:abap>
+</abapGit>

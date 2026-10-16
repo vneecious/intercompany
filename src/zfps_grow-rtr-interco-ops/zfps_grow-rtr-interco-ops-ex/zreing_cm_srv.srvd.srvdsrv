@@ -1,0 +1,7 @@
+@EndUserText.label: 'CM - Carga Mensual de Montos'
+define service ZREING_CM_SRV {
+  expose ZC_ReingCMPeriod as Period;
+  expose ZC_ReingCMHeader as CMHeader;
+  expose ZC_ReingCMRecv   as CMRecv;
+  expose ZC_ReingCMLog    as CMLog;
+}

@@ -1,0 +1,22 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_ReingTXRule alias TxRule
+{
+  use create;
+  use update;
+  use delete;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use action ActivateRule;
+  use action Deactivate;
+  use action CopyRule;
+  use action UploadRules;
+  use action DownloadTemplate;
+}

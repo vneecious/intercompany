@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_MM_CREATE_PO</CLSNAME>
+    <LANGU>S</LANGU>
+    <DESCRIPT>Create Purchase Order</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CMPNAME>CALL_BAPI_PO_CREATE</CMPNAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Call Bapi Create Purchase Order</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GO_INSTANCE</CMPNAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Create Purchase Order</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>CALL_BAPI_MOCK</CMPNAME>
+     <SCONAME>EV_PURCHASEORDER</SCONAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Número del documento de compras</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CALL_BAPI_PO_CREATE</CMPNAME>
+     <SCONAME>EV_PURCHASEORDER</SCONAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Número del documento de compras</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_INSTANCE</CMPNAME>
+     <SCONAME>RO_INSTANCE</SCONAME>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Create Purchase Order</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,78 @@
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: {
+  typeName: 'Material IC',
+  typeNamePlural: 'Materiales IC',
+  title: { type: #STANDARD, value: 'Matnr' },
+  description: { type: #STANDARD, value: 'MatDesc' }
+}
+
+annotate view ZC_ReingCTMaterial2 with
+{
+  @EndUserText.label: 'Material'
+  @UI.fieldGroup: [{ position: 10, qualifier: 'MatInfo' }]
+  @Consumption.valueHelpDefinition: [{
+    entity:            { name: 'ZI_ReingCTMatVH', element: 'Product' },
+    additionalBinding: [{ localElement: 'MatDesc', element: 'ProductDescription', usage: #RESULT }]
+  }]
+  Matnr;
+
+  @EndUserText.label: 'Descripcion'
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 20, qualifier: 'MatInfo' }]
+  MatDesc;
+
+  @EndUserText.label: 'Monto Global'
+  @UI.lineItem: [{ position: 30, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 30, qualifier: 'MatInfo' }]
+  @UI.hidden: true
+  Amount;
+
+  @UI.hidden: true
+  Waers;
+
+
+  @EndUserText.label: 'Cuenta GL Origen'
+  @UI.fieldGroup: [{ position: 50, qualifier: 'MatInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingGLAccountVH', element: 'GLAccount' } }]
+  Saknr;
+
+  @EndUserText.label: 'Centro de Costo'
+  @UI.fieldGroup: [{ position: 60, qualifier: 'MatInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingCostCenterVH', element: 'CostCenter' } }]
+  Kostl;
+
+  @EndUserText.label: 'Centro de Beneficio'
+  @UI.fieldGroup: [{ position: 70, qualifier: 'MatInfo' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_ReingProfitCenterVH', element: 'ProfitCenter' } }]
+  Prctr;
+
+  @UI.hidden: true
+  MatStatus;
+
+  @EndUserText.label: 'Creado Por'
+  @UI.fieldGroup: [{ position: 10, qualifier: 'AdminData' }]
+  CreatedBy;
+
+  @EndUserText.label: 'Creado El'
+  @UI.fieldGroup: [{ position: 20, qualifier: 'AdminData' }]
+  CreatedAt;
+
+  @EndUserText.label: 'Modificado Por'
+  @UI.fieldGroup: [{ position: 30, qualifier: 'AdminData' }]
+  ChangedBy;
+
+  @EndUserText.label: 'Modificado El'
+  @UI.fieldGroup: [{ position: 40, qualifier: 'AdminData' }]
+  @UI.facet: [
+    { id: 'MatInfo', type: #COLLECTION, label: 'Info Contable Origen', position: 10 },
+    { id: 'MatInfoFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'MatInfo', parentId: 'MatInfo', position: 10 },
+    { id: 'Metrics', type: #LINEITEM_REFERENCE, label: 'Metricas', position: 20, targetElement: '_Metrics' },
+    { id: 'Receivers', type: #LINEITEM_REFERENCE, label: 'Sociedades Receptoras', position: 30, targetElement: '_Receivers' },
+    { id: 'OpTypes', type: #LINEITEM_REFERENCE, label: 'Tipos de Operacion', position: 40, targetElement: '_OpTypes' },
+    { id: 'GLLines', type: #LINEITEM_REFERENCE, label: 'Modelo GL', position: 50, targetElement: '_GLLines' },
+    { id: 'AdminData', type: #COLLECTION, label: 'Datos Administrativos', position: 60 },
+    { id: 'AdminDataFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'AdminData', parentId: 'AdminData', position: 10 }
+  ]
+  ChangedAt;
+}

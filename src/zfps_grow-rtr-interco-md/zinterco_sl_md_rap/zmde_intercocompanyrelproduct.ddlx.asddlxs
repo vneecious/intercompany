@@ -1,0 +1,210 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Company Relationship by Concept',
+        typeNamePlural: 'Companies Relationship by Concepts',
+         title: {
+            value: 'Product',
+            type: #STANDARD
+          },
+          description: {
+            type: #STANDARD,
+            value: 'Id'
+          }
+  },
+  presentationVariant: [{
+        sortOrder: [
+            { by: 'Product', direction: #ASC },
+            { by: 'ProductName', direction: #ASC },
+            { by: 'ProviderCompanyCode', direction: #ASC },
+            { by: 'ProviderCompanyCodeName', direction: #ASC },
+            { by: 'RecipientCompanyCode', direction: #ASC },
+            { by: 'RecipientCompanyCodeName', direction: #ASC },
+            { by: 'ProfitCenter', direction: #ASC },
+            { by: 'ValidFrom', direction: #ASC },
+            { by: 'ValidTo', direction: #ASC }
+        ],
+        visualizations: [{
+            type: #AS_LINEITEM
+        }]
+    }]
+}
+annotate entity ZC_IntercoCompanyRelProduct with
+{
+  @UI.facet: [ {
+                  purpose: #HEADER,
+                  type       : #FIELDGROUP_REFERENCE,
+                  targetQualifier: 'HeaderData'
+                },
+                {
+                  id: 'General',
+                  purpose: #STANDARD,
+                  type: #FIELDGROUP_REFERENCE,
+                  label: 'Detail',
+                  position: 10 ,
+                  targetQualifier: 'General'
+                },
+                {
+                  id: 'Status',
+                  purpose: #STANDARD,
+                  type: #FIELDGROUP_REFERENCE,
+                  label: 'Status',
+                  position: 20 ,
+                  targetQualifier: 'Status'
+                },
+                {
+                  id: 'Log',
+                  purpose: #STANDARD,
+                  type: #LINEITEM_REFERENCE,
+                  label: 'Log',
+                  position: 30 ,
+                  targetElement: '_log'
+                }
+             ]
+
+  @UI: { lineItem: [
+            { position: 10, importance: #HIGH },
+            { type: #FOR_ACTION, dataAction: 'Block', label: 'Block', position: 50},
+            { type: #FOR_ACTION, dataAction: 'Release', label: 'Release', position: 60},
+            { type: #FOR_ACTION, dataAction: 'SetDelete', label: 'Set Delete', position: 70}
+//            { type: #FOR_ACTION, dataAction: 'deleteDraft', label: 'Delete Draft', position: 80}
+      ],
+      identification:[ { position: 10 } ]}
+  @UI.fieldGroup: [{ qualifier: 'General', position: 10 }, { qualifier: 'HeaderData', position: 10 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoProduct_SH', element: 'Product' } }]
+  @UI.selectionField: [{ position: 10 }]
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @EndUserText.label: 'Product'
+  Product;
+
+
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 } ]}
+  @EndUserText.label: 'Id'
+  @UI.hidden: true
+  Id;
+
+  @UI: { lineItem: [ { position: 30 } ],identification:[ { position: 30 } ]}
+  @EndUserText.label: 'Product Name'
+  //@UI.hidden: true
+  ProductName;
+
+  @UI: { lineItem: [ { position: 40 } ],identification:[ { position: 40 } ]}
+  @UI.fieldGroup: [{ qualifier: 'General', position: 20 }, { qualifier: 'HeaderData', position: 20 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoProviderCompany_SH', element: 'ProviderCompanyCode' } }]
+  @UI.selectionField: [{ position: 30 }]
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @EndUserText.label: 'Provider Company'
+  ProviderCompanyCode;
+
+  @UI: { lineItem: [ { position: 50 } ],identification:[ { position: 50 } ]}
+  @EndUserText.label: 'Provider Company Name'
+  //@UI.hidden: true
+  ProviderCompanyCodeName;
+
+  @UI: { lineItem: [ { position: 60 } ],identification:[ { position: 60 } ]}
+  @UI.fieldGroup: [{ qualifier: 'General', position: 30 }, { qualifier: 'HeaderData', position: 30 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoRecipientCompany_SH', element: 'RecipientCompanyCode' } }]
+  @UI.selectionField: [{ position: 50 }]
+  @Search.defaultSearchElement : true
+  @Search.fuzzinessThreshold: 0.8
+  @EndUserText.label: 'Recipient Company'
+  RecipientCompanyCode;
+
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 70 } ]}
+  @EndUserText.label: 'Recipient Company Name'
+  //@UI.hidden: true
+  RecipientCompanyCodeName;
+
+  @UI: { lineItem: [ { position: 80 } ],identification:[ { position: 80 } ]}
+  @UI.fieldGroup: [{ qualifier: 'General', position: 40 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoProfitCenter_SH', element: 'ProfitCenter' } }]
+  @UI.selectionField: [{ position: 70 }]
+  @EndUserText.label: 'Profit Center'
+  ProfitCenter;
+
+  @UI: { lineItem: [ { position: 85 } ],identification:[ { position: 85 } ]}
+  @EndUserText.label: 'Profit Center Name'
+  //@UI.hidden: true
+  ProfitCenterName;
+
+  @UI: { lineItem: [ { position: 90 } ],identification:[ { position: 90 } ]}
+  @UI.fieldGroup: [{ qualifier: 'General', position: 01 }]
+  @EndUserText.label: 'Valid From'
+  ValidFrom;
+
+  @UI: { lineItem: [ { position: 100 } ],identification:[ { position: 100 } ]}
+  @UI.fieldGroup: [{ qualifier: 'General', position: 02 }]
+  @EndUserText.label: 'Valid To'
+  ValidTo;
+
+  @UI: { lineItem: [ { position: 110 } ],identification:[ { position: 110 } ],
+  dataPoint: {
+        title: 'Rate',
+        valueFormat: {
+        scaleFactor: 100,
+        numberOfFractionalDigits: 6
+    }
+  }}
+  @UI.fieldGroup: [{ qualifier: 'General', position: 50 }]
+  @UI.textArrangement: #TEXT_LAST
+  @EndUserText.label: 'Site-Company Code Percentage'
+  Rate;
+
+  @UI: { lineItem: [ { position: 115 } ],identification:[ { position: 115 } ]}
+  @EndUserText.label: 'Percentage'
+//  @UI.hidden: true
+  RateUnit;
+
+  @UI: { lineItem: [ { position: 120 } ],identification:[ { position: 120 } ]}
+  @UI.fieldGroup: [{ qualifier: 'General', position: 60 }]
+  @EndUserText.label: 'Flow Type'
+  @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoFlow_SH', element: 'Flow' } }]
+  Flow;
+
+  @UI: { lineItem: [ { position: 125 } ],identification:[ { position: 125 } ]}
+  @EndUserText.label: 'Flow Type Name'
+  //@UI.hidden: true
+  FlowName;
+
+  @UI: { lineItem: [ { position: 128 } ],identification:[ { position: 128 } ]}
+  @EndUserText.label: 'Metric'
+  Metric;
+
+  //@UI: { lineItem: [ { position: 130 } ],identification:[ { position: 130 } ]}
+  //@UI.fieldGroup: [{ qualifier: 'General', position: 70 }]
+  //@EndUserText.label: 'Is not promoted'
+  //IsPromo;
+
+  @UI: { lineItem: [ { position: 135 } ],identification:[ { position: 135 } ]}
+  @UI.fieldGroup: [{ qualifier: 'Status', position: 10 }]
+  @EndUserText.label: 'Is Blocked'
+  IsBlocked;
+
+  @UI: { lineItem: [ { position: 140 } ],identification:[ { position: 140 } ]}
+  @UI.fieldGroup: [{ qualifier: 'Status', position: 20 }]
+  @EndUserText.label: 'Is Deleted'
+  IsDeleted;
+  
+  @UI.hidden: true
+  zindex;
+  
+  @UI.hidden: true
+  AuthorizationGroup;
+  
+  @UI: { lineItem: [ { position: 150 } ],identification:[ { position: 150 } ]}
+  @UI.fieldGroup: [{ qualifier: 'Status', position: 30 }]
+  @EndUserText.label: 'Created At'
+  CreatedAt;
+
+  @UI: { lineItem: [ { position: 160 } ],identification:[ { position: 160 } ]}
+  @UI.fieldGroup: [{ qualifier: 'Status', position: 40 }]
+  @EndUserText.label: 'Created By'
+  CreatedBy;
+
+  @UI: { lineItem: [ { position: 160 } ],identification:[ { position: 160 } ]}
+  @UI.fieldGroup: [{ qualifier: 'Log', position: 10 }]
+  @EndUserText.label: 'Log'
+  _log;
+}

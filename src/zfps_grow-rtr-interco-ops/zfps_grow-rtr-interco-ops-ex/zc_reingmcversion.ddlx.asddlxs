@@ -1,0 +1,182 @@
+@Metadata.layer: #CUSTOMER
+
+@UI.presentationVariant: [{
+  requestAtLeast: ['IsLatestVersion'],
+  sortOrder: [{ by: 'MetricCode',  direction: #ASC },
+              { by: 'VersionNum',  direction: #DESC }]
+}]
+
+@UI.headerInfo: {
+  typeName: 'Version de Metrica',
+  typeNamePlural: 'Versiones de Metricas',
+  title: { type: #STANDARD, value: 'MetricCode' },
+  description: { type: #STANDARD, value: 'MetricDesc' }
+}
+
+annotate view ZC_ReingMCVersion with
+{
+  @EndUserText.label: 'Metrica'
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  @UI.selectionField: [{ position: 10 }]
+  @UI.fieldGroup: [{ position: 10, qualifier: 'MetricHeader' }]
+  @UI.identification: [
+    { type: #FOR_ACTION, dataAction: 'ActivateVersion',   label: 'Activar Version'   },
+    { type: #FOR_ACTION, dataAction: 'InactivateVersion', label: 'Inactivar Version' }
+  ]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_REINGMCVERSION_VH', element: 'MetricCode' } }]
+  MetricCode;
+
+  @EndUserText.label: 'Version'
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 10, qualifier: 'VersionDetail' }]
+  VersionNum;
+
+  @EndUserText.label: 'Nombre'
+  @UI.lineItem: [{ position: 30, importance: #HIGH }]
+  @UI.selectionField: [{ position: 20 }]
+  @UI.fieldGroup: [{ position: 20, qualifier: 'MetricHeader' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_REINGMCVERSION_NOMBRE_VH', element: 'MetricDesc' } }]
+  MetricDesc;
+
+  @UI.hidden: true
+  MetricType;
+
+  @EndUserText.label: 'Tipo'
+  @UI.lineItem: [{ position: 40, importance: #HIGH }]
+  @UI.selectionField: [{ position: 30 }]
+  @UI.fieldGroup: [{ position: 30, qualifier: 'MetricHeader' }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_REINGMCVERSION_TIPO_VH', element: 'Tipo' } }]
+  MetricTypeText;
+
+  @EndUserText.label: 'Fuente'
+  @UI.lineItem: [{ position: 50, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 40, qualifier: 'MetricHeader' },
+                   { position: 20, qualifier: 'HeaderKPI' }]
+  DataSource;
+
+  @UI.hidden: true
+  ValidFrom;
+
+  @UI.hidden: true
+  ValidTo;
+
+  @EndUserText.label: 'Var. Lim. %'
+  @UI.lineItem: [{ position: 70, importance: #HIGH }]
+  @UI.fieldGroup: [{ position: 50, qualifier: 'VersionDetail' }]
+  VarPctLimit;
+
+  @EndUserText.label: 'Estado Version'
+  @UI.lineItem: [{ position: 80, importance: #HIGH,
+                   criticality: 'StatusCriticality',
+                   criticalityRepresentation: #WITH_ICON }]
+  @UI.selectionField: [{ position: 40 }]
+  @UI.defaultValue: 'D'
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZI_ReingMCVerStatus', element: 'VersionStatus' },
+    label: 'Estado version',
+    useForValidation: true
+  }]
+  VersionStatus;
+
+  @EndUserText.label: 'Estado Version'
+  @UI.fieldGroup: [{ position: 15, qualifier: 'VersionDetail' }]
+  VersionStatusText;
+
+  @EndUserText.label: 'Ultima version'
+  @UI.lineItem: [{ position: 90, importance: #HIGH }]
+  @UI.selectionField: [{ position: 50 }]
+  @Consumption.filter: { defaultValue: 'X', selectionType: #SINGLE }
+  @UI.defaultValue: 'X'
+  IsLatestVersion;
+
+  @EndUserText.label: 'Responsable'
+  @UI.lineItem: [{ position: 100, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ position: 50, qualifier: 'MetricHeader' },
+                   { position: 30, qualifier: 'HeaderKPI' }]
+  Responsible;
+
+  @UI.hidden: true
+  MetricStatus;
+
+   @UI.hidden: true
+  MetricStatusText;
+
+  @EndUserText.label: 'Ult. N Version'
+  @UI.fieldGroup: [{ position: 80, qualifier: 'MetricHeader' }]
+  LastVersNum;
+
+  @EndUserText.label: 'Version Fuente'
+  @UI.fieldGroup: [{ position: 20, qualifier: 'VersionDetail' }]
+  DataSourceVer;
+
+  @EndUserText.label: 'Motivo de Cambio'
+  @UI.fieldGroup: [{ position: 60, qualifier: 'VersionDetail' }]
+  @UI.identification: [{ position: 20 }]
+  @UI.defaultValue: 'Primera version'
+  ChangeReason;
+
+  @UI.hidden: true
+  StatusCriticality;
+
+  @UI.hidden: true
+  IsNewVersion;
+
+  @EndUserText.label: 'Creado Por'
+  @UI.fieldGroup: [{ position: 10, qualifier: 'AdminData' }]
+  CreatedBy;
+
+  @EndUserText.label: 'Creado El'
+  @UI.fieldGroup: [{ position: 20, qualifier: 'AdminData' }]
+  CreatedAt;
+
+  @EndUserText.label: 'Modificado Por'
+  @UI.fieldGroup: [{ position: 30, qualifier: 'AdminData' }]
+  ChangedBy;
+
+  @UI.facet: [
+    { id: 'HeaderKPIFacet',
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'HeaderKPI',
+      position: 10,
+      purpose: #HEADER },
+    { id: 'MetricHeader',
+      type: #COLLECTION,
+      label: 'Definicion de la Metrica',
+      position: 10 },
+    { id: 'MetricHeaderFields',
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'MetricHeader',
+      parentId: 'MetricHeader',
+      position: 10 },
+    { id: 'VersionDetail',
+      type: #COLLECTION,
+      label: 'Datos de esta Version',
+      position: 20 },
+    { id: 'VersionDetailFields',
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'VersionDetail',
+      parentId: 'VersionDetail',
+      position: 10 },
+    { id: 'AdminData',
+      type: #COLLECTION,
+      label: 'Datos Administrativos',
+      position: 30 },
+    { id: 'AdminDataFields',
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'AdminData',
+      parentId: 'AdminData',
+      position: 10 },
+    { id: 'OtherVersions',
+      type: #LINEITEM_REFERENCE,
+      label: 'Otras Versiones',
+      position: 40,
+      targetElement: '_OtherVersions' },
+      { id: 'History',
+      type: #LINEITEM_REFERENCE,
+      label: 'Historial de Cambios',
+      position: 50,     
+      targetElement: '_History' }
+  ]
+  @EndUserText.label: 'Modificado El'
+  ChangedAt;
+}

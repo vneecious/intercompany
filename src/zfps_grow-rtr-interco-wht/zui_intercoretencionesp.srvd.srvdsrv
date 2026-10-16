@@ -1,0 +1,4 @@
+define service ZUI_INTERCORETENCIONESP {
+  expose ZC_INTERCORETENCIONESP_S as IntercoRetencionAll;
+  expose ZC_INTERCORETENCIONESP as IntercoRetencionesP;
+}

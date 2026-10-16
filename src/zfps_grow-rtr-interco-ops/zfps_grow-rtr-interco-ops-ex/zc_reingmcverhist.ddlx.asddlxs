@@ -1,0 +1,46 @@
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: {
+  typeName: 'Historial',
+  typeNamePlural: 'Historial de Cambios'
+}
+
+@UI.presentationVariant: [{
+  sortOrder: [{ by: 'ChangedAt', direction: #DESC }]
+}]
+
+annotate view ZC_ReingMCVerHist with
+{
+  @UI.hidden: true
+  HistUuid;
+
+  @UI.hidden: true
+  MetricCode;
+
+  @UI.hidden: true
+  VersionNum;
+
+  @EndUserText.label: 'Fecha/Hora'
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  ChangedAt;
+
+  @EndUserText.label: 'Usuario'
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  ChangedBy;
+
+  @EndUserText.label: 'Accion'
+  @UI.lineItem: [{ position: 30, importance: #HIGH }]
+  Action;
+
+  @EndUserText.label: 'Campo'
+  @UI.lineItem: [{ position: 40, importance: #HIGH }]
+  FieldName;
+
+  @EndUserText.label: 'Valor Anterior'
+  @UI.lineItem: [{ position: 50, importance: #HIGH }]
+  ValueOld;
+
+  @EndUserText.label: 'Valor Nuevo'
+  @UI.lineItem: [{ position: 60, importance: #HIGH }]
+  ValueNew;
+}

@@ -1,0 +1,5 @@
+CLASS zbp_reingmeheader DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_reingmeheader.
+ENDCLASS.
+
+CLASS zbp_reingmeheader IMPLEMENTATION.
+ENDCLASS.

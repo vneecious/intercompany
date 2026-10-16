@@ -1,0 +1,439 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Message Class for Intercompany Calculation Proposal</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>It is only possible to apply metrics to proposals in status Pending.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>The Calculate action is only allowed for proposals in pending status.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Simulate action is only allowed for proposals in pending status.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Metric not calculed for period, fiscal year and product.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Metric not released for period, fiscal year and product.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Calculated metric not found for period, fiscal year and product.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Applied metrics not found for this proposal.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Applied metrics did not reach 100% for Provider &amp;1 and Profit Center &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>No applied metrics found.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>No calculations were performed.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Metric (&amp;1) not found for period &amp;2 and fiscal year &amp;3.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Rate values for company-related concepts line items not found.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Rate values for company-related &amp;1 concepts &amp;2 in item &amp;3 not found.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Metric not found in product master data</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>No metrics have been applied to the items in the proposal.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>Billing can only be triggered when the proposal is Calculated.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>Metric (&amp;1) not found for period &amp;2 Recipient &amp;3 profit center &amp;4.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>018</MSGNR>
+     <TEXT>Error during proposal document generation</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>019</MSGNR>
+     <TEXT>Error during cancellation of proposal document</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>020</MSGNR>
+     <TEXT>ExchangeRate not found from source &amp;1 to target &amp;2 in date &amp;3</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>021</MSGNR>
+     <TEXT>The document has been posted correctly: &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>022</MSGNR>
+     <TEXT>Error generating document, check transaction ST22</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>023</MSGNR>
+     <TEXT>Delete operation disabled</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>024</MSGNR>
+     <TEXT>Purchase Order &amp;1 set deleted flag</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>025</MSGNR>
+     <TEXT>No se encontraron retenciones a tratar en este documento</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>026</MSGNR>
+     <TEXT>La retención para esta operación no requiere registraciones adicionales</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>027</MSGNR>
+     <TEXT>Falta la configuración del código interno de la Sociedad</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>028</MSGNR>
+     <TEXT>No se encuentra definido el código inicial del centro de costo</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>029</MSGNR>
+     <TEXT>Exchange rate &amp;1 with factor &amp;2 exceeds the size of the exchange rate</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>030</MSGNR>
+     <TEXT>Selection required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>031</MSGNR>
+     <TEXT>No flow config found: Provider &amp;1 Recipient &amp;2 Product &amp;3 PrftCtr &amp;4</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <MSGNR>032</MSGNR>
+     <TEXT>Metric applied. NCP: &amp;1%</TEXT>
+    </T100>
+   </T100>
+   <I18N_LANGS>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <T100T>
+    <T100T>
+     <SPRSL>P</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <STEXT>Classe de mensagem para proposta de cálculo intercompanhia</STEXT>
+    </T100T>
+    <T100T>
+     <SPRSL>S</SPRSL>
+     <ARBGB>ZINT_MSG_INTERCO_CP</ARBGB>
+     <STEXT>Clase de mensaje para Calculo de propuestas intercompany</STEXT>
+    </T100T>
+   </T100T>
+   <T100_TEXTS>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>001</MSGNR>
+     <TEXT>Só é possível aplicar métricas a propostas com o status Pendente.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>002</MSGNR>
+     <TEXT>A ação Calcular só é permitida para propostas com status pendente.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>003</MSGNR>
+     <TEXT>A ação Simular só é permitida para propostas no status pendente.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>004</MSGNR>
+     <TEXT>Métrica não calculada para período, exercício fiscal e produto.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>005</MSGNR>
+     <TEXT>Métrica não liberada para período, exercício fiscal e produto.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>006</MSGNR>
+     <TEXT>Métrica calculada não encontrada para período, exercício fiscal e produto</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>007</MSGNR>
+     <TEXT>Métricas aplicadas não encontradas para esta proposta.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>008</MSGNR>
+     <TEXT>Métricas aplicadas não totalizam 100% para provedor &amp; e centro de lucro &amp;</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>009</MSGNR>
+     <TEXT>Nenhuma métrica aplicada encontrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>010</MSGNR>
+     <TEXT>Não foram efetuados cálculos.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>011</MSGNR>
+     <TEXT>Métrica (&amp;1) não encontrada para período &amp;2 e exercício &amp;3.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>012</MSGNR>
+     <TEXT>Taxas não encontradas para a empresa e o conceito.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>013</MSGNR>
+     <TEXT>Taxas não encontradas para empresa e conceito no item &amp;1.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>014</MSGNR>
+     <TEXT>Métrica não encontrada nos dados mestre do produto.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>015</MSGNR>
+     <TEXT>Nenhuma métrica foi aplicada aos itens na proposta.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>016</MSGNR>
+     <TEXT>O faturamento só pode ser acionado quando a proposta é Calculada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>022</MSGNR>
+     <TEXT>Erro ao gerar documento, verifique a transação ST22</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>024</MSGNR>
+     <TEXT>Ordem de compra &amp;1 marcada para exclusão</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>001</MSGNR>
+     <TEXT>Solo es posible aplicar métricas a propuestas en estado Pendiente.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>002</MSGNR>
+     <TEXT>La acción Calcular solo es permitida para propuestas en estado Pendiente</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>003</MSGNR>
+     <TEXT>La acción Simular solo es permitida para propuestas en estado Pendiente</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>004</MSGNR>
+     <TEXT>Métrica no calculada para el período, año fiscal y producto.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>005</MSGNR>
+     <TEXT>Métrica no liberada para el período, año fiscal y producto.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>006</MSGNR>
+     <TEXT>Métrica calculada no encontrada para el período, año fiscal y producto.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>007</MSGNR>
+     <TEXT>Métricas aplicadas no encontradas para esta propuesta.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>008</MSGNR>
+     <TEXT>Las métricas aplicadas no suman 100% para la Prestadora &amp;1 y el CeBe &amp;2.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>009</MSGNR>
+     <TEXT>No se encontraron métricas aplicadas.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>010</MSGNR>
+     <TEXT>No se realizaron cálculos.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>011</MSGNR>
+     <TEXT>Métrica (&amp;1) no encontrada para el período &amp;2 y ejercicio &amp;3.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>012</MSGNR>
+     <TEXT>Tarifas no encontradas para la Sociedad y Concepto.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>013</MSGNR>
+     <TEXT>Calculo de tarifa para Soc.Prest. &amp;1 Concep. &amp;2 en item &amp;3 no encontrado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>014</MSGNR>
+     <TEXT>Métrica no encontrada en los datos maestros del producto.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>015</MSGNR>
+     <TEXT>No se han aplicado métricas a los ítems de la propuesta.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>016</MSGNR>
+     <TEXT>Solo es posible iniciar la facturación cuando la propuesta está Calculada</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>017</MSGNR>
+     <TEXT>Métrica (&amp;1) no encontrada para ejercicio &amp;2 soc. prestataria &amp;3 Cebe &amp;4.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>020</MSGNR>
+     <TEXT>Tipo de cambio no encontrado desde &amp;1 a &amp;2 en fecha &amp;3</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>021</MSGNR>
+     <TEXT>El documento se ha contabilizado correctamente: &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>022</MSGNR>
+     <TEXT>Error al generar documento, revisar la transaccion ST22</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>023</MSGNR>
+     <TEXT>Operación de borrado desabilitado</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>024</MSGNR>
+     <TEXT>Orden de compra &amp;1 marcado para borrado</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>027</MSGNR>
+     <TEXT>Falta la configuración del código interno de la Sociedad</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>031</MSGNR>
+     <TEXT>Sin configuracion de flujo: &amp;1/&amp;2/&amp;3/&amp;4</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>032</MSGNR>
+     <TEXT>Metrica aplicada. NCP: &amp;1%</TEXT>
+    </item>
+   </T100_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

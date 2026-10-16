@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_PROPOSAL_BO_WT_POST</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>Manage creation of Supplier Invoice BO</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>5</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CMPNAME>GC_BLART</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>ABAP: Name of Variant Variable</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GC_COSTCENTER_REDONDEO</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>ABAP: Name of Variant Variable</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GC_DOCTYPE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>ABAP: Name of Variant Variable</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GC_GLACCOUNT_JE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>ABAP: Name of Variant Variable</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GC_GLACCOUNT_REDONDEO</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>ABAP: Name of Variant Variable</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GC_TARIFFTYPE_ITEM_1</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>ABAP: Name of Variant Variable</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GC_TARIFFTYPE_ITEM_2N</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>ABAP: Name of Variant Variable</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GET_PERCENT_HIS</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Get Percent of Total Journal Entry Hispanos</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GET_PERCENT_JE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Get Total of Journal Entry</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GET_PERCENT_OF_TOTAL</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Get Percent of Total</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GET_TVARVC</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Get TVARVC</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MAP_ERROR</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Map error</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_PERCENT_JE</CMPNAME>
+     <SCONAME>IV_GLACCOUNT_JE</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Gl account</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>MAP_ERROR</CMPNAME>
+     <SCONAME>IV_DOC_KEY</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Document Key</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>MAP_ERROR</CMPNAME>
+     <SCONAME>IV_ID</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Message Class</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>MAP_ERROR</CMPNAME>
+     <SCONAME>IV_NUMBER</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Message Number</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>MAP_ERROR</CMPNAME>
+     <SCONAME>IV_SEVERITY</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Output: Severity of error (N/SPACE-normal, E/F/A-error)</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>

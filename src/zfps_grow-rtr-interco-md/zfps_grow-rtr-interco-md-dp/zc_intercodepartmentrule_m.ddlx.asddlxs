@@ -1,0 +1,38 @@
+@Metadata.layer: #CORE
+annotate entity ZC_IntercoDepartmentRule_M with
+{
+  @UI.hidden: true
+  Department;
+  @UI.hidden: true
+  Item;
+  @UI.lineItem: [{ position: 1 }]
+  @Consumption.valueHelpDefinition: [{ entity.name: 'ZI_IntercoCompanyCodeVH', entity.element: 'CompanyCode', useForValidation: true }]
+  CompanyCode;
+  @UI.lineItem: [{ position: 2 }]
+  @Consumption.valueHelpDefinition: [{
+    entity.name:'ZI_IntercoProduct_SH',
+    entity.element: 'Product',
+    distinctValues: true,
+    useForValidation: true,
+    additionalBinding: [{
+        element: 'Product',
+        localElement: 'Product',
+        usage: #FILTER_AND_RESULT},
+      {  element: 'ProductName',
+         usage: #RESULT }
+         ]}]
+  Product;
+  @UI.lineItem: [{ position: 3 }]
+  @Consumption.valueHelpDefinition: [{
+    entity.name:'ZI_IntercoPandLHierFlattenedSH',
+    entity.element: 'ID',
+    useForValidation: true,
+    additionalBinding: [{ element: 'CustomerLevel', localConstant: 'L3', usage: #FILTER  }]
+  }]
+  PAndLId;
+  @UI.hidden: true
+  PAndLLevel;
+  @UI.lineItem: [{ position: 4 }]
+  @Consumption.valueHelpDefinition: [{ entity.name:'ZI_IntercoProfitCenter_SH', entity.element: 'ProfitCenter', useForValidation: true }]
+  ProfitCenter;
+}

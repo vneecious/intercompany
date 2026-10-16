@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZREING_ENTITY_KEY</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <HEADLEN>20</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>20</SCRLEN2>
+    <SCRLEN3>20</SCRLEN3>
+    <DDTEXT>Entity Key</DDTEXT>
+    <REPTEXT>Entity Key</REPTEXT>
+    <SCRTEXT_S>Ent Key</SCRTEXT_S>
+    <SCRTEXT_M>Entity Key</SCRTEXT_M>
+    <SCRTEXT_L>Entity Key</SCRTEXT_L>
+    <DTELMASTER>E</DTELMASTER>
+    <DATATYPE>CHAR</DATATYPE>
+    <LENG>000100</LENG>
+    <OUTPUTLEN>000100</OUTPUTLEN>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Clave de Entidad</DDTEXT>
+     <REPTEXT>Clave de Entidad</REPTEXT>
+     <SCRTEXT_S>Clave Ent.</SCRTEXT_S>
+     <SCRTEXT_M>Clave de Entidad</SCRTEXT_M>
+     <SCRTEXT_L>Clave de Entidad</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

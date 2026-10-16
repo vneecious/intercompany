@@ -1,0 +1,48 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+    headerInfo: {
+        typeName: 'Item',
+        typeNamePlural: 'Items',
+        title: { type: #STANDARD }
+    },
+    createHidden: true,
+    updateHidden: true,
+    deleteHidden: true
+}
+annotate entity ZC_IntercoProposalItemBasisTP with
+{
+  @UI: {    lineItem: [ { position: 10, importance: #HIGH } ],
+            hidden: true }
+  @EndUserText.label: 'ID'
+  id;
+  @UI: {    lineItem: [ { position: 20, importance: #HIGH } ],
+            hidden: true }
+  @EndUserText.label: 'Item ID'
+  item_id;
+  @UI: {    lineItem: [ { position: 30 } ]}
+  @EndUserText.label: 'Base ID'
+  itembasis_id;
+//  @UI: {    lineItem: [ { position: 40 } ]}
+//  @EndUserText.label: 'Metric ID'
+//  metric_id;
+  @UI: {    lineItem: [ { position: 50 } ]}
+  sharedrate;
+  @UI: {    lineItem: [ { position: 60 } ],
+            hidden: true
+  }
+  globalcurrency;
+  @UI: {    lineItem: [ { position: 70 } ]
+  }
+  amountinglobalcurrency;
+  @UI: {    lineItem: [ { position: 80 } ],
+            hidden: true
+  }
+  companycodecurrency;
+  @UI: {    lineItem: [ { position: 90 } ]
+  }
+  amountincompanycodecurrency;
+  /* Associations */
+//  _Proposal;
+//  _Items;
+//  _ItemsCalc;
+}

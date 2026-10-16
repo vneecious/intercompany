@@ -1,0 +1,27 @@
+@Metadata.layer: #CUSTOMER
+
+annotate view ZC_ReingCTGLOpType2 with
+{
+  @UI.hidden: true
+  GlopUuid;
+
+  @EndUserText.label: 'Tipo Operacion'
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZI_ReingOpTypesByRoleVH', element: 'OpType' },
+    useForValidation: true,
+    additionalBinding: [{
+      localElement: 'GlRole',
+      element:      'GlRole',
+      usage:        #FILTER_AND_RESULT
+    }]
+  }]
+  OpType;
+
+  @UI.hidden: true
+  GlRole;
+
+  @EndUserText.label: 'Descripcion'
+  @UI.lineItem: [{ position: 20, importance: #MEDIUM }]
+  OpTypeDescr;
+}

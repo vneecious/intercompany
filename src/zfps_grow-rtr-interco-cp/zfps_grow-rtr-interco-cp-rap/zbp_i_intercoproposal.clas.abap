@@ -1,0 +1,7 @@
+CLASS zbp_i_intercoproposal DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF ZI_IntercoProposal.
+
+
+ENDCLASS.
+
+CLASS zbp_i_intercoproposal IMPLEMENTATION.
+ENDCLASS.

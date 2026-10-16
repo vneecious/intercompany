@@ -1,0 +1,9 @@
+CLASS zbp_reingmcversion DEFINITION
+  PUBLIC
+  ABSTRACT
+  FINAL
+  FOR BEHAVIOR OF zi_reingmcversion.
+ENDCLASS.
+
+CLASS zbp_reingmcversion IMPLEMENTATION.
+ENDCLASS.

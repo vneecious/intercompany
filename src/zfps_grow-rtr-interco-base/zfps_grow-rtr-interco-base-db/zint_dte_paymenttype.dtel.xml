@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZINT_DTE_PAYMENTTYPE</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ZINT_DOM_PAYMENTTYPE</DOMNAME>
+    <HEADLEN>55</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>20</SCRLEN2>
+    <SCRLEN3>40</SCRLEN3>
+    <DDTEXT>Intercompany Payment Type</DDTEXT>
+    <REPTEXT>Intercompany Payment Type</REPTEXT>
+    <SCRTEXT_S>Pay type</SCRTEXT_S>
+    <SCRTEXT_M>Payment Type</SCRTEXT_M>
+    <SCRTEXT_L>Intercompany Payment Type</SCRTEXT_L>
+    <DTELMASTER>S</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>P</DDLANGUAGE>
+     <DDTEXT>Tipo de Fatura Intercompany</DDTEXT>
+     <REPTEXT>Tipo Fat. Interco</REPTEXT>
+     <SCRTEXT_S>Tipo Fac.</SCRTEXT_S>
+     <SCRTEXT_M>Tipo Fat. Interco</SCRTEXT_M>
+     <SCRTEXT_L>Tipo Fat. Interco</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Intercompany Payment Type</DDTEXT>
+     <REPTEXT>Tipo de Factura Intercompany</REPTEXT>
+     <SCRTEXT_S>Tipo Fac</SCRTEXT_S>
+     <SCRTEXT_M>Tipo Fac. Interco</SCRTEXT_M>
+     <SCRTEXT_L>Tipo Fac. Inteco</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

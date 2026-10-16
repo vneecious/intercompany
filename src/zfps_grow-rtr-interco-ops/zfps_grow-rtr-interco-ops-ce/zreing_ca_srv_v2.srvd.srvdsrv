@@ -1,0 +1,9 @@
+@EndUserText.label: 'App CA - Motor Calculo IC - V2'
+define service ZREING_CA_SRV_V2 {
+  expose ZC_ReingCALineAll  as CALineAll;
+  expose ZC_ReingCARun_V2   as CalcRun;
+  expose ZC_ReingCALine_V2  as CalcLine;
+  expose ZC_ReingCALinePC_V2 as CalcLinePC;
+  expose ZC_ReingCAStep_V2  as CalcStep;
+  expose ZC_ReingCALog_V2   as CalcLog;
+}

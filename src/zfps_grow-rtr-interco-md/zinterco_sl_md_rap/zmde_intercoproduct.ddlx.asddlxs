@@ -1,0 +1,90 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Concept',
+        typeNamePlural: 'Concepts',
+        title: { type: #STANDARD }
+  },
+  presentationVariant: [{
+        sortOrder: [
+            {
+                by: 'Product',
+                direction: #ASC
+            },
+            {
+                by: 'Plant',
+                direction: #ASC
+            },
+            {
+                by: 'UnitOfMeasure',
+                direction: #ASC
+            },
+            {
+                by: 'Metric',
+                direction: #ASC
+            }
+        ],
+        visualizations: [{
+            type: #AS_LINEITEM
+        }]
+    }]
+}
+@UI.textArrangement: #TEXT_SEPARATE
+annotate entity ZC_IntercoProduct with
+{
+  @UI.facet: [ {
+                  id: 'Header',
+                  purpose: #STANDARD,
+                  type: #IDENTIFICATION_REFERENCE,
+                  label: 'Concept/Product',
+                  position: 10
+               }
+             ]
+
+  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ]}
+  @Consumption.valueHelpDefinition: [{ entity: { name:'I_ProductVH', element: 'Product'  } }]
+  @UI.selectionField: [{ position: 10 }]
+  @EndUserText.label: 'Product'
+  Product;
+
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 } ]}
+  @EndUserText.label: 'Product Name'
+  ProductName;
+
+  @UI: { lineItem: [ { position: 30 } ],identification:[ { position: 30 } ]}
+  @Consumption.valueHelpDefinition: [{ entity: { name:'I_Plant', element: 'Plant'  } }]
+  @UI.selectionField: [{ position: 20 }]
+  @EndUserText.label: 'Plant'
+  Plant;
+
+  @UI: { lineItem: [ { position: 40 } ],identification:[ { position: 40 } ]}
+  @EndUserText.label: 'Plant Name'
+  PlantName;
+
+  @UI: { lineItem: [ { position: 50 } ],identification:[ { position: 50 } ]}
+  @EndUserText.label: 'Unit of Measure'
+  UnitOfMeasure;
+
+  @UI: { lineItem: [ { position: 60 } ],identification:[ { position: 60 } ]}
+  @EndUserText.label: 'Unit of Measure Name'
+  UnitOfMeasureName;
+
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 70 } ]}
+  @EndUserText.label: 'Metric'
+  Metric;
+
+  @UI: { lineItem: [ { position: 80 } ],identification:[ { position: 80 } ]}
+  @EndUserText.label: 'Metric Name'
+  MetricName;
+
+  @UI: { lineItem: [ { position: 90 } ],identification:[ { position: 90 } ]}
+  @EndUserText.label: 'Product Type'
+  @UI.textArrangement: #TEXT_LAST
+  ProductType;
+
+  @UI: { lineItem: [ { position: 100 } ],identification:[ { position: 100 } ]}
+  @EndUserText.label: 'Product Type Name'
+  @UI.hidden: true
+  ProductTypeName;
+
+}

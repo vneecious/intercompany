@@ -1,0 +1,4 @@
+@EndUserText.label: 'Intercompay: Metrics'
+define service ZUI_IntercoMetric {
+  expose ZI_IntercoMetricCXBR as CostSharingBRGeneral;
+}

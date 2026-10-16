@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>ZREING_CA</ARBGB>
+    <MASTERLANG>S</MASTERLANG>
+    <STEXT>Reintegro de Gastos - App CA Motor de Calculo</STEXT>
+   </T100A>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <T100T>
+    <T100T>
+     <SPRSL>S</SPRSL>
+     <ARBGB>ZREING_CA</ARBGB>
+     <STEXT>Reintegro de Gastos - App CA Motor de Calculo</STEXT>
+    </T100T>
+   </T100T>
+   <T100_TEXTS>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>001</MSGNR>
+     <TEXT>&amp;1 &amp;2 &amp;3 &amp;4</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>002</MSGNR>
+     <TEXT>Documento &amp;1: sociedad &amp;2 sin código interno para generar CeCo</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>003</MSGNR>
+     <TEXT>Documento &amp;1: tasa explícita inválida para sociedad &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>004</MSGNR>
+     <TEXT>Documento &amp;1: posición &amp;2 en moneda &amp;3; se esperaba &amp;4</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>005</MSGNR>
+     <TEXT>Paso &amp;1: KOSTL_RULE=C requiere BUKRS_RULE=P.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>006</MSGNR>
+     <TEXT>Contrato/material &amp;1/&amp;2 sin centro de costo para el paso &amp;3.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>007</MSGNR>
+     <TEXT>Paso &amp;1: KOSTL_RULE=Z requiere BUKRS_RULE=O.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>008</MSGNR>
+     <TEXT>Paso &amp;1: sin mapeo de campaña &amp;2 para material &amp;3.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>009</MSGNR>
+     <TEXT>Paso &amp;1: campaña destino vacía para &amp;2/material &amp;3.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>010</MSGNR>
+     <TEXT>Reclasificación &amp;1: &amp;3 contrapartidas para &amp;2 (categoría &amp;4).</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>011</MSGNR>
+     <TEXT>Reclasificación &amp;1: destino &amp;3 de &amp;2 debe tener contexto GL.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>012</MSGNR>
+     <TEXT>Contrato/material &amp;1/&amp;2 sin CeBe para reclasificación &amp;3.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>013</MSGNR>
+     <TEXT>Paso &amp;1: importe fuera de rango al agrupar posiciones.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>014</MSGNR>
+     <TEXT>Paso &amp;1: agrupación supera 999 posiciones contables.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>400</MSGNR>
+     <TEXT>Sociedad o monedas incompletas para la conversión local</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>401</MSGNR>
+     <TEXT>Decimales de moneda ausentes o fuera del rango soportado</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>402</MSGNR>
+     <TEXT>Decimales contradictorios para una misma moneda</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>403</MSGNR>
+     <TEXT>Fecha de conversión local no informada</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>404</MSGNR>
+     <TEXT>Importe transaccional no representable sin pérdida en LINE y STEP</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>405</MSGNR>
+     <TEXT>La API de conversión devolvió factores no válidos</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>406</MSGNR>
+     <TEXT>La tasa local normalizada está fuera del rango permitido</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>407</MSGNR>
+     <TEXT>La tasa local pierde su valor positivo con cinco decimales</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>408</MSGNR>
+     <TEXT>La tasa local supera la capacidad del campo de tasa</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>409</MSGNR>
+     <TEXT>Tasa local no representable sin pérdida en LINE y STEP</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>410</MSGNR>
+     <TEXT>Importe local no representable sin pérdida en LINE y STEP</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>411</MSGNR>
+     <TEXT>Sin cotización &amp;1 para &amp;2/&amp;3 a fecha &amp;4</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>412</MSGNR>
+     <TEXT>La API excedió el rango de conversión local</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>413</MSGNR>
+     <TEXT>La API de conversión local falló</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>414</MSGNR>
+     <TEXT>Importe o tasa fuera de rango para la conversión local</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>415</MSGNR>
+     <TEXT>No fue posible completar la conversión local</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>416</MSGNR>
+     <TEXT>Datos incompletos para proyectar importes en moneda de transacción</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>417</MSGNR>
+     <TEXT>Memoria cambiaria incoherente para la línea &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>418</MSGNR>
+     <TEXT>Moneda &amp;1 sin precisión válida para la proyección</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>419</MSGNR>
+     <TEXT>Importe &amp;1 no representable en moneda &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>420</MSGNR>
+     <TEXT>Apertura incompleta o incoherente para la línea &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>421</MSGNR>
+     <TEXT>Paso &amp;1/&amp;2 sin moneda compatible para la proyección</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>422</MSGNR>
+     <TEXT>Residuo no representable en moneda &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>423</MSGNR>
+     <TEXT>Vista previa local no disponible para la apertura de la línea &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>424</MSGNR>
+     <TEXT>Reclasificación &amp;1: destino &amp;3 ausente para el rol &amp;2 (categoría &amp;4)</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>425</MSGNR>
+     <TEXT>Reclasificación &amp;1: falta contrapartida GL para &amp;2 (categoría &amp;4)</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>426</MSGNR>
+     <TEXT>Reclasificación &amp;1: destino y contrapartida &amp;3 coinciden para &amp;2</TEXT>
+    </item>
+   </T100_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

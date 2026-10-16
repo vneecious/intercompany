@@ -1,0 +1,132 @@
+//----------------------------------------------------------------------
+// Created by     : Oscar Augusto Leal Dominguez (EXT_OSCUGALD)
+// Change ID      : V001
+// Date           : 10.07.2026
+// Description    : App CA - F6-05 Tab Secuencia de Calculo: columnas
+//                  de la tabla anidada Step en el Object Page CalcLine.
+//                  Muestra cada paso del calculo (base, rate, output).
+//                  Patron ET §9.3 "Secuencia de Calculo: tabla STEP_A".
+// Transport      : DS4K9B5XZC
+// Reference      : 5000049390
+//----------------------------------------------------------------------
+// Begin Change ID V001 (10.07.2026 | EXT_OSCUGALD)
+// Descripcion : Creacion inicial DDLX ZC_ReingCAStep para F6-05.
+// End Change ID V001 (10.07.2026 | EXT_OSCUGALD)
+// Begin Change ID V002 (17.09.2026 | EXT_GONZALCA)
+// Description : Bug #78 - missing accents in header info and StepKey facet label.
+// End Change ID V002 (17.09.2026 | EXT_GONZALCA)
+//----------------------------------------------------------------------
+@Metadata.layer: #CUSTOMER
+
+@UI.headerInfo: {
+  typeName:       'Paso de Cálculo',
+  typeNamePlural: 'Pasos de Cálculo',
+  title:          { type: #STANDARD, value: 'StepDesc' },
+  description:    { type: #STANDARD, value: 'StepCategory' }
+}
+
+// V001 (CC) - #118: semantic highlighting for NET and FX result rows.
+@UI.lineItem: [{ criticality: 'RowCriticality' }]
+annotate view ZC_ReingCAStep with
+{
+  // V001 (CC) - #118: technical UI property, excluded from table personalization.
+  @UI.hidden: true
+  RowCriticality;
+
+  @UI.fieldGroup: [{ qualifier: 'StepKey', position: 10 }]
+  CalcRunId;
+
+  @UI.fieldGroup: [{ qualifier: 'StepKey', position: 20 }]
+  LineNum;
+
+  @UI.lineItem:   [{ position: 10, importance: #HIGH }]
+  @UI.fieldGroup: [{ qualifier: 'StepKey', position: 30 }]
+  StepNum;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : Seq - baja de importancia de MEDIUM a LOW (pedido de Frontend, reduce ruido visual del tab
+  // "Secuencia de Calculo"); posicion y fieldGroup StepKey sin cambios
+  @UI.lineItem:   [{ position: 20, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'StepKey', position: 40 }]
+  Seq;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.lineItem:   [{ position: 30, importance: #HIGH }]
+  @UI.fieldGroup: [{ qualifier: 'StepData', position: 10 }]
+  StepCategory;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : TaxType - baja de importancia de MEDIUM a LOW; posicion y fieldGroup StepData sin cambios
+  @UI.lineItem:   [{ position: 40, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'StepData', position: 20 }]
+  TaxType;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.lineItem:   [{ position: 50, importance: #HIGH }]
+  @UI.fieldGroup: [{ qualifier: 'StepData', position: 30 }]
+  StepDesc;
+
+  @UI.fieldGroup: [{ qualifier: 'StepData', position: 40 }]
+  TxRuleId;
+
+  @UI.lineItem:   [{ position: 60, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'StepAmounts', position: 10 }]
+  InputAmt;
+
+  @UI.fieldGroup: [{ qualifier: 'StepAmounts', position: 20 }]
+  InputCurrency;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : RatePct - baja de importancia de MEDIUM a LOW; posicion y fieldGroup StepAmounts sin cambios
+  @UI.lineItem:   [{ position: 70, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'StepAmounts', position: 30 }]
+  RatePct;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.fieldGroup: [{ qualifier: 'StepAmounts', position: 40 }]
+  RateDesc;
+
+  @UI.lineItem:   [{ position: 80, importance: #HIGH }]
+  @UI.fieldGroup: [{ qualifier: 'StepAmounts', position: 50 }]
+  OutputAmt;
+
+  @UI.fieldGroup: [{ qualifier: 'StepAmounts', position: 60 }]
+  OutputCurrency;
+
+  @UI.lineItem:   [{ position: 90, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'StepAmounts', position: 70 }]
+  Sign;
+
+  // Begin Change ID V001 (14.07.2026 | EXT_GONZALCA)
+  // Descripcion : SourceTable - alta como columna lineItem (hoy solo tenia fieldGroup). Spec pedia position
+  // 70 pero colisiona con RatePct (ya ocupada) - se reubica en position 100, ultima posicion libre despues
+  // de Sign (ver Desviacion #6 del blueprint). fieldGroup StepSource sin cambios
+  @UI.lineItem:   [{ position: 100, importance: #MEDIUM }]
+  @UI.fieldGroup: [{ qualifier: 'StepSource', position: 10 }]
+  SourceTable;
+  // End Change ID V001 (14.07.2026 | EXT_GONZALCA)
+
+  @UI.facet: [
+    { id: 'StepKey', type: #COLLECTION, label: 'Identificación', position: 10 },
+    { id: 'StepKeyFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'StepKey', parentId: 'StepKey', position: 10 },
+    { id: 'StepData', type: #COLLECTION, label: 'Tipo de Paso', position: 20 },
+    { id: 'StepDataFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'StepData', parentId: 'StepData', position: 10 },
+    { id: 'StepAmounts', type: #COLLECTION, label: 'Montos', position: 30 },
+    { id: 'StepAmountsFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'StepAmounts', parentId: 'StepAmounts', position: 10 },
+    { id: 'StepSource', type: #COLLECTION, label: 'Fuente', position: 40 },
+    { id: 'StepSourceFields', type: #FIELDGROUP_REFERENCE, targetQualifier: 'StepSource', parentId: 'StepSource', position: 10 }
+  ]
+  SourceKey;
+
+  // V001 (CC) - CA-11 (Brazil): transaction-currency fields.
+  @EndUserText.label: 'Moneda de transacción'
+  @UI.lineItem: [{ position: 300, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'StepAmounts', position: 110 }]
+  TransCurrency;
+
+  @EndUserText.label: 'Salida en moneda de transacción'
+  @UI.lineItem: [{ position: 310, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'StepAmounts', position: 120 }]
+  OutputTransAmt;
+}
+

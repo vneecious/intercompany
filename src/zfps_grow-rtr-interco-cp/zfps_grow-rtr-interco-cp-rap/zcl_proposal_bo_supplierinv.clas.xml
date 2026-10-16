@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_PROPOSAL_BO_SUPPLIERINV</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>Manage creation of Supplier Invoice BO</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>5</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_WHT_CODES_FOR_ITEM</CMPNAME>
+     <SCONAME>IV_COMPANYCODE</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Company Code</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_WHT_CODES_FOR_ITEM</CMPNAME>
+     <SCONAME>IV_CURRENCY</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Global Currency</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_WHT_CODES_FOR_ITEM</CMPNAME>
+     <SCONAME>IV_PRODUCT</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Material Number</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_WHT_CODES_FOR_ITEM</CMPNAME>
+     <SCONAME>IV_PROVIDER</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Company Code</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_WHT_CODES_FOR_ITEM</CMPNAME>
+     <SCONAME>IV_RECIPIENT</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Company Code</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_WHT_CODES_FOR_ITEM</CMPNAME>
+     <SCONAME>IV_SUPPLIER</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Partner for Abap Cloud</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>

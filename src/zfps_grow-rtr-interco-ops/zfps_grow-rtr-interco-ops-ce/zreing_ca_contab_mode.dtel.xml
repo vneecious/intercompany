@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZREING_CA_CONTAB_MODE</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ZREING_CA_CONTAB_MODE</DOMNAME>
+    <HEADLEN>34</HEADLEN>
+    <SCRLEN1>04</SCRLEN1>
+    <SCRLEN2>11</SCRLEN2>
+    <SCRLEN3>26</SCRLEN3>
+    <DDTEXT>CONTAB Dispatcher mode</DDTEXT>
+    <REPTEXT>CONTAB Dispatcher mode (C/P/S)</REPTEXT>
+    <SCRTEXT_S>Mode</SCRTEXT_S>
+    <SCRTEXT_M>Mode CONTAB</SCRTEXT_M>
+    <SCRTEXT_L>CONTAB Dispatcher mode</SCRTEXT_L>
+    <DTELMASTER>E</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Modo del dispatcher CONTAB</DDTEXT>
+     <REPTEXT>Modo del dispatcher CONTAB (C/P/S)</REPTEXT>
+     <SCRTEXT_S>Modo</SCRTEXT_S>
+     <SCRTEXT_M>Modo CONTAB</SCRTEXT_M>
+     <SCRTEXT_L>Modo del dispatcher CONTAB</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

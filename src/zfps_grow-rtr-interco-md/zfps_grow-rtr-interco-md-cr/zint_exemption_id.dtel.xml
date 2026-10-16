@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZINT_EXEMPTION_ID</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ZINT_EXEMPTION_ID</DOMNAME>
+    <HEADLEN>55</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>20</SCRLEN2>
+    <SCRLEN3>40</SCRLEN3>
+    <DDTEXT>Intercompany Clasification Rule ID</DDTEXT>
+    <REPTEXT>Exemption ID</REPTEXT>
+    <SCRTEXT_S>Exemp.ID</SCRTEXT_S>
+    <SCRTEXT_M>Exemption ID</SCRTEXT_M>
+    <SCRTEXT_L>Exemption ID</SCRTEXT_L>
+    <DTELMASTER>E</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>P</DDLANGUAGE>
+     <DDTEXT>ID de Regra de Classificação Intercompany</DDTEXT>
+     <REPTEXT>ID de Regra</REPTEXT>
+     <SCRTEXT_S>ID Regra</SCRTEXT_S>
+     <SCRTEXT_M>ID de Regra</SCRTEXT_M>
+     <SCRTEXT_L>ID de Regra</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>ID de Regla de Clasificación Intercompany</DDTEXT>
+     <REPTEXT>ID de Regla</REPTEXT>
+     <SCRTEXT_S>ID Regla</SCRTEXT_S>
+     <SCRTEXT_M>ID de Regla</SCRTEXT_M>
+     <SCRTEXT_L>ID de Regla</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

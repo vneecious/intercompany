@@ -1,0 +1,74 @@
+managed with additional save implementation in class ZBP_I_INTERCORETENCIONESP_S unique;
+strict;
+with draft;
+
+define behavior for ZI_IntercoRetencionesP_S alias IntercoRetencionAll
+draft table ZINTER_WHT_Z_D_S
+with unmanaged save
+lock master total etag LastChangedAtMax
+authorization master( global )
+
+{
+  field ( readonly )
+   SingletonID;
+
+
+  update;
+  internal create;
+  internal delete;
+
+  draft action ( features : instance ) Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare {
+    validation IntercoRetencionesP ~ ValidateDataConsistency;
+  }
+  action ( features : instance ) SelectCustomizingTransptReq parameter D_SelectCustomizingTransptReqP result [1] $self;
+
+  association _IntercoRetencionesP { create ( features : instance ); with draft; }
+}
+
+define behavior for ZI_IntercoRetencionesP alias IntercoRetencionesP
+persistent table ZINTER_WHT_ZUONR
+draft table ZINTER_WHT_ZUO_D
+lock dependent by _IntercoRetencionAll
+authorization dependent by _IntercoRetencionAll
+
+{
+  field ( mandatory : create )
+   Land1,
+   Bukrs,
+   Lifnr,
+   Concepto;
+
+  field ( readonly )
+   SingletonID;
+
+  field ( readonly : update )
+   Land1,
+   Bukrs,
+   Lifnr,
+   Concepto;
+
+
+  update( features : global );
+  delete( features : global );
+
+  factory action ( features : instance ) CopyIntercoRetencionesP parameter ZD_CopyIntercoRetencionesPP [1];
+
+  mapping for ZINTER_WHT_ZUONR
+  {
+    Land1 = LAND1;
+    Bukrs = BUKRS;
+    Lifnr = LIFNR;
+    Concepto = CONCEPTO;
+    Witht = WITHT;
+    WtWithcd = WT_WITHCD;
+  }
+
+  association _IntercoRetencionAll { with draft; }
+
+  validation ValidateTransportRequest on save ##NOT_ASSIGNED_TO_DETACT { create; update; delete; }
+  validation ValidateDataConsistency on save { create; update; }
+}

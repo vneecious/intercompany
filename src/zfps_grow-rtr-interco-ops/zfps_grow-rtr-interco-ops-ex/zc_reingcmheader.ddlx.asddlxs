@@ -1,0 +1,36 @@
+@Metadata.layer: #CORE
+annotate entity ZC_ReingCMHeader with
+{
+  @UI.facet: [
+    { id:              'HeaderInfo',
+      purpose:         #STANDARD,
+      type:            #FIELDGROUP_REFERENCE,
+      label:           'Datos del Registro',
+      position:        10,
+      targetQualifier: 'HeaderInfo' },
+
+    { id:              'CMData',
+      purpose:         #STANDARD,
+      type:            #FIELDGROUP_REFERENCE,
+      label:           'Datos de Carga',
+      position:        20,
+      targetQualifier: 'CM_DATA' },
+
+    { id:            'Receivers',
+      purpose:       #STANDARD,
+      type:          #LINEITEM_REFERENCE,
+      label:         'Sociedades Receptoras',
+      position:      30,
+      targetElement: '_Receivers' },
+    // Mod 02.10.2026 EXT_AGFAGINA - defecto 518 (ET 7.9): historial de cambios del
+    // registro como ultima seccion del detalle. La ET lo proponia como boton en el
+    // listado porque no habia navegacion al detalle; hoy la hay.
+    { id:            'History',
+      purpose:       #STANDARD,
+      type:          #LINEITEM_REFERENCE,
+      label:         'Historial de cambios',
+      position:      90,
+      targetElement: '_Log' }
+  ]
+  _Receivers;
+}

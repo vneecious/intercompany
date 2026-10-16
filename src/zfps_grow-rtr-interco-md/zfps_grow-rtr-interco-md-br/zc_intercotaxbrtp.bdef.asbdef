@@ -1,0 +1,33 @@
+projection;
+strict ( 2 );
+use draft;
+use side effects;
+
+define behavior for ZC_IntercoTaxBRTP alias TaxBrazil
+use etag
+{
+  use create;
+  use update;
+  use delete;
+  use association _Items { create; with  draft; }
+
+  use action Delete;
+  use action Restore;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use function DefaultForCreate;
+}
+
+define behavior for ZC_IntercoTaxBRItemTP alias TaxBrazilItem
+use etag
+{
+  use update;
+  use delete;
+  use association _Header;
+
+}

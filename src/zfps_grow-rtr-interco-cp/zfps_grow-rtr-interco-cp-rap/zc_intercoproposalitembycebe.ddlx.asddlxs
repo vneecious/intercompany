@@ -1,0 +1,126 @@
+//@Metadata.layer: #CUSTOMER
+//@UI: {
+//  headerInfo: {
+//        typeName: 'Profit Center',
+//        typeNamePlural: 'Profit Centers',
+//        title: { label: '{@i18n>ProfitCenter}',
+//                 value: 'Profitcenter',
+//                 type: #STANDARD }
+//  }
+//  }
+//@UI.textArrangement: #TEXT_LAST
+//@UI.presentationVariant: [{
+//    sortOrder: [
+//        { by: 'ProfitCenter', direction: #ASC }
+//    ]
+//}]
+//annotate entity ZC_IntercoProposalItemByCeBe with
+//{
+//
+//  @UI.hidden: true
+//  Id;
+//
+//  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ],
+//          fieldGroup: [{ qualifier: 'BasicData', position: 40 } ]}
+//  ProfitCenter;
+//
+//  @UI: { lineItem: [ { position: 30, label: 'Product' } ], identification: [ { position: 30 } ] }
+//  ProductName;
+//
+//  @UI: { lineItem: [ { position: 40, label: 'Base Amount C' } ],identification:[ { position: 40 } ]}
+//  Baseamountprofitcenter;
+//
+//  // Anotación para mostrar BaseAmountH
+//  @UI: { lineItem: [ { position: 50, label: 'Base Amount H' } ],identification:[ { position: 50 } ]}
+//  BaseamountprofitcenterH;
+//
+//  // Anotación para mostrar BaseAmountL
+//  @UI: { lineItem: [ { position: 60, label: 'Base Amount L' } ],identification:[ { position: 60 } ]}
+//  BaseamountprofitcenterL;
+//}
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Profit Center',
+        typeNamePlural: 'Profit Centers',
+        title: { label: '{@i18n>ProfitCenter}',
+                 value: 'Profitcenter',
+                 type: #STANDARD }
+  }
+  }
+@UI.textArrangement: #TEXT_LAST
+@UI.presentationVariant: [{
+    sortOrder: [
+        { by: 'GroupCode', direction: #ASC }
+    ]
+}]
+annotate entity ZC_IntercoProposalItemByCeBe with
+{
+
+  @UI.hidden: true
+  Id;
+
+  @UI.hidden: true
+  Product;
+
+  @UI.hidden: true
+  BaseCurrencyProfitCenter;
+
+  @UI: { lineItem: [ { hidden: true } ],
+         identification:[ { position: 10 } ],
+         fieldGroup: [{ qualifier: 'BasicData', position: 40 }] }
+  ProfitCenter;
+
+  @UI: { lineItem: [ { position: 10, label: 'Distribución por' } ],
+         identification: [ { position: 10 } ] }
+  GroupCode;
+
+  @UI: { lineItem: [ { position: 20, label: 'Descripción' } ],
+         identification: [ { position: 20 } ] }
+  GroupName;
+
+  @UI: { lineItem: [ { position: 25, label: 'Cost Sharing' } ],
+         identification: [ { position: 25 } ] }
+  IsCostSharing;
+
+  @UI.hidden: true
+  IsBermudas;
+
+  -- Ini Facturación Local CH/ARG EXT_OSCUGALD 15.10.2026 - C23: indicador técnico Local, patrón IsBermudas
+  @UI.hidden: true
+  IsLocal;
+  -- Fin EXT_OSCUGALD 15.10.2026 - C23
+
+  @UI: { lineItem: [ { position: 30, label: 'Product' } ],
+         identification: [ { position: 30, label: 'Product' } ] }
+  ProductName;
+
+  @UI: { lineItem: [ { position: 40, label: 'Base Amount C' } ],
+         identification:[ { position: 40 } ]}
+  Baseamountprofitcenter;
+
+  @UI: { lineItem: [ { position: 50, label: 'Base Amount H' } ],
+         identification:[ { position: 50 } ]}
+  BaseamountprofitcenterH;
+
+  @UI: { lineItem: [ { position: 60, label: 'Base Amount L' } ],
+           identification:[ { position: 60 } ]}
+  BaseamountprofitcenterL;
+
+  // ── NUEVO: moneda y monto local (solo aplica ramas 1A y 1B) ──────────────
+  @UI.hidden: true
+  CompanyCodeCurrency;
+
+  @UI: { lineItem: [ { position: 70, label: 'Local Amount C' } ],
+         identification:[ { position: 70 } ]}
+  AmountInCompanyCodeCurrencyC;
+
+  @UI: { lineItem: [ { position: 80, label: 'Local Amount H' } ],
+         identification:[ { position: 80 } ]}
+  AmountInCompanyCodeCurrencyH;
+
+  @UI: { lineItem: [ { position: 90, label: 'Local Amount L' } ],
+         identification:[ { position: 90 } ]}
+  AmountInCompanyCodeCurrencyL;
+  // ─────────────────────────────────────────────────────────────────────────
+}

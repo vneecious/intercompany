@@ -1,0 +1,56 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: { typeName: 'Intercompany Snapshot Base',
+                typeNamePlural: 'Intercompany Snapshots Bases',
+                title: { type: #STANDARD }
+                } ,
+               presentationVariant: [{
+        visualizations: [{
+            type: #AS_LINEITEM
+        }]
+    }]
+}
+annotate entity ZC_INTERCOBASIS with
+{
+  @UI.facet: [ { id:              'Header',
+                 purpose:         #STANDARD,
+                 type:            #COLLECTION,
+                 label:           'Header',
+                 position:        10 } ,
+               { id:              'Items',
+                 purpose:         #STANDARD,
+                 type:            #LINEITEM_REFERENCE,
+                 label:           'Items',
+                 position:        20,
+                 targetElement:   '_Items'}]
+  @UI: {  lineItem: [{ position: 10 }], identification: [{ qualifier: 'Header', position: 10 }] }
+  @EndUserText.label: 'Id'
+  Id;
+  @UI: {  lineItem: [{ position: 20}], identification: [{ qualifier: 'Header', position: 20 }] }
+  @EndUserText.label: 'Is Released'
+  @UI.selectionField: [{ position: 10 }]
+  @Consumption.valueHelpDefinition: [{
+      entity: { name: 'ZI_INTERCOBASISSTATUS_SH', element: 'StatusId' } }]
+  IsReleased;
+  @UI: {  lineItem: [{ position: 30}], identification: [{ qualifier: 'Header', position: 30 }] }
+  @EndUserText.label: 'Reoirt executed At'
+  Reportexecutedat;
+  @UI: {  lineItem: [{ position: 40}], identification: [{ qualifier: 'Header', position: 50 }] }
+  @EndUserText.label: 'Created By'
+  CreatedBy;
+  @UI: {  lineItem: [{ position: 50}], identification: [{ qualifier: 'Header', position: 60 }] }
+  @EndUserText.label: 'Created At'
+  CreatedAt;
+  @UI: {  lineItem: [{ position: 60}], identification: [{ qualifier: 'Header', position: 70 }] }
+  @EndUserText.label: 'Description'
+  Description;
+
+  @UI: {  lineItem: [{ position: 70}] }
+  @EndUserText.label: 'Proposal Id'
+  proposalid;
+
+  @UI: {  lineItem: [{ position: 80}] }
+  @EndUserText.label: 'Proposal Product'
+  proposalproduct;
+
+}

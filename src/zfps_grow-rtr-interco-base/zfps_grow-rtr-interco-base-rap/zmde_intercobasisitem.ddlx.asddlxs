@@ -1,0 +1,45 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+        typeName: 'Item snapshot billing Base',
+        typeNamePlural: 'Items Billing Base',
+        title: { type: #STANDARD }
+    }
+    }
+annotate entity ZC_INTERCOBASISITEM with
+{
+  @UI.facet: [ { id:              'Items',
+                 purpose:         #STANDARD,
+                 type:            #IDENTIFICATION_REFERENCE,
+                 label:           'Items',
+                 position:        10 } ]
+  @UI.hidden: true
+  Id;
+  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ]}
+  CompanyCode;
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 } ]}
+  Fiscalyear;
+  @UI: { lineItem: [ { position: 30 } ],identification:[ { position: 30 } ]}
+  Fiscalperiod;
+  @UI: { lineItem: [ { position: 40 } ],identification:[ { position: 40 } ]}
+  Ledger;
+  @UI: { lineItem: [ { position: 50 } ],identification:[ { position: 50 } ]}
+  Glaccount;
+  @UI: { lineItem: [ { position: 60 } ],identification:[ { position: 60 } ]}
+  Product;
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 70 } ]}
+  Costcenter;
+  @UI: { lineItem: [ { position: 80 } ],identification:[ { position: 80 } ]}
+  Profitcenter;
+  @UI: { lineItem: [ { position: 90 } ],identification:[ { position: 90 } ]}
+  PaymentType;
+  @UI: { lineItem: [ { position: 100 } ],identification:[ { position: 100 } ]}
+  Companycodecurrency;
+  @UI: { lineItem: [ { position: 110 } ],identification:[ { position: 110 } ]}
+  Globalcurrency;
+  @UI: { lineItem: [ { position: 120 } ],identification:[ { position: 120 } ]}
+  Amountinglobalcurrency;
+  @UI: { lineItem: [ { position: 130 } ],identification:[ { position: 130 } ]}
+  Amountincompanycodecurrency;
+
+}

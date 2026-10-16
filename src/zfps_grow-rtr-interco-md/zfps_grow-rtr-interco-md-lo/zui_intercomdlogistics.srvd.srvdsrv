@@ -1,0 +1,4 @@
+@EndUserText.label: 'Service definition for ZC_INTERCOMPANYCOMPANY'
+define service ZUI_INTERCOMDLOGISTICS {
+  expose ZC_INTERCOCOMPANYCODELOGISTICS as CompanyCodeLogistics;
+}

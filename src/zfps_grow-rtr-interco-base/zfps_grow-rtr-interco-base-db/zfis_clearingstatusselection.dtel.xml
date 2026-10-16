@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZFIS_CLEARINGSTATUSSELECTION</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ZFIS_CLEARINGSTATUSSELECTION</DOMNAME>
+    <HEADLEN>55</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>20</SCRLEN2>
+    <SCRLEN3>40</SCRLEN3>
+    <DDTEXT>Clearing Status Selection</DDTEXT>
+    <REPTEXT>Clearing Status Selection</REPTEXT>
+    <SCRTEXT_S>Cl. Status</SCRTEXT_S>
+    <SCRTEXT_M>Clearing Status</SCRTEXT_M>
+    <SCRTEXT_L>Clearing Status Selection</SCRTEXT_L>
+    <DTELMASTER>E</DTELMASTER>
+    <REFKIND>D</REFKIND>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>D</LANGU>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>D</DDLANGUAGE>
+     <DDTEXT>Ausgleichsstatusselektion</DDTEXT>
+     <REPTEXT>Ausgleichsstatusselektion</REPTEXT>
+     <SCRTEXT_S>AusglStat.</SCRTEXT_S>
+     <SCRTEXT_M>Ausgleichsstatus</SCRTEXT_M>
+     <SCRTEXT_L>Ausgleichsstatusselektion</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>P</DDLANGUAGE>
+     <DDTEXT>Seleção do status de compensação</DDTEXT>
+     <REPTEXT>Seleção do status de compensação</REPTEXT>
+     <SCRTEXT_S>St.comp.</SCRTEXT_S>
+     <SCRTEXT_M>Status compensação</SCRTEXT_M>
+     <SCRTEXT_L>Seleção do status de compensação</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Selecc.status compensac.</DDTEXT>
+     <REPTEXT>Selecc.status compensac.</REPTEXT>
+     <SCRTEXT_S>Stat.clase</SCRTEXT_S>
+     <SCRTEXT_M>Status compensación</SCRTEXT_M>
+     <SCRTEXT_L>Selecc.status compensac.</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,253 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Tax Definition for Brazil',
+    typeNamePlural: 'Taxes Definitions for Brazil',
+    title: {
+        label: 'Tax Definition'
+    }
+  },
+/* Presentation Variant */
+  presentationVariant: [{
+    sortOrder: [
+      { by: 'ProviderCompanyCode',  direction: #ASC },
+      { by: 'RecipientCompanyCode',  direction: #ASC },
+      { by: 'Product',  direction: #ASC },
+      { by: 'ValidTo', direction: #DESC }
+    ],
+    visualizations: [{ type: #AS_LINEITEM }]
+   }],
+  textArrangement: #TEXT_LAST
+}
+@Consumption.semanticObject: 'IntercoExemption'
+annotate entity ZC_IntercoTaxBRTP with
+{
+  @UI: {
+    lineItem: [
+        { importance: #HIGH } ,
+        { type: #FOR_ACTION, dataAction: 'Delete', label: 'Delete' }
+        ],
+    identification: [{
+        importance: #HIGH,
+        label: 'Delete',
+        inline: true,
+        dataAction: 'Delete',
+        type: #FOR_ACTION,
+        position: 15 }] }
+
+
+  @UI.facet: [
+                {
+             id: 'GeneralInformation',
+             position: 10,
+             purpose: #STANDARD,
+             type: #COLLECTION,
+             label: '{@i18n>GeneralInformation}'
+         },
+         {
+             id: 'HeaderFacet',
+             purpose: #HEADER,
+             type: #COLLECTION,
+             label: '{@i18n>ClassificationRule}',
+             targetQualifier: 'HeaderItems'
+         },
+         {
+             id: 'HeaderBasicData',
+             label: '{@i18n>BasicData}',
+             position: 10,
+             purpose: #HEADER,
+             type: #FIELDGROUP_REFERENCE,
+             targetQualifier: 'HeaderBasicData'
+         },
+         {
+             id: 'HeaderLog',
+             label: '{@i18n>Log}',
+             position: 30,
+             purpose: #HEADER,
+             type: #FIELDGROUP_REFERENCE,
+             targetQualifier: 'HeaderLog'
+         },
+         {
+             id: 'BasicData',
+             label: '{@i18n>BasicData}',
+             position: 10,
+             purpose: #STANDARD,
+             type: #FIELDGROUP_REFERENCE,
+             targetQualifier: 'BasicData',
+             parentId: 'GeneralInformation'
+         },
+         {
+             id: 'Validity',
+             label: '{@i18n>Validity}',
+             position: 20,
+             purpose: #STANDARD,
+             type: #FIELDGROUP_REFERENCE,
+             targetQualifier: 'Validity',
+             parentId: 'GeneralInformation'
+         },
+                 {
+             id: 'TaxTypeDefiniton',
+             label: '{@i18n>TaxTypeDefiniton}',
+             position: 20,
+             purpose: #STANDARD,
+             type: #COLLECTION
+         },
+         {
+             type: #FIELDGROUP_REFERENCE,
+             position: 10,
+             purpose: #STANDARD,
+             targetQualifier: 'RuleParameters',
+             parentId: 'RuleParameters'
+         },
+               {
+             id: 'TaxTypes',
+             label: '{@i18n>TaxTypes}',
+             importance: #HIGH,
+             position: 20,
+             purpose: #STANDARD,
+             type: #COLLECTION,
+             parentId: 'TaxTypeDefiniton'
+         },
+         {
+           type: #LINEITEM_REFERENCE,
+           position: 10,
+           purpose: #STANDARD,
+           targetElement: '_Items',
+           parentId: 'TaxTypes'
+         }]
+
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 05
+    }],
+    selectionField: [{ position: 05 }],
+    // Object Page
+    fieldGroup: [{ qualifier: 'BasicData', position: 05 }, { qualifier: 'HeaderBasicData', position: 05 }]
+  }
+  @Consumption.valueHelpDefinition: [{
+      entity: { name: 'ZI_DomainFixedValueVH', element: 'value_low' },
+      useForValidation: true,
+      additionalBinding: [{ element: 'domain_name', localConstant: 'ZINT_TXBR_DOCTYPE', usage: #FILTER }],
+      distinctValues: true
+      }]
+  @EndUserText.label: '{@i18n>DocumentType}'
+  DocumentType;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 10
+    }],
+    selectionField: [{ position: 10 }],
+    // Object Page
+    fieldGroup: [{ qualifier: 'BasicData', position: 10 }, { qualifier: 'HeaderBasicData', position: 10 }]
+  }
+  @Consumption.valueHelpDefinition: [{ entity.name: 'ZI_IntercoCompanyCodeVH', entity.element: 'CompanyCode', useForValidation: true }]
+  @EndUserText.label: '{@i18n>ProviderCompanyCode}'
+  ProviderCompanyCode;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 20 ,
+        importance: #HIGH
+    }],
+    selectionField: [{ position: 20 }],
+    // Object Page
+    identification: [{
+        position: 20
+    }],
+    fieldGroup: [{ qualifier: 'BasicData', position: 20 }, { qualifier: 'HeaderBasicData', position: 20 }]
+  }
+  @Consumption.valueHelpDefinition: [{ entity.name: 'ZI_IntercoCompanyCodeVH', entity.element: 'CompanyCode', useForValidation: true }]
+  @EndUserText.label: '{@i18n>RecipientCompanyCode}'
+  RecipientCompanyCode;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 30 ,
+        importance: #HIGH
+    }],
+    selectionField: [{ position: 30 }],
+    // Object Page
+    identification: [{
+        position: 20
+    }],
+    fieldGroup: [{ qualifier: 'BasicData', position: 30 }, { qualifier: 'HeaderBasicData', position: 30 }]
+  }
+  @Consumption.valueHelpDefinition: [{
+  entity.name:'ZI_IntercoProduct_SH',
+  entity.element: 'Product',
+  distinctValues: true,
+  useForValidation: true,
+  additionalBinding: [{
+    element: 'Product',
+    localElement: 'Product',
+    usage: #FILTER_AND_RESULT},
+  {  element: 'ProductName',
+     usage: #RESULT }
+     ]}]
+  Product;
+
+  @UI: {
+    // List Page
+    lineItem: [{
+        position: 35 ,
+        importance: #HIGH
+    }],
+    selectionField: [{ position: 30 }],
+    // Object Page
+    identification: [{
+        position: 35
+    }],
+    fieldGroup: [{ qualifier: 'BasicData', position: 30 }, { qualifier: 'HeaderBasicData', position: 30 }]
+  }
+  @Consumption.valueHelpDefinition: [{
+  entity.name:'ZI_IntercoDepartmentVH',
+  entity.element: 'Department',
+  distinctValues: true,
+  useForValidation: true
+  }]
+  Department;
+
+  @EndUserText.label: '{@i18n>ValidFrom}'
+  @UI: {
+    lineItem: [ { position: 40 } ],
+    identification:[ { position: 40 } ],
+    selectionField: [{exclude: true}],
+    fieldGroup: [{ qualifier: 'Validity', position: 10 }]
+  }
+  ValidFrom;
+  @EndUserText.label: '{@i18n>ValidTo}'
+  @UI: {
+    lineItem: [ { position: 40 } ],
+    identification:[ { position: 40 } ],
+    selectionField: [{exclude: true}],
+    fieldGroup: [{ qualifier: 'Validity', position: 20 }]
+  }
+  ValidTo;
+  @UI.fieldGroup: [{ qualifier: 'HeaderLog' }]
+  @UI.selectionField: [{ exclude: true }]
+  @UI.lineItem: [{ position: 50 }]
+  @EndUserText.label: '{@i18n>CreatedAt}'
+  CreatedAt;
+  @UI.fieldGroup: [{ qualifier: 'HeaderLog' }]
+  @UI.selectionField: [{exclude: true}]
+  @UI.lineItem: [{ position: 60 }]
+  @EndUserText.label: '{@i18n>CreatedBy}'
+  CreatedBy;
+  @UI.fieldGroup: [{ qualifier: 'HeaderLog' }]
+  @UI.selectionField: [{exclude: true}]
+  @UI.lineItem: [{ position: 70 }]
+  @EndUserText.label: '{@i18n>LastChangedAt}'
+  LastChangedAt;
+  @UI.fieldGroup: [{ qualifier: 'HeaderLog' }]
+  @UI.selectionField: [{exclude: true}]
+  @UI.lineItem: [{ position: 80 }]
+  @EndUserText.label: '{@i18n>LastChangedBy}'
+  LastChangedBy;
+
+}

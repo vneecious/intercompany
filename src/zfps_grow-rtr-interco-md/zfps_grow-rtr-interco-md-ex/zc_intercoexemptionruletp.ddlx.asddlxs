@@ -1,0 +1,32 @@
+@Metadata.layer: #CORE
+@UI.headerInfo:{
+  typeName:       'Intercompany Exemption Rule',
+  title:          {value: 'ID'}
+}
+annotate entity ZC_IntercoExemptionRuleTP with
+{
+  @UI.lineItem: [{ exclude: true }]
+  companycode;
+  @UI.lineItem: [{ exclude: true }]
+  product;
+  @UI.lineItem: [{ exclude: true }]
+  validfrom;
+  @UI.lineItem: [{ exclude: true }]
+  ID;
+  @UI.lineItem: [ { position: 10 } ]
+  fiscalyear;
+  @UI.lineItem: [ { position: 20 } ]
+  accountingdocument;
+  @UI.lineItem: [ { position: 30 } ]
+//  @Consumption.valueHelpDefinition: [{ entity:{ name: 'ZZ1_VAccountingDocumentTyp', element: 'AccountingDocumentType' } }]
+  AccountingDocumentType;
+  @UI.lineItem: [ { position: 40 } ]
+  @Consumption.valueHelpDefinition: [{ entity:{ name: 'I_GLAccountStdVH', element: 'GLAccount' } }, { useForValidation: true }]
+  GLAccount;
+  @UI.lineItem: [ { position: 50 } ]
+  @Consumption.valueHelpDefinition: [{ entity:{ name: 'I_ProfitCenterStdVH', element: 'ProfitCenter' } }]
+  ProfitCenter;
+  @UI.lineItem: [ { position: 60 } ]
+  @Consumption.valueHelpDefinition: [{ entity:{ name: 'I_CostCenterStdVH', element: 'CostCenter' } }]
+  CostCenter;
+}

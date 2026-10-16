@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZINT_DTE_FIS_HSL</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>WERTV12</DOMNAME>
+    <HEADLEN>55</HEADLEN>
+    <SCRLEN3>40</SCRLEN3>
+    <DDTEXT>Amount in Company Code Currency</DDTEXT>
+    <REPTEXT>Amount in Company Code Currency</REPTEXT>
+    <SCRTEXT_L>Amount in Company Code Currency</SCRTEXT_L>
+    <DTELMASTER>E</DTELMASTER>
+    <REFKIND>D</REFKIND>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>D</LANGU>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>D</DDLANGUAGE>
+     <DDTEXT>Betrag in Buchungskreiswährung</DDTEXT>
+     <REPTEXT>Betrag in Buchungskreiswährung</REPTEXT>
+     <SCRTEXT_S>BetrgBuKrs</SCRTEXT_S>
+     <SCRTEXT_M>Betrag in BuKrsWährg</SCRTEXT_M>
+     <SCRTEXT_L>Betrag in Buchungskreiswährung</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>P</DDLANGUAGE>
+     <DDTEXT>Montante em moeda da empresa</DDTEXT>
+     <REPTEXT>Montante em moeda da empresa</REPTEXT>
+     <SCRTEXT_S>MntMdaEmpr</SCRTEXT_S>
+     <SCRTEXT_M>Mont.moeda empresa</SCRTEXT_M>
+     <SCRTEXT_L>Montante em moeda da empresa</SCRTEXT_L>
+    </item>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Importe en moneda de sociedad</DDTEXT>
+     <REPTEXT>Importe en moneda de sociedad</REPTEXT>
+     <SCRTEXT_S>ImptMonSo</SCRTEXT_S>
+     <SCRTEXT_M>Impte.moneda socied.</SCRTEXT_M>
+     <SCRTEXT_L>Importe en moneda de sociedad</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

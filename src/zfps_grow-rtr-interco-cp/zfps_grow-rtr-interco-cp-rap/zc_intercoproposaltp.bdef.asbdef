@@ -1,0 +1,60 @@
+projection;
+strict ( 2 );
+use side effects;
+define behavior for ZC_IntercoProposalTP //alias <alias_name>
+{
+  //  use create;
+  //  use update;
+  use delete;
+
+
+  use action Invoice;
+  use action Simulate;
+  use action SetDelete;
+  use action ApplyMetric;
+  use action SetAppliedMetric;
+  use action Calculate;
+  use action Check;
+  use action Commit;
+  use action CommitTest;
+  use action Reverse;
+  use action AnulateTest;
+  use action simulation;
+  use function GetAvailableMetrics;
+  //  use function GetRegionalMetrics;
+
+  use association _Items;
+  //  use function GetDocumentFlow;
+  //  use function GetSumaryStatus;
+  //  use function GetVisualDocumentFlow;
+
+
+}
+
+define behavior for ZC_IntercoProposalItemTP
+{
+  use action ReverseItem;
+  use association _Proposal;
+  use association _ProposalItemsBasis;
+}
+
+define behavior for ZC_IntercoProposalItemBasisTP
+{
+  use association _Items;
+  use association _proposal;
+  use association _ItemsCalc;
+
+}
+
+define behavior for ZC_IntercoProposalItemCalcTP
+{
+  use association _ItemsBasis;
+  use association _ItemsDoc;
+  use association _Proposal;
+}
+
+define behavior for ZC_IntercoProposalItemDoc
+{
+  use association _ItemCalc;
+  use association _Proposal;
+}

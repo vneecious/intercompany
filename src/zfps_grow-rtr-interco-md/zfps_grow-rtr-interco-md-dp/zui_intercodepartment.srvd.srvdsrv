@@ -1,0 +1,10 @@
+@EndUserText.label: 'Intercompany: Department'
+@ObjectModel.leadingEntity.name: 'ZC_IntercoDepartment_M'
+define service ZUI_IntercoDepartment {
+  expose ZC_IntercoDepartment_M         as Department;
+  expose ZC_IntercoDepartmentRule_M     as Rule;
+  expose ZI_intercoCompanyCodeVH        as CompanyCodeVH;
+  expose ZI_IntercoProduct_SH           as ProductVH;
+  expose ZI_IntercoPandLHierFlattenedSH as PandLVH;
+  expose ZI_IntercoProfitCenter_SH      as ProfitCenterVH;
+}

@@ -1,0 +1,58 @@
+managed implementation in class zbp_i_intercobasis unique;
+strict ( 2 );
+
+foreign entity ZI_IntercoProposal;
+foreign entity ZI_IntercoProposalItem;
+foreign entity ZR_IntercoJEItemClassBGTP;
+
+define behavior for ZI_INTERCOBASIS //alias <alias_name>
+persistent table zfi_a_intrc_bh
+with additional save //ext_oscugald - se agrega class saver para menejo de evento de ejecución asíncrona
+lock master
+authorization master ( instance )
+{
+  create;
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) Id;
+  field ( readonly : update ) ExecutionStatus; //ext_oscugald - background process
+
+  static factory action ( features : global ) CreateBasis parameter ZA_IntercoBasisCreateBasis [1];
+  static action RunInBG parameter ZA_IntercoBasisRUninbackground;
+  static function GetBGRun parameter ZA_IntercoBasisRUninbackground result [1] ZA_INTERCOBASISGETBGRUN;
+
+
+  //Actions
+  action ( features : instance ) ReleaseBasis result [1] $self;
+  action UnreleaseBasis result [1] $self;
+  action ( features : instance ) DeleteBasis result [1] $self;
+
+  association _items { create; }
+
+  mapping for zfi_a_intrc_bh corresponding
+    {
+      LastErrorMessage = last_error_message;
+    }
+}
+
+define behavior for ZI_IntercoBasisItem //alias <alias_name>
+persistent table zfi_a_intrc_bi
+lock dependent by _header
+authorization dependent by _header
+//etag master <field_name>
+
+{
+  delete;
+  update;
+  field ( readonly ) Id, Ledger, providercompanycode, PandLL5ID, ccallocation, CostCenterStdHierArea, ccconsolidation, glaccount, fiscalyear, fiscalperiod, product, costcenter, profitcenter, paymenttype;
+  association _header;
+
+  mapping for zfi_a_intrc_bi corresponding
+    {
+      Providercompanycode   = companycode;
+      CostCenterStdHierArea = costcenterstandardhierarea;
+      Department            = depto;
+      IsReleased            = is_released;
+    }
+}

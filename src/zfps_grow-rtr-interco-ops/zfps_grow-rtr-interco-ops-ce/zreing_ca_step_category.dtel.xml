@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZREING_CA_STEP_CATEGORY</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ZREING_CA_STEP_CATEGORY</DOMNAME>
+    <HEADLEN>45</HEADLEN>
+    <SCRLEN1>09</SCRLEN1>
+    <SCRLEN2>20</SCRLEN2>
+    <SCRLEN3>28</SCRLEN3>
+    <DDTEXT>Calculation step category</DDTEXT>
+    <REPTEXT>Calculation step category</REPTEXT>
+    <SCRTEXT_S>Category</SCRTEXT_S>
+    <SCRTEXT_M>Calculation step cat</SCRTEXT_M>
+    <SCRTEXT_L>Calculation step category</SCRTEXT_L>
+    <DTELMASTER>E</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Categoria de paso de calculo</DDTEXT>
+     <REPTEXT>Categoria de paso de calculo</REPTEXT>
+     <SCRTEXT_S>Categoria</SCRTEXT_S>
+     <SCRTEXT_M>Cat. de paso de calc</SCRTEXT_M>
+     <SCRTEXT_L>Categoria de paso de calculo</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

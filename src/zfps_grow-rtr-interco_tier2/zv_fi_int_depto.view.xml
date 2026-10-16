@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_VIEW" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD25V>
+    <VIEWNAME>ZV_FI_INT_DEPTO</VIEWNAME>
+    <AS4LOCAL>A</AS4LOCAL>
+    <AGGTYPE>V</AGGTYPE>
+    <ROOTTAB>ZINT_A_MD_DPH</ROOTTAB>
+    <VIEWCLASS>C</VIEWCLASS>
+    <CUSTOMAUTH>A</CUSTOMAUTH>
+    <GLOBALFLAG>X</GLOBALFLAG>
+   </DD25V>
+   <DD26V_TABLE>
+    <DD26V>
+     <VIEWNAME>ZV_FI_INT_DEPTO</VIEWNAME>
+     <TABNAME>ZINT_A_MD_DPH</TABNAME>
+     <TABPOS>0001</TABPOS>
+     <FORTABNAME>ZINT_A_MD_DPH</FORTABNAME>
+    </DD26V>
+   </DD26V_TABLE>
+   <DD27P_TABLE>
+    <DD27P>
+     <VIEWFIELD>CLIENT</VIEWFIELD>
+     <TABNAME>ZINT_A_MD_DPH</TABNAME>
+     <FIELDNAME>CLIENT</FIELDNAME>
+     <KEYFLAG>X</KEYFLAG>
+     <RDONLY>H</RDONLY>
+    </DD27P>
+    <DD27P>
+     <VIEWFIELD>DEPTO</VIEWFIELD>
+     <TABNAME>ZINT_A_MD_DPH</TABNAME>
+     <FIELDNAME>DEPTO</FIELDNAME>
+     <KEYFLAG>X</KEYFLAG>
+    </DD27P>
+    <DD27P>
+     <VIEWFIELD>DESCRIPTION</VIEWFIELD>
+     <TABNAME>ZINT_A_MD_DPH</TABNAME>
+     <FIELDNAME>DESCRIPTION</FIELDNAME>
+    </DD27P>
+   </DD27P_TABLE>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD25_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>Intercompany: Department</DDTEXT>
+    </item>
+   </DD25_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

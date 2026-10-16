@@ -1,0 +1,12 @@
+@EndUserText.label: 'Relationship Companies por Concepts'
+@MappingRole: true
+define role ZDCL_INTERCOCOMPANYRELPRODUCT {
+    grant 
+        select
+            on
+                ZI_INTERCOCOMPANYRELPRODUCT
+                    where
+//                    ( AuthorizationGroup ) = aspect pfcg_auth( M_MATE_MAT, BEGRU, ACTVT = '03' );
+                    ( Isdeleted is initial );
+//                    or () = aspect pfcg_auth( ZFI_IC_LVL, ZFI_IC_LVV = '3' );                      
+}

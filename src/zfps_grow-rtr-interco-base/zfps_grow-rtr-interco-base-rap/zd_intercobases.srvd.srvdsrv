@@ -1,0 +1,4 @@
+@EndUserText.label: 'Service def. Bases facturable Interco'
+define service ZD_INTERCOBASES {
+  expose ZC_INTERCOBASIS;
+}

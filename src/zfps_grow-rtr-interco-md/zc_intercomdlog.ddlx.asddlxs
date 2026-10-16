@@ -1,0 +1,45 @@
+@Metadata.layer: #CORE
+@UI.presentationVariant: [{
+    sortOrder: [{ by: 'CreationDate', direction: #DESC },
+                { by: 'CreationTime', direction: #DESC }]
+    }]
+annotate entity ZC_IntercoMDLog with
+{
+  @UI.facet: [ { id:              'Log',
+                 purpose:         #STANDARD,
+                 type:            #IDENTIFICATION_REFERENCE,
+                 label:           '{@i18n>Log}',
+                 position:        10 } ]
+  @UI.hidden: true
+  ID;
+  @UI: { lineItem: [ { position: 10 } ],identification:[ { position: 10 } ]}
+  ChangeDocDatabaseTableField;
+  @UI: { lineItem: [ { position: 20 } ],identification:[ { position: 20 } ]}
+  ChangeDocItemChangeType;
+  @UI.hidden: true
+  ChangeDocPreviousUnit;
+  @UI.hidden: true
+  ChangeDocNewUnit;
+  @UI.hidden: true
+  ChangeDocPreviousCurrency;
+  @UI.hidden: true
+  ChangeDocNewCurrency;
+  @UI: { lineItem: [ { position: 70 } ],identification:[ { position: 70 } ]}
+  ChangeDocNewFieldValue;
+  @UI: { lineItem: [ { position: 80 } ],identification:[ { position: 80 } ]}
+  ChangeDocPreviousFieldValue;
+  @UI.hidden: true
+  ChangeDocTextIsChanged;
+  @UI: { lineItem: [ { position: 100 } ],identification:[ { position: 100 } ]}
+  CreatedByUser;
+  @UI: { lineItem: [ { position: 100 } ],identification:[ { position: 110 } ]}
+  CreationDate;
+  @UI: { lineItem: [ { position: 120 } ],identification:[ { position: 120 } ]}
+  CreationTime;
+  @UI.hidden: true
+  ChangeTransactionCode;
+  @UI.hidden: true
+  ChangeDocChangeType;
+  @UI: { lineItem: [ { position: 150 } ],identification:[ { position: 150 } ]}
+  ChangeDocLanguage;
+}

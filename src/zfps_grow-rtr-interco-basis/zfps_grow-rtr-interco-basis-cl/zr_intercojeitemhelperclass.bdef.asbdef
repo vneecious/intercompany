@@ -1,0 +1,64 @@
+managed implementation in class zbp_r_intercojeitemhelperclass unique;
+strict ( 2 );
+
+define behavior for ZR_IntercoJEItemHelperClass alias Header
+persistent table zint_a_jeitem_ch
+lock master
+authorization master ( instance )
+with additional save
+//etag master <field_name>
+{
+  create;
+  update;
+  delete;
+  association _Items { create; }
+  association _ItemsExemptions { create; }
+
+  field ( readonly : update ) Ledger, CompanyCode, FiscalYear, FiscalPeriod, PaymentType;
+
+  action ApplyRules;
+  event ApplyRulesRequested;
+
+  mapping for zint_a_jeitem_ch
+    {
+      CompanyCode          = companycode;
+      FiscalPeriod         = fiscalperiod;
+      FiscalYear           = FiscalYear;
+      Ledger               = Ledger;
+      PaymentType          = PaymentType;
+      CreatedAt            = created_at;
+      CreatedBy            = created_by;
+      IsRuleProcessed      = is_rule_processed;
+      IsExemptionProcessed = is_exemp_processed;
+    }
+}
+
+define behavior for ZR_IntercoJEItemHelperClassItm alias Item
+persistent table zint_a_jeitem_ci
+lock dependent by _Header
+authorization dependent by _Header
+//etag master <field_name>
+{
+  update;
+  delete;
+  field ( readonly ) Ledger, CompanyCode, FiscalYear, FiscalPeriod, PaymentType;
+  association _Header;
+
+  field ( readonly : update ) CcAllocation, CcConsolidation, CostCenterStandardHierArea, PandLL5ID, ProfitCenter;
+}
+
+
+define behavior for ZR_INTERCOJEITEMHELPERCLASSEXE alias Exemption
+persistent table zint_a_jeitem_ce
+lock dependent by _Header
+authorization dependent by _Header
+//etag master <field_name>
+{
+  update;
+  delete;
+  field ( readonly ) Ledger, CompanyCode, FiscalYear, FiscalPeriod, PaymentType;
+  association _Header;
+
+  field ( readonly : update ) ProfitCenter, CostCenter, GLAccount;
+
+}

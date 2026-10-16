@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZREING_CA_CALC_AMT</ROLLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DOMNAME>ZREING_CA_AMT_D</DOMNAME>
+    <HEADLEN>09</HEADLEN>
+    <SCRLEN1>09</SCRLEN1>
+    <SCRLEN2>15</SCRLEN2>
+    <SCRLEN3>30</SCRLEN3>
+    <DDTEXT>CA - Calculated Amount</DDTEXT>
+    <REPTEXT>Calc.Amt</REPTEXT>
+    <SCRTEXT_S>Calc.Amt</SCRTEXT_S>
+    <SCRTEXT_M>Calculated Amnt</SCRTEXT_M>
+    <SCRTEXT_L>CalculatedAmount(Base x Share)</SCRTEXT_L>
+    <DTELMASTER>S</DTELMASTER>
+    <REFKIND>D</REFKIND>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>S</DDLANGUAGE>
+     <DDTEXT>CA - Monto Calculado</DDTEXT>
+     <REPTEXT>Mto.Calc.</REPTEXT>
+     <SCRTEXT_S>Mto.Calc.</SCRTEXT_S>
+     <SCRTEXT_M>Monto Calculado</SCRTEXT_M>
+     <SCRTEXT_L>Monto Calculado (Base x Share)</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

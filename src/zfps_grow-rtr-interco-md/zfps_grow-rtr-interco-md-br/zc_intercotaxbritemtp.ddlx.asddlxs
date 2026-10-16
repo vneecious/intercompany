@@ -1,0 +1,50 @@
+@Metadata.layer: #CORE
+@UI.headerInfo:{
+  typeName:       'Intercompany Exemption Rule'
+}
+annotate entity ZC_IntercoTaxBRItemTP with
+{
+  @UI.lineItem: [ { exclude: true } ]
+  DocumentType;
+  @UI.lineItem: [{ exclude: true }]
+  ProviderCompanyCode;
+  @UI.lineItem: [{ exclude: true }]
+  RecipientCompanyCode;
+  @UI.lineItem: [{ exclude: true }]
+  ValidFrom;
+  @UI.lineItem: [{ exclude: true }]
+  Product;
+  @UI.lineItem: [ { position: 10 } ]
+  @Consumption.valueHelpDefinition: [{
+      entity: { name: 'ZI_DomainFixedValueVH', element: 'value_low' },
+      useForValidation: true,
+      additionalBinding: [{ element: 'domain_name', localConstant: 'ZINT_TXBR_TAXTYPE', usage: #FILTER }],
+      distinctValues: true
+      }]
+  @EndUserText.label: '{@i18n>TaxType}'
+  TaxType;
+  @UI.lineItem: [ { position: 20 } ]
+  @EndUserText.label: '{@i18n>TaxRate}'
+  TaxRate;
+  @UI.lineItem: [ { position: 30 } ]
+  //  @Consumption.valueHelpDefinition: [{ entity:{ name: 'I_GLAccountStdVH', element: 'GLAccount' }, additionalBinding: [{  localElement: 'ProviderCompanyCode', element: 'CompanyCode' }] }, { useForValidation: true }]
+  @Consumption.valueHelpDefinition: [{
+    entity:{ name: 'I_CnsldtnGLAccountVH', element: 'GLAccount' }, additionalBinding: [{  element: 'ChartOfAccounts', localConstant: 'MLIB', usage: #FILTER }, {  element: 'GLAccount', usage: #RESULT }] },
+    { useForValidation: true }]
+  @EndUserText.label: '{@i18n>GLAccount1}'
+  GLAccount1;
+  @UI.lineItem: [ { position: 40 } ]
+  //  @Consumption.valueHelpDefinition: [{ entity:{ name: 'I_GLAccountStdVH', element: 'GLAccount' }, additionalBinding: [{  localElement: 'ProviderCompanyCode', element: 'CompanyCode' }] }, { useForValidation: true }]
+  @Consumption.valueHelpDefinition: [{
+    entity:{ name: 'I_CnsldtnGLAccountVH', element: 'GLAccount' }, additionalBinding: [{  element: 'ChartOfAccounts', localConstant: 'MLIB', usage: #FILTER }, {  element: 'GLAccount', usage: #RESULT }] },
+    { useForValidation: true }]
+  @EndUserText.label: '{@i18n>GLAccount2}'
+  GLAccount2;
+  @UI.lineItem: [{ position: 50 }]
+  @EndUserText.label: '{@i18n>Classif}'
+  Classif;
+
+  @UI.lineItem: [{ position: 60 }]
+  @EndUserText.label: '{@i18n>Contingency}'
+  Contingency;
+}

@@ -1,0 +1,20 @@
+@EndUserText.label: 'Manage Proposal'
+@ObjectModel.leadingEntity.name: 'ZC_IntercoProposalTP'
+define service ZD_INTERCOPROPOSAL {
+  expose ZC_IntercoProposalTP;
+  expose ZC_IntercoProposalItemTP;
+  expose ZC_IntercoProposalItemBasisTP;
+  expose ZC_IntercoProposalItemCalcTP;
+  expose ZC_IntercoProposalItemDoc;
+  expose ZC_INTRC_CPD                   as DocumentFlow;
+  expose ZC_INTRC_CPDLog                as DocumentLog;
+  expose ZC_INTRC_CPLog                 as ProposalLog;
+  expose ZC_INTERCOPROP_DOCTYP_SH       as DocumentType;
+  expose ZC_proposalbystatus;
+  expose ZC_IntercoProposalItemByCeBe;
+  expose ZI_INTERCOPROPOSALITEMAQ       as ZC_INTERCOPROPOSALITEMAQ;
+  expose ZI_INTRC_IBaOGLAcc3;
+  expose ZI_IntercoProposalStatus;
+  expose ZC_INTRC_CP_DOC_EXPORT         as CPDocExport;
+  expose ZC_IntercoProposalItemOrGLAcct as ProposalItemGLAccounts;
+}

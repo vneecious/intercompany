@@ -126,14 +126,26 @@ annotate entity ZC_IntercoTaxBRTP with
     // Object Page
     fieldGroup: [{ qualifier: 'BasicData', position: 05 }, { qualifier: 'HeaderBasicData', position: 05 }]
   }
+  // >>> INICIO CAMBIO EXT_OSCUGALD | 2026-10-19
+  // Descripción: Evitar el $apply/groupby que no soporta el proveedor del value help.
+
+  // Código anterior conservado para trazabilidad:
+  // @Consumption.valueHelpDefinition: [{
+  //     entity: { name: 'ZI_DomainFixedValueVH', element: 'value_low' },
+  //     useForValidation: true,
+  //     additionalBinding: [{ element: 'domain_name', localConstant: 'ZINT_TXBR_DOCTYPE', usage: #FILTER }],
+  //     distinctValues: true
+  //     }]
+
   @Consumption.valueHelpDefinition: [{
       entity: { name: 'ZI_DomainFixedValueVH', element: 'value_low' },
       useForValidation: true,
-      additionalBinding: [{ element: 'domain_name', localConstant: 'ZINT_TXBR_DOCTYPE', usage: #FILTER }],
-      distinctValues: true
+      additionalBinding: [{ element: 'domain_name', localConstant: 'ZINT_TXBR_DOCTYPE', usage: #FILTER }]
       }]
   @EndUserText.label: '{@i18n>DocumentType}'
   DocumentType;
+
+  // <<< FIN CAMBIO EXT_OSCUGALD | 2026-10-19
 
   @UI: {
     // List Page

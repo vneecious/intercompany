@@ -40,60 +40,72 @@
 ***  endmethod.
 ***
 ***endclass.
-class lcl_parallel_processing definition create public.
+CLASS lcl_parallel_processing DEFINITION CREATE PUBLIC.
 
-  public section.
+  PUBLIC SECTION.
 
-    interfaces if_abap_parallel.
+    INTERFACES if_abap_parallel.
 
     " Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 -
     " C12, paso 6c.3: devolver el estado serializado del worker
-    DATA error_text TYPE string READ-ONLY.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12k: retirar diagnóstico adicional
+    " DATA error_text TYPE string READ-ONLY.
+    " Fin EXT_OSCUGALD 16.10.2026 - C12k
     " Fin EXT_OSCUGALD 07.10.2026 - C12
 
-    methods:
+    METHODS:
       constructor
-        importing
-          i_selection type zcl_interco_class_engine_mult=>ty_selection.
+        IMPORTING
+          i_selection TYPE zcl_interco_class_engine_mult=>ty_selection.
 
-  private section.
+  PRIVATE SECTION.
 
-    data selection type
+    DATA selection TYPE
       zcl_interco_class_engine_mult=>ty_selection.
 
-endclass.
+ENDCLASS.
 
 
-class lcl_parallel_processing implementation.
+CLASS lcl_parallel_processing IMPLEMENTATION.
 
-  method constructor.
+  METHOD constructor.
     selection = i_selection.
-  endmethod.
+  ENDMETHOD.
 
 
-  method if_abap_parallel~do.
+  METHOD if_abap_parallel~do.
 
     " Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 -
     " C12, paso 6c.3: conservar el error devuelto por RUN
-    CLEAR error_text.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12k: restituir worker original
+    " CLEAR error_text.
 
-    TRY.
-        DATA(engine) = zcl_interco_class_engine=>new( )->for(
-          i_companycode  = selection-companycode
-          i_fiscalperiod = selection-fiscalperiod
-          i_fiscalyear   = selection-fiscalyear
-          i_ledger       = selection-ledger
-          i_paymenttype  = selection-paymenttype ).
+    " TRY.
+    " DATA(engine) = zcl_interco_class_engine=>new( )->for(
+    " i_companycode  = selection-companycode
+    " i_fiscalperiod = selection-fiscalperiod
+    " i_fiscalyear   = selection-fiscalyear
+    " i_ledger       = selection-ledger
+    " i_paymenttype  = selection-paymenttype ).
 
-        engine->run( ).
-        error_text = engine->error_text.
+    " engine->run( ).
+    " error_text = engine->error_text.
 
-      CATCH cx_root.
-        error_text =
-          'No se pudo completar una clasificación paralela.'.
-    ENDTRY.
+    " CATCH cx_root.
+    " error_text =
+    " 'No se pudo completar una clasificación paralela.'.
+    " ENDTRY.
+
+    zcl_interco_class_engine=>new( )->for(
+        i_companycode = selection-companycode
+        i_fiscalperiod = selection-fiscalperiod
+        i_fiscalyear = selection-fiscalyear
+        i_ledger = selection-ledger
+        i_paymenttype = selection-paymenttype
+    )->run(  ).
+    " Fin EXT_OSCUGALD 16.10.2026 - C12k
     " Fin EXT_OSCUGALD 07.10.2026 - C12
 
-  endmethod.
+  ENDMETHOD.
 
-endclass.
+ENDCLASS.

@@ -39,7 +39,9 @@ INTERFACE zif_reing_contab PUBLIC.
       " V001 (CC) - #121: exact contractual material, no lookup in processing loops.
       iv_contract_prctr TYPE prctr OPTIONAL
       " V001 (CC) - Effective OFF captured once by the current action.
-      iv_eba_off TYPE abap_bool OPTIONAL.
+      iv_eba_off TYPE abap_bool OPTIONAL
+      " V001 (CC) - #122: header value warmed before all processing loops.
+      iv_contract_ext TYPE zreing_ct_ext_num OPTIONAL.
 
   METHODS execute
     IMPORTING

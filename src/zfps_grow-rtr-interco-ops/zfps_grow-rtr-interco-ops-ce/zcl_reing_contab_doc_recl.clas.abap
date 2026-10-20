@@ -34,8 +34,7 @@ CLASS zcl_reing_contab_doc_recl DEFINITION
 
   PROTECTED SECTION.
     METHODS build_items REDEFINITION.
-    " V001 (CC) - #122: reclassification has its own ET line-text format.
-    METHODS build_item_text REDEFINITION.
+    " V001 (CC) - #122: inherit the single approved item-text formatter.
 
   PRIVATE SECTION.
     " V001 (CC) - #121: aggregate only equivalent final ZZZ/Z positions.
@@ -284,12 +283,7 @@ CLASS zcl_reing_contab_doc_recl IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD build_item_text.
-    " V001 (CC) - #122: label the effective configured role on each position.
-    CONSTANTS lc_reclassification TYPE c LENGTH 4 VALUE 'RECL'.
-    rv_text = |{ is_item-role_code } { lc_reclassification } \| | &&
-      |{ ms_line_a-bukrs_prest } X { ms_line_a-bukrs_recv }|.
-  ENDMETHOD.
+
 
   METHOD resolve_counter_role.
     " V001 (CC) - #125: pure resolution over the current configured roles.

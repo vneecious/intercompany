@@ -284,6 +284,10 @@ CLASS ltc_contab_doc DEFINITION FOR TESTING
     METHODS bypass_explicit_off_wins FOR TESTING RAISING cx_static_check.
     METHODS bypass_explicit_on_wins FOR TESTING RAISING cx_static_check.
     METHODS bypass_omitted_refreshes FOR TESTING RAISING cx_static_check.
+    " V001 (CC) - #122: unified external-contract text.
+    METHODS text_external_context_reset FOR TESTING RAISING cx_static_check.
+    METHODS text_external_preserves_inner FOR TESTING RAISING cx_static_check.
+    METHODS text_external_check_post FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 
@@ -797,7 +801,7 @@ CLASS ltc_contab_doc IMPLEMENTATION.
       is_line_a = ms_line it_line_pc = mt_pc it_step_a = mt_steps
       is_flow_step = VALUE #( op_type = ms_line-op_type seq = 1 doc_type_code = 'AR'
         blart = 'SA' active = abap_true bukrs_rule = iv_rule bukrs_override = 'OVR' )
-      is_trans_projection = ms_projection it_currencies = mt_currencies ).
+      is_trans_projection = ms_projection it_currencies = mt_currencies iv_contract_ext = 'Simetrik' ).
   ENDMETHOD.
 
   METHOD cb04_assert_tax.
@@ -1988,10 +1992,10 @@ given_trans( ).
     cl_abap_unit_assert=>assert_equals( act = lines( result-items ) exp = 4 ).
     cl_abap_unit_assert=>assert_equals(
       act = result-items[ role_code = 'GS' prctr = '0000000999' ]-item_text
-      exp = 'GS4590000000999 | EBA X MUR' ).
+      exp = 'Reintegros | EBA X MUR | Simetrik' ).
     cl_abap_unit_assert=>assert_equals(
       act = result-items[ role_code = 'GH' prctr = '0000000123' ]-item_text
-      exp = 'GH1230000000123 | EBA X MUR' ).
+      exp = 'Reintegros | EBA X MUR | Simetrik' ).
     cl_abap_unit_assert=>assert_equals( act = result-items exp = cb04_poster->items ).
     cl_abap_unit_assert=>assert_initial( mo_cut->calculate_balance( result-items ) ).
   ENDMETHOD.
@@ -2001,9 +2005,9 @@ given_trans( ).
     cl_abap_unit_assert=>assert_false( result-has_error ).
     cl_abap_unit_assert=>assert_equals( act = lines( result-items ) exp = 2 ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ posting_context = 'AR' ]-item_text
-      exp = 'RA | EBA X MUR' ).
+      exp = 'Reintegros | EBA X MUR | Simetrik' ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ posting_context = 'AP' ]-item_text
-      exp = 'PA | EBA X MUR' ).
+      exp = 'Reintegros | EBA X MUR | Simetrik' ).
   ENDMETHOD.
   METHOD text_et_nominal_payload.
     cb04_given( ).
@@ -2014,7 +2018,7 @@ given_trans( ).
     cl_abap_unit_assert=>assert_equals( act = decoded-items exp = cb04_poster->items ).
     cl_abap_unit_assert=>assert_equals(
       act = decoded-items[ role_code = 'GS' prctr = '0000000999' ]-item_text
-      exp = 'GS4590000000999 | EBA X MUR' ).
+      exp = 'Reintegros | EBA X MUR | Simetrik' ).
     cl_abap_unit_assert=>assert_equals( act = result-waers exp = 'BRL' ).
   ENDMETHOD.
   METHOD text_et_override_company.
@@ -2025,7 +2029,7 @@ given_trans( ).
     cl_abap_unit_assert=>assert_equals( act = result-bukrs exp = 'OVR' ).
     cl_abap_unit_assert=>assert_equals(
       act = result-items[ role_code = 'GS' prctr = '0000000999' ]-item_text
-      exp = 'GS4590000000999 | EBA X MUR' ).
+      exp = 'Reintegros | EBA X MUR | Simetrik' ).
   ENDMETHOD.
   METHOD text_et_blank_dimensions.
     mo_cut->ms_line_a-bukrs_prest = 'MUR'.
@@ -2033,20 +2037,22 @@ given_trans( ).
     DATA(item) = VALUE zif_reing_contab_types=>ty_doc_item(
       role_code = 'ARIC' zuonr = 'REINT LICENCIAS' item_text = 'STALE' ).
     cl_abap_unit_assert=>assert_equals( act = mo_cut->build_item_text( item )
-      exp = 'ARIC | MUR X MAM' ).
+      exp = 'Reintegros | MUR X MAM' ).
   ENDMETHOD.
   METHOD text_et_width_and_refresh.
     mo_cut->ms_line_a-bukrs_prest = 'ABCD'.
     mo_cut->ms_line_a-bukrs_recv = 'EFGH'.
+    mo_cut->mv_contract_ext = '12345678901234567890'.
     DATA(item) = VALUE zif_reing_contab_types=>ty_doc_item(
       role_code = 'ABCDEFGHIJ' campana = '123' prctr = '1234567890' ).
     DATA(first) = mo_cut->build_item_text( item ).
-    cl_abap_unit_assert=>assert_equals( act = first exp = 'ABCDEFGHIJ1231234567890 | ABCD X EFGH' ).
-    cl_abap_unit_assert=>assert_equals( act = strlen( first ) exp = 37 ).
-    CLEAR: mo_cut->ms_line_a-bukrs_recv, item-campana, item-prctr.
+    cl_abap_unit_assert=>assert_equals( act = first
+      exp = 'Reintegros | ABCD X EFGH | 12345678901234567890' ).
+    cl_abap_unit_assert=>assert_equals( act = strlen( first ) exp = 47 ).
+    CLEAR: mo_cut->ms_line_a-bukrs_recv, mo_cut->mv_contract_ext, item-campana, item-prctr.
     item-role_code = 'APIC'.
     cl_abap_unit_assert=>assert_equals( act = mo_cut->build_item_text( item )
-      exp = 'APIC | ABCD X ' ).
+      exp = 'Reintegros | ABCD X' ).
   ENDMETHOD.
   METHOD text_et_int_inherits.
     cb04_given( iv_off = abap_true ).
@@ -2060,7 +2066,7 @@ given_trans( ).
     cl_abap_unit_assert=>assert_false( result-has_error ).
     cl_abap_unit_assert=>assert_equals(
       act = result-items[ role_code = 'GS' prctr = '0000000999' ]-item_text
-      exp = 'GS4590000000999 | EBA X EBA' ).
+      exp = 'Reintegros | EBA X EBA | Simetrik' ).
   ENDMETHOD.
   METHOD bypass_explicit_off_wins.
     cb04_given( ).
@@ -2095,6 +2101,48 @@ given_trans( ).
     cl_abap_unit_assert=>assert_false( mo_cut->mv_use_trans ).
     cl_abap_unit_assert=>assert_initial( mo_cut->mv_trans_error ).
     cl_abap_unit_assert=>assert_equals( act = mo_cut->posting_currency( ) exp = 'USD' ).
+  ENDMETHOD.
+  METHOD text_external_context_reset.
+    cb04_given( iv_off = abap_true ).
+    mo_cut->zif_reing_contab~set_context( is_line_a = ms_line it_line_pc = mt_pc
+      it_step_a = mt_steps is_flow_step = VALUE #( doc_type_code = 'AR' )
+      iv_contract_ext = 'Contract-A' iv_eba_off = abap_true ).
+    cl_abap_unit_assert=>assert_equals( act = mo_cut->build_item_text( VALUE #( ) )
+      exp = 'Reintegros | EBA X MUR | Contract-A' ).
+    mo_cut->zif_reing_contab~set_context( is_line_a = ms_line it_line_pc = mt_pc
+      it_step_a = mt_steps is_flow_step = VALUE #( doc_type_code = 'AR' )
+      iv_contract_ext = 'Contract-B' iv_eba_off = abap_true ).
+    cl_abap_unit_assert=>assert_equals( act = mo_cut->build_item_text( VALUE #( ) )
+      exp = 'Reintegros | EBA X MUR | Contract-B' ).
+    mo_cut->zif_reing_contab~set_context( is_line_a = ms_line it_line_pc = mt_pc
+      it_step_a = mt_steps is_flow_step = VALUE #( doc_type_code = 'AR' )
+      iv_eba_off = abap_true ).
+    cl_abap_unit_assert=>assert_initial( mo_cut->mv_contract_ext ).
+    cl_abap_unit_assert=>assert_equals( act = mo_cut->build_item_text( VALUE #( ) )
+      exp = 'Reintegros | EBA X MUR' ).
+  ENDMETHOD.
+
+  METHOD text_external_preserves_inner.
+    mo_cut->ms_line_a-bukrs_prest = 'MUR'.
+    mo_cut->ms_line_a-bukrs_recv = 'MLB'.
+    mo_cut->mv_contract_ext = '  00-Acme  Latam.  '.
+    cl_abap_unit_assert=>assert_equals( act = mo_cut->build_item_text(
+      VALUE #( role_code = 'OTHER' campana = '999' prctr = '1111111111' ) )
+      exp = 'Reintegros | MUR X MLB | 00-Acme  Latam.' ).
+  ENDMETHOD.
+
+  METHOD text_external_check_post.
+    cb04_given( iv_off = abap_true ).
+    DATA(checked) = mo_cut->zif_reing_contab~execute( 'C' ).
+    cl_abap_unit_assert=>assert_false( checked-has_error ).
+    DATA(posted) = mo_cut->zif_reing_contab~execute( 'P' ).
+    cl_abap_unit_assert=>assert_false( posted-has_error ).
+    cl_abap_unit_assert=>assert_equals( act = posted-items exp = checked-items ).
+    LOOP AT cb04_poster->items INTO DATA(item).
+      cl_abap_unit_assert=>assert_equals( act = item-item_text
+        exp = 'Reintegros | EBA X MUR | Simetrik' ).
+    ENDLOOP.
+    cl_abap_unit_assert=>assert_equals( act = cb04_poster->mode exp = 'P' ).
   ENDMETHOD.
 ENDCLASS.
 

@@ -261,6 +261,9 @@ CLASS ltcl_cb03_recl DEFINITION FINAL FOR TESTING
     METHODS text_et_actzzz_roles FOR TESTING RAISING cx_static_check.
     METHODS text_et_nominal_counter FOR TESTING RAISING cx_static_check.
     METHODS text_et_after_grouping FOR TESTING RAISING cx_static_check.
+    " V001 (CC) - #122: unified external-contract text.
+    METHODS text_external_context_reset FOR TESTING RAISING cx_static_check.
+    METHODS text_external_override_company FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 CLASS ltcl_cb03_recl IMPLEMENTATION.
   METHOD class_setup.
@@ -345,7 +348,7 @@ CLASS ltcl_cb03_recl IMPLEMENTATION.
   ENDMETHOD.
   METHOD apply_context.
     cut->zif_reing_contab~set_context( is_line_a = line it_line_pc = VALUE #( )
-      it_step_a = VALUE #( ) is_flow_step = step ).
+      it_step_a = VALUE #( ) is_flow_step = step iv_contract_ext = 'Simetrik' ).
     cut->zif_reing_contab~set_prior_documents( docs ).
     cut->zif_reing_contab~set_fi_poster( poster ).
   ENDMETHOD.
@@ -808,7 +811,7 @@ CLASS ltcl_cb03_recl IMPLEMENTATION.
     load_sql( ).
     cut->zif_reing_contab~set_context( is_line_a = line it_line_pc = VALUE #( )
       it_step_a = VALUE #( ) is_flow_step = step iv_contract_kostl = iv_contract
-      it_campana_map = it_map iv_contract_prctr = '999' ).
+      it_campana_map = it_map iv_contract_prctr = '999' iv_contract_ext = 'Simetrik' ).
     cut->zif_reing_contab~set_prior_documents( docs ).
     cut->zif_reing_contab~set_fi_poster( poster ).
     IF iv_nominal = abap_true. cut->enable_nominal( ). ENDIF.
@@ -1120,7 +1123,7 @@ CLASS ltcl_cb03_recl IMPLEMENTATION.
     sql_env->get_double( 'ZI_COMPANYCODEADDLINFORMATION' )->clear( ).
     sql_env->insert_test_data( companies ).
     cut->zif_reing_contab~set_context( is_line_a = line it_line_pc = VALUE #( ) it_step_a = VALUE #( )
-      is_flow_step = step iv_contract_prctr = iv_prctr
+      is_flow_step = step iv_contract_prctr = iv_prctr iv_contract_ext = 'Simetrik'
       it_campana_map = VALUE #( ( campana_de = '459' matnr = line-matnr campana_para = '954' ) ) ).
     cut->zif_reing_contab~set_prior_documents( docs ).
     cut->zif_reing_contab~set_fi_poster( poster ).
@@ -1257,27 +1260,27 @@ CLASS ltcl_cb03_recl IMPLEMENTATION.
     DATA(result) = run( ).
     assert_pair( is_result = result iv_kostl = '4591333999' ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ role_code = 'RECL' ]-item_text
-      exp = 'RECL RECL | EBA X RCV' ).
+      exp = 'Reintegros | EBA X RCV | Simetrik' ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ role_code = 'RREE' ]-item_text
-      exp = 'RREE RECL | EBA X RCV' ).
+      exp = 'Reintegros | EBA X RCV | Simetrik' ).
   ENDMETHOD.
   METHOD text_et_actzzz_roles.
     configure( iv_act = abap_true ).
     DATA(result) = run( ).
     assert_pair( is_result = result iv_act = abap_true iv_kostl = '4591333999' ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ role_code = 'RECL' ]-item_text
-      exp = 'RECL RECL | EBA X RCV' ).
+      exp = 'Reintegros | EBA X RCV | Simetrik' ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ role_code = 'RREE' ]-item_text
-      exp = 'RREE RECL | EBA X RCV' ).
+      exp = 'Reintegros | EBA X RCV | Simetrik' ).
   ENDMETHOD.
   METHOD text_et_nominal_counter.
     given_counter( iv_nominal = abap_true ).
     DATA(result) = run( ).
     assert_counter_pair( is_result = result iv_currency = 'BRL' ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ role_code = 'RWHE' ]-item_text
-      exp = 'RWHE RECL | EBA X RCV' ).
+      exp = 'Reintegros | EBA X RCV | Simetrik' ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ role_code = 'RECL' ]-item_text
-      exp = 'RECL RECL | EBA X RCV' ).
+      exp = 'Reintegros | EBA X RCV | Simetrik' ).
   ENDMETHOD.
   METHOD text_et_after_grouping.
     cebe_case( VALUE #( ( amount = '-10.11' prctr = '0000000200' )
@@ -1286,12 +1289,42 @@ CLASS ltcl_cb03_recl IMPLEMENTATION.
     cl_abap_unit_assert=>assert_false( result-has_error ).
     cl_abap_unit_assert=>assert_equals( act = lines( result-items ) exp = 2 ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ role_code = 'RECL' ]-item_text
-      exp = 'RECL RECL | EBA X RCV' ).
+      exp = 'Reintegros | EBA X RCV | Simetrik' ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ role_code = 'RREE' ]-item_text
-      exp = 'RREE RECL | EBA X RCV' ).
+      exp = 'Reintegros | EBA X RCV | Simetrik' ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ 1 ]-prctr exp = '0000000999' ).
     cl_abap_unit_assert=>assert_equals( act = result-items[ 1 ]-kostl exp = '9540147999' ).
     cl_abap_unit_assert=>assert_equals( act = result-total_amount exp = CONV zreing_ca_calc_amt( '30.33' ) ).
+  ENDMETHOD.
+  METHOD text_external_context_reset.
+    configure( ).
+    cut->zif_reing_contab~set_context( is_line_a = line it_line_pc = VALUE #( )
+      it_step_a = VALUE #( ) is_flow_step = step iv_contract_ext = 'Contract-B' ).
+    DATA(first) = run( ).
+    cl_abap_unit_assert=>assert_false( first-has_error ).
+    cl_abap_unit_assert=>assert_equals( act = first-items[ 1 ]-item_text
+      exp = 'Reintegros | EBA X RCV | Contract-B' ).
+    cl_abap_unit_assert=>assert_equals( act = first-items[ 2 ]-item_text
+      exp = 'Reintegros | EBA X RCV | Contract-B' ).
+    cut->zif_reing_contab~set_context( is_line_a = line it_line_pc = VALUE #( )
+      it_step_a = VALUE #( ) is_flow_step = step ).
+    DATA(second) = run( ).
+    cl_abap_unit_assert=>assert_false( second-has_error ).
+    cl_abap_unit_assert=>assert_equals( act = second-items[ 1 ]-item_text
+      exp = 'Reintegros | EBA X RCV' ).
+    cl_abap_unit_assert=>assert_equals( act = second-items[ 2 ]-item_text
+      exp = 'Reintegros | EBA X RCV' ).
+  ENDMETHOD.
+
+  METHOD text_external_override_company.
+    configure( iv_rule = 'O' ).
+    DATA(result) = run( ).
+    cl_abap_unit_assert=>assert_false( result-has_error ).
+    cl_abap_unit_assert=>assert_equals( act = result-bukrs exp = 'OVR' ).
+    cl_abap_unit_assert=>assert_equals( act = result-items[ 1 ]-item_text
+      exp = 'Reintegros | EBA X RCV | Simetrik' ).
+    cl_abap_unit_assert=>assert_equals( act = result-items[ 2 ]-item_text
+      exp = 'Reintegros | EBA X RCV | Simetrik' ).
   ENDMETHOD.
 ENDCLASS.
 

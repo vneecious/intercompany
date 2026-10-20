@@ -870,22 +870,26 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     valid_date = i_fiscalyear && i_fiscalperiod+1 && '01'.
 
     DATA(run_paymenttype) = i_paymenttype.
-    DATA(force_pending) = abap_false.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12i: retirar reproceso adicional
+    " DATA(force_pending) = abap_false.
+    " Fin EXT_OSCUGALD 16.10.2026 - C12i
 
     IF i_paymenttype = 'E' OR i_paymenttype = 'L'.
       " Conservar la solicitud pendiente del padre E/L antes de consultar el coordinador.
-      SELECT SINGLE isruleprocessed, isexemptionprocessed
-        FROM zr_intercojeitemhelperclass
-        WHERE companycode = @i_companycode
-          AND fiscalyear = @i_fiscalyear
-          AND fiscalperiod = @i_fiscalperiod
-          AND ledger = @i_ledger
-          AND paymenttype = @i_paymenttype
-        INTO @DATA(requested_status).
-      force_pending = xsdbool(
-        sy-subrc <> 0 OR
-        requested_status-isruleprocessed IS INITIAL OR
-        requested_status-isexemptionprocessed IS INITIAL ).
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12i: usar estado de coordinadora
+      " SELECT SINGLE isruleprocessed, isexemptionprocessed
+      " FROM zr_intercojeitemhelperclass
+      " WHERE companycode = @i_companycode
+      " AND fiscalyear = @i_fiscalyear
+      " AND fiscalperiod = @i_fiscalperiod
+      " AND ledger = @i_ledger
+      " AND paymenttype = @i_paymenttype
+      " INTO @DATA(requested_status).
+      " force_pending = xsdbool(
+      " sy-subrc <> 0 OR
+      " requested_status-isruleprocessed IS INITIAL OR
+      " requested_status-isexemptionprocessed IS INITIAL ).
+      " Fin EXT_OSCUGALD 16.10.2026 - C12i
 
       " Normalizar solo E/L; I y otros valores no se reinterpretan como una corrida nueva.
       CLEAR run_paymenttype.
@@ -900,12 +904,14 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
       INTO @header.
 
     IF sy-subrc = 0.
-      IF force_pending = abap_true.
-        " Un coordinador completo no cancela una solicitud pendiente del padre E/L.
-        " Los flags vacíos fuerzan from_scratch en evaluate_processing_strategy.
-        " Conservar CreatedAt y el flujo de comprobaciones posterior.
-        CLEAR: header-isruleprocessed, header-isexemptionprocessed.
-      ENDIF.
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12i: retirar reset adicional
+      " IF force_pending = abap_true.
+      " Un coordinador completo no cancela una solicitud pendiente del padre E/L.
+      " Los flags vacíos fuerzan from_scratch en evaluate_processing_strategy.
+      " Conservar CreatedAt y el flujo de comprobaciones posterior.
+      " CLEAR: header-isruleprocessed, header-isexemptionprocessed.
+      " ENDIF.
+      " Fin EXT_OSCUGALD 16.10.2026 - C12i
       APPEND header TO headers.
     ELSE.
       " Header quedó limpio al iniciar: sin metadata heredada de un período anterior.
@@ -1057,6 +1063,7 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
   ENDMETHOD.
 
 
+
   METHOD new.
     IF instance IS NOT BOUND.
       instance = NEW #( ).
@@ -1066,11 +1073,15 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
 
   METHOD run.
 
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12j: simplificación acotada de RUN
+    " Se retiran solo validaciones generales; se conserva publicación E/L.
+
     " Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 -
     " C12-6c.2: preparación común y reemplazo controlado E/L
     CONSTANTS:
-      error_data TYPE string VALUE
-        'Los datos de la clasificación requieren revisión. Contacte a soporte.',
+      " C12j: constante del control retirado, conservada como referencia.
+      " error_data TYPE string VALUE
+      " 'Los datos de la clasificación requieren revisión. Contacte a soporte.',
       error_save TYPE string VALUE
         'No se pudo completar la clasificación. Contacte a soporte.',
       error_undo TYPE string VALUE
@@ -1080,14 +1091,15 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     DATA(db_pending) = abap_false.
     DATA(is_coordinator) = xsdbool( header-paymenttype IS INITIAL ).
 
-    IF is_coordinator = abap_true AND
-       ( header-companycode IS INITIAL OR
-         header-fiscalyear IS INITIAL OR
-         header-fiscalperiod IS INITIAL OR
-         header-ledger IS INITIAL ).
-      error_text = error_data.
-      RETURN instance.
-    ENDIF.
+    " C12j: validación general anterior desactivada.
+    " IF is_coordinator = abap_true AND
+    " ( header-companycode IS INITIAL OR
+    " header-fiscalyear IS INITIAL OR
+    " header-fiscalperiod IS INITIAL OR
+    " header-ledger IS INITIAL ).
+    " error_text = error_data.
+    " RETURN instance.
+    " ENDIF.
 
     DATA(processing_type) = evaluate_processing_strategy( ).
 
@@ -1100,31 +1112,32 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     ENDIF.
 
     " Proteger hijos históricos vacíos antes del COMMIT interno de AG.
-    IF is_coordinator = abap_true.
-      SELECT SINGLE paymenttype FROM zint_a_jeitem_ci
-        WHERE companycode  = @header-companycode
-          AND fiscalyear   = @header-fiscalyear
-          AND fiscalperiod = @header-fiscalperiod
-          AND ledger       = @header-ledger
-          AND paymenttype  = @space
-        INTO @DATA(existing_blank_ci).
-      IF sy-subrc = 0.
-        error_text = error_data.
-        RETURN instance.
-      ENDIF.
+    " C12j: bloqueos por hijos vacíos anteriores desactivados.
+    " IF is_coordinator = abap_true.
+    " SELECT SINGLE paymenttype FROM zint_a_jeitem_ci
+    " WHERE companycode  = @header-companycode
+    " AND fiscalyear   = @header-fiscalyear
+    " AND fiscalperiod = @header-fiscalperiod
+    " AND ledger       = @header-ledger
+    " AND paymenttype  = @space
+    " INTO @DATA(existing_blank_ci).
+    " IF sy-subrc = 0.
+    " error_text = error_data.
+    " RETURN instance.
+    " ENDIF.
 
-      SELECT SINGLE paymenttype FROM zint_a_jeitem_ce
-        WHERE companycode  = @header-companycode
-          AND fiscalyear   = @header-fiscalyear
-          AND fiscalperiod = @header-fiscalperiod
-          AND ledger       = @header-ledger
-          AND paymenttype  = @space
-        INTO @DATA(existing_blank_ce).
-      IF sy-subrc = 0.
-        error_text = error_data.
-        RETURN instance.
-      ENDIF.
-    ENDIF.
+    " SELECT SINGLE paymenttype FROM zint_a_jeitem_ce
+    " WHERE companycode  = @header-companycode
+    " AND fiscalyear   = @header-fiscalyear
+    " AND fiscalperiod = @header-fiscalperiod
+    " AND ledger       = @header-ledger
+    " AND paymenttype  = @space
+    " INTO @DATA(existing_blank_ce).
+    " IF sy-subrc = 0.
+    " error_text = error_data.
+    " RETURN instance.
+    " ENDIF.
+    " ENDIF.
 
     TRY.
         IF lv_matag_activa = 'X'.
@@ -1179,45 +1192,46 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
 
         IF is_coordinator = abap_true.
           " Mandante implícito de Open SQL; RuleID/ExemptionID no son clave.
-          DATA ci_keys TYPE HASHED TABLE OF zint_a_jeitem_ci
-            WITH UNIQUE KEY ledger companycode fiscalyear fiscalperiod
-              paymenttype pandll5id profitcenter costcenterstandardhierarea
-              ccallocation ccconsolidation.
-          DATA ce_keys TYPE HASHED TABLE OF zint_a_jeitem_ce
-            WITH UNIQUE KEY ledger companycode fiscalyear fiscalperiod
-              paymenttype profitcenter costcenter glaccount.
+          " C12j: controles generales de ámbito/colisiones desactivados.
+          " DATA ci_keys TYPE HASHED TABLE OF zint_a_jeitem_ci
+          " WITH UNIQUE KEY ledger companycode fiscalyear fiscalperiod
+          " paymenttype pandll5id profitcenter costcenterstandardhierarea
+          " ccallocation ccconsolidation.
+          " DATA ce_keys TYPE HASHED TABLE OF zint_a_jeitem_ce
+          " WITH UNIQUE KEY ledger companycode fiscalyear fiscalperiod
+          " paymenttype profitcenter costcenter glaccount.
 
-          LOOP AT ci_tab INTO DATA(ci_row).
-            IF ci_row-companycode  <> header-companycode OR
-               ci_row-fiscalyear   <> header-fiscalyear OR
-               ci_row-fiscalperiod <> header-fiscalperiod OR
-               ci_row-ledger       <> header-ledger OR
-               ( ci_row-paymenttype <> 'E' AND ci_row-paymenttype <> 'L' ).
-              error_text = error_data.
-              RETURN instance.
-            ENDIF.
-            INSERT ci_row INTO TABLE ci_keys.
-            IF sy-subrc <> 0.
-              error_text = error_data.
-              RETURN instance.
-            ENDIF.
-          ENDLOOP.
+          " LOOP AT ci_tab INTO DATA(ci_row).
+          " IF ci_row-companycode  <> header-companycode OR
+          " ci_row-fiscalyear   <> header-fiscalyear OR
+          " ci_row-fiscalperiod <> header-fiscalperiod OR
+          " ci_row-ledger       <> header-ledger OR
+          " ( ci_row-paymenttype <> 'E' AND ci_row-paymenttype <> 'L' ).
+          " error_text = error_data.
+          " RETURN instance.
+          " ENDIF.
+          " INSERT ci_row INTO TABLE ci_keys.
+          " IF sy-subrc <> 0.
+          " error_text = error_data.
+          " RETURN instance.
+          " ENDIF.
+          " ENDLOOP.
 
-          LOOP AT ce_tab INTO DATA(ce_row).
-            IF ce_row-companycode  <> header-companycode OR
-               ce_row-fiscalyear   <> header-fiscalyear OR
-               ce_row-fiscalperiod <> header-fiscalperiod OR
-               ce_row-ledger       <> header-ledger OR
-               ( ce_row-paymenttype <> 'E' AND ce_row-paymenttype <> 'L' ).
-              error_text = error_data.
-              RETURN instance.
-            ENDIF.
-            INSERT ce_row INTO TABLE ce_keys.
-            IF sy-subrc <> 0.
-              error_text = error_data.
-              RETURN instance.
-            ENDIF.
-          ENDLOOP.
+          " LOOP AT ce_tab INTO DATA(ce_row).
+          " IF ce_row-companycode  <> header-companycode OR
+          " ce_row-fiscalyear   <> header-fiscalyear OR
+          " ce_row-fiscalperiod <> header-fiscalperiod OR
+          " ce_row-ledger       <> header-ledger OR
+          " ( ce_row-paymenttype <> 'E' AND ce_row-paymenttype <> 'L' ).
+          " error_text = error_data.
+          " RETURN instance.
+          " ENDIF.
+          " INSERT ce_row INTO TABLE ce_keys.
+          " IF sy-subrc <> 0.
+          " error_text = error_data.
+          " RETURN instance.
+          " ENDIF.
+          " ENDLOOP.
 
           db_pending = abap_true.
           DELETE FROM zint_a_jeitem_ce
@@ -1304,6 +1318,7 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     " El rollback no revierte AG si MATERIALIZE ya hizo su COMMIT.
     RETURN instance.
     " Fin EXT_OSCUGALD 07.10.2026 - C12-6c.2
+    " Fin EXT_OSCUGALD 16.10.2026 - C12j
 
 ***  METHOD run.
 ***

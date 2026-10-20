@@ -398,6 +398,7 @@ CLASS ltcl_cb05_engine DEFINITION FINAL FOR TESTING
     DATA saved_traces LIKE zcl_reing_contab_engine=>gt_trace_pending.
     DATA saved_precision LIKE zcl_reing_contab_engine=>gt_trans_currencies.
     DATA saved_kostl LIKE zcl_reing_contab_engine=>gt_contract_kostl.
+    DATA saved_text LIKE zcl_reing_contab_engine=>gt_contract_text.
     DATA saved_map LIKE zcl_reing_contab_engine=>gt_campana_map.
     DATA saved_guard TYPE abap_bool.
     DATA saved_eba_off TYPE abap_bool.
@@ -419,13 +420,14 @@ CLASS ltcl_cb05_engine DEFINITION FINAL FOR TESTING
     METHODS expected_items
       IMPORTING iv_type TYPE zreing_doc_type_code iv_scale TYPE i DEFAULT 1
         iv_tax TYPE abap_bool DEFAULT abap_true iv_code TYPE c DEFAULT space
+        iv_external TYPE zreing_ct_ext_num DEFAULT 'Simetrik'
       RETURNING VALUE(rt_items) TYPE zif_reing_contab_types=>ty_doc_item_t.
     METHODS assert_document
       IMPORTING is_result TYPE zif_reing_contab_types=>ty_process_result
         iv_index TYPE i iv_type TYPE zreing_doc_type_code iv_total TYPE zreing_cb_total_amount
         iv_scale TYPE i DEFAULT 1 iv_tax TYPE abap_bool DEFAULT abap_true
         iv_code TYPE c DEFAULT space iv_mode TYPE zreing_ca_contab_mode DEFAULT 'C'
-        iv_call TYPE i DEFAULT 0.
+        iv_call TYPE i DEFAULT 0 iv_external TYPE zreing_ct_ext_num DEFAULT 'Simetrik'.
     METHODS assert_trace
       IMPORTING iv_index TYPE i iv_type TYPE zreing_trace_type
         iv_doc TYPE zreing_doc_type_code iv_mode TYPE zreing_ca_contab_mode DEFAULT 'C'
@@ -480,6 +482,11 @@ CLASS ltcl_cb05_engine DEFINITION FINAL FOR TESTING
     METHODS bypass_on_document_flow FOR TESTING RAISING cx_static_check.
     METHODS bypass_action_snapshot FOR TESTING RAISING cx_static_check.
     METHODS bypass_empty_scope_resets FOR TESTING RAISING cx_static_check.
+    " V001 (CC) - #122: unified external-contract text.
+    METHODS text_header_cache_exact FOR TESTING RAISING cx_static_check.
+    METHODS text_header_missing_refresh FOR TESTING RAISING cx_static_check.
+    METHODS text_header_blank_value FOR TESTING RAISING cx_static_check.
+    METHODS text_header_post_payload FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 CLASS ltcl_cb05_engine IMPLEMENTATION.
   METHOD class_setup.
@@ -490,7 +497,7 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
       ( 'ZI_REINGCBCUSTOMERRECON' ) ( 'ZI_REINGCBSUPPLIERRECON' )
       ( 'ZI_REINGCBPRODUCTTEXT' ) ( 'ZREING_DOCTYPE_C' ) ( 'I_CURRENCY' )
       ( 'ZREING_CB_DOC_A' ) ( 'ZREING_CB_ITEM_A' ) ( 'ZREING_CB_TRC_A' )
-      ( 'ZREING_CT2_MAT_A' ) ( 'ZREING_CMP_MAP_C' ) ) ).
+      ( 'ZREING_CT2_MAT_A' ) ( 'ZREING_CMP_MAP_C' ) ( 'ZREING_CT2_A' ) ) ).
   ENDMETHOD.
   METHOD class_teardown.
     sql_env->destroy( ).
@@ -505,6 +512,7 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
     saved_traces = zcl_reing_contab_engine=>gt_trace_pending.
     saved_precision = zcl_reing_contab_engine=>gt_trans_currencies.
     saved_kostl = zcl_reing_contab_engine=>gt_contract_kostl.
+    saved_text = zcl_reing_contab_engine=>gt_contract_text.
     saved_map = zcl_reing_contab_engine=>gt_campana_map.
     saved_guard = zcl_reing_contab_engine=>gv_test_eba_off.
     saved_eba_off = zcl_reing_contab_engine=>gv_eba_off.
@@ -536,6 +544,7 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
     zcl_reing_contab_engine=>gt_trace_pending = saved_traces.
     zcl_reing_contab_engine=>gt_trans_currencies = saved_precision.
     zcl_reing_contab_engine=>gt_contract_kostl = saved_kostl.
+    zcl_reing_contab_engine=>gt_contract_text = saved_text.
     zcl_reing_contab_engine=>gt_campana_map = saved_map.
     zcl_reing_contab_engine=>gv_test_eba_off = saved_guard.
     zcl_reing_contab_engine=>gv_eba_off = saved_eba_off.
@@ -685,6 +694,11 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
     DATA lt_currency TYPE STANDARD TABLE OF i_currency WITH EMPTY KEY.
     lt_currency = CORRESPONDING #( currencies ).
     sql_env->insert_test_data( lt_currency ).
+    " V001 (CC) - #122: headers are isolated SQL fixtures, not real masters.
+    DATA headers TYPE STANDARD TABLE OF zreing_ct2_a WITH EMPTY KEY.
+    headers = VALUE #( ( ct_uuid = c_ct ext_contract = 'Simetrik' )
+      ( ct_uuid = c_ct_b ext_contract = 'Simetrik' ) ).
+    sql_env->insert_test_data( headers ).
     snapshot_db( ).
     warm( ).
   ENDMETHOD.
@@ -733,7 +747,7 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
     assert_db_unchanged( ).
   ENDMETHOD.
   METHOD expected_items.
-    " V001 (CC) - DF-567: ET v41 item text in literal regression oracles.
+    " V001 (CC) - DF-567: approved unified text in independent literal oracles.
     " Literal oracles follow CALC for AR, BRUTO for AP/INT, STEP TAX for ZZZ.
     DATA(lv_code) = COND string( WHEN iv_code = '1' THEN '111'
       WHEN iv_code = '3' THEN '333' WHEN iv_code = '2' THEN '222'
@@ -743,45 +757,45 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
         rt_items = VALUE #(
           ( role_code = 'RA' posting_context = 'AR' hkont = '0000110000' partner = '0000000001'
             posting_side = 'S' amount = 100 * iv_scale waers = 'USD' zuonr = 'REINT LICENCIAS'
-            item_text = |RA \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'GE' posting_context = 'GL' hkont = '0000410000' posting_side = 'H'
             amount = -60 * iv_scale waers = 'USD' prctr = '0000000999' campana = '459' allocation = '1'
             kostl = |4591{ lv_code }999| zuonr = 'REINT LICENCIAS'
-            item_text = |GE4590000000999 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'GE' posting_context = 'GL' hkont = '0000410000' posting_side = 'H'
             amount = -40 * iv_scale waers = 'USD' prctr = '0000000123' campana = '123' allocation = '3'
             kostl = |1233{ lv_code }123| zuonr = 'REINT LICENCIAS'
-            item_text = |GE1230000000123 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
         ).
       WHEN 'AP'.
         rt_items = VALUE #(
           ( role_code = 'PA' posting_context = 'AP' hkont = '0000210000' partner = '0000000002'
             posting_side = 'H' amount = COND #( WHEN iv_tax = abap_true THEN -125 ELSE -100 ) * iv_scale waers = 'USD' zuonr = 'REINT LICENCIAS'
-            item_text = |PA \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'GE' posting_context = 'GL' hkont = '0000410000' posting_side = 'S'
             amount = COND #( WHEN iv_tax = abap_true THEN 75 ELSE 60 ) * iv_scale waers = 'USD' prctr = '0000000999' campana = '459' allocation = '1'
             kostl = |4591{ lv_code }999| zuonr = 'REINT LICENCIAS'
-            item_text = |GE4590000000999 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'GE' posting_context = 'GL' hkont = '0000410000' posting_side = 'S'
             amount = COND #( WHEN iv_tax = abap_true THEN 50 ELSE 40 ) * iv_scale waers = 'USD' prctr = '0000000123' campana = '123' allocation = '3'
             kostl = |1233{ lv_code }123| zuonr = 'REINT LICENCIAS'
-            item_text = |GE1230000000123 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'TS' posting_context = 'GL' hkont = '0000420000' posting_side = 'S'
             amount = 15 * iv_scale waers = 'USD' prctr = '0000000999' campana = '459' allocation = '1'
             kostl = |4591{ lv_code }999| zuonr = 'REINT LICENCIAS'
-            item_text = |TS4590000000999 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'TS' posting_context = 'GL' hkont = '0000420000' posting_side = 'S'
             amount = 10 * iv_scale waers = 'USD' prctr = '0000000123' campana = '123' allocation = '3'
             kostl = |1233{ lv_code }123| zuonr = 'REINT LICENCIAS'
-            item_text = |TS1230000000123 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'TH' posting_context = 'GL' hkont = '0000430000' posting_side = 'H'
             amount = -15 * iv_scale waers = 'USD' prctr = '0000000999' campana = '459' allocation = '1'
             kostl = |4591{ lv_code }999| zuonr = 'REINT LICENCIAS'
-            item_text = |TH4590000000999 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'TH' posting_context = 'GL' hkont = '0000430000' posting_side = 'H'
             amount = -10 * iv_scale waers = 'USD' prctr = '0000000123' campana = '123' allocation = '3'
             kostl = |1233{ lv_code }123| zuonr = 'REINT LICENCIAS'
-            item_text = |TH1230000000123 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
         ).
         IF iv_tax = abap_false.
           DELETE rt_items WHERE role_code = 'TS' OR role_code = 'TH'.
@@ -791,38 +805,38 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
           ( role_code = 'RT' posting_context = 'GL' hkont = '0000510000' posting_side = 'S'
             amount = 15 * iv_scale waers = 'USD' prctr = '0000000999' campana = '459' allocation = '1'
             kostl = |4591{ lv_code }999| zuonr = 'REINT LICENCIAS'
-            item_text = |RT RECL \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'RT' posting_context = 'GL' hkont = '0000510000' posting_side = 'S'
             amount = 10 * iv_scale waers = 'USD' prctr = '0000000123' campana = '123' allocation = '3'
             kostl = |1233{ lv_code }123| zuonr = 'REINT LICENCIAS'
-            item_text = |RT RECL \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'GE' posting_context = 'GL' hkont = '0000410000' posting_side = 'H'
             amount = -15 * iv_scale waers = 'USD' prctr = '0000000999' campana = '459' allocation = '1'
             kostl = |4591{ lv_code }999| zuonr = 'REINT LICENCIAS'
-            item_text = |GE RECL \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'GE' posting_context = 'GL' hkont = '0000410000' posting_side = 'H'
             amount = -10 * iv_scale waers = 'USD' prctr = '0000000123' campana = '123' allocation = '3'
             kostl = |1233{ lv_code }123| zuonr = 'REINT LICENCIAS'
-            item_text = |GE RECL \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
         ).
       WHEN 'INT'.
         rt_items = VALUE #(
           ( role_code = 'GS' posting_context = 'GL' hkont = '0000410000' posting_side = 'S'
             amount = 75 * iv_scale waers = 'USD' prctr = '0000000999' campana = '459' allocation = '1'
             kostl = |4591{ lv_code }999| zuonr = 'REINT LICENCIAS'
-            item_text = |GS4590000000999 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'GS' posting_context = 'GL' hkont = '0000410000' posting_side = 'S'
             amount = 50 * iv_scale waers = 'USD' prctr = '0000000123' campana = '123' allocation = '3'
             kostl = |1233{ lv_code }123| zuonr = 'REINT LICENCIAS'
-            item_text = |GS1230000000123 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'GH' posting_context = 'GL' hkont = '0000410000' posting_side = 'H'
             amount = -75 * iv_scale waers = 'USD' prctr = '0000000999' campana = '459' allocation = '1'
             kostl = |4591{ lv_code }999| zuonr = 'REINT LICENCIAS'
-            item_text = |GH4590000000999 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
           ( role_code = 'GH' posting_context = 'GL' hkont = '0000410000' posting_side = 'H'
             amount = -50 * iv_scale waers = 'USD' prctr = '0000000123' campana = '123' allocation = '3'
             kostl = |1233{ lv_code }123| zuonr = 'REINT LICENCIAS'
-            item_text = |GH1230000000123 \| { line-bukrs_prest } X { line-bukrs_recv }| )
+            item_text = |Reintegros \| { line-bukrs_prest } X { line-bukrs_recv } \| { iv_external }| )
         ).
     ENDCASE.
   ENDMETHOD.
@@ -835,7 +849,8 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
       waers = 'USD' doc_type_code = iv_type header_txt = |REING F { line-calc_run_id }| ).
     cl_abap_unit_assert=>assert_equals( act = ls_call-header exp = ls_expected_header ).
     cl_abap_unit_assert=>assert_equals( act = ls_call-mode exp = iv_mode ).
-    DATA(lt_expected_items) = expected_items( iv_type = iv_type iv_scale = iv_scale iv_tax = iv_tax iv_code = iv_code ).
+    DATA(lt_expected_items) = expected_items( iv_type = iv_type iv_scale = iv_scale
+      iv_tax = iv_tax iv_code = iv_code iv_external = iv_external ).
     DATA(lt_actual_items) = ls_call-items.
     DATA lv_seq TYPE i.
     LOOP AT lt_actual_items ASSIGNING FIELD-SYMBOL(<item>).
@@ -1114,10 +1129,16 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
       <step>-output_amt *= 2.
       <step>-output_trans_amt *= 2.
     ENDLOOP.
+    " V001 (CC) - #122: two exact headers must survive both contexts.
+    DATA headers TYPE STANDARD TABLE OF zreing_ct2_a WITH EMPTY KEY.
+    headers = VALUE #( ( ct_uuid = c_ct ext_contract = 'EXT-A' )
+      ( ct_uuid = c_ct_b ext_contract = 'EXT-B' ) ).
+    sql_env->get_double( 'ZREING_CT2_A' )->clear( ).
+    sql_env->insert_test_data( headers ).
     zcl_reing_contab_engine=>warm_config( VALUE #( ( line_a ) ( line_b ) ) ).
     DATA(result_a) = process( ).
     cl_abap_unit_assert=>assert_false( result_a-has_error ).
-    assert_document( is_result = result_a iv_index = 1 iv_type = 'AR' iv_total = 100 ).
+    assert_document( is_result = result_a iv_index = 1 iv_type = 'AR' iv_total = 100 iv_external = 'EXT-A' ).
     DATA(doc_a) = zcl_reing_contab_engine=>gt_doc_pending[ 1 ].
     DATA(items_a) = zcl_reing_contab_engine=>gt_item_pending.
     DATA(trace_a) = zcl_reing_contab_engine=>gt_trace_pending[ 1 ].
@@ -1127,7 +1148,7 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
     DATA(result_b) = process( ).
     cl_abap_unit_assert=>assert_false( result_b-has_error ).
     cl_abap_unit_assert=>assert_equals( act = lines( result_b-documents ) exp = 1 ).
-    assert_document( is_result = result_b iv_index = 1 iv_call = 2 iv_type = 'AR' iv_total = 200 iv_scale = 2 ).
+    assert_document( is_result = result_b iv_index = 1 iv_call = 2 iv_type = 'AR' iv_total = 200 iv_scale = 2 iv_external = 'EXT-B' ).
     cl_abap_unit_assert=>assert_equals( act = zcl_reing_contab_engine=>gt_doc_pending[ 1 ] exp = doc_a ).
     cl_abap_unit_assert=>assert_equals( act = zcl_reing_contab_engine=>gt_trace_pending[ 1 ] exp = trace_a ).
     DATA lt_a_items TYPE tt_items.
@@ -1549,5 +1570,67 @@ CLASS ltcl_cb05_engine IMPLEMENTATION.
     zcl_reing_contab_engine=>warm_config( VALUE #( ) ).
     cl_abap_unit_assert=>assert_true( zcl_reing_contab_engine=>gv_eba_off ).
     cl_abap_unit_assert=>assert_initial( zcl_reing_contab_engine=>gt_trans_currencies ).
+  ENDMETHOD.
+  METHOD text_header_cache_exact.
+    given( ).
+    DATA(second) = line.
+    second-ct_uuid = c_ct_b.
+    DATA headers TYPE STANDARD TABLE OF zreing_ct2_a WITH EMPTY KEY.
+    headers = VALUE #( ( ct_uuid = c_ct ct_id = 'SAME' ext_contract = 'EXT-A' )
+      ( ct_uuid = c_ct_b ct_id = 'SAME' ext_contract = 'EXT-B' )
+      ( ct_uuid = c_mat_b ct_id = line-ct_id ext_contract = 'OUT-OF-SCOPE' ) ).
+    sql_env->get_double( 'ZREING_CT2_A' )->clear( ).
+    sql_env->insert_test_data( headers ).
+    zcl_reing_contab_engine=>warm_config( VALUE #( ( line ) ( second ) ) ).
+    cl_abap_unit_assert=>assert_equals( act = lines( zcl_reing_contab_engine=>gt_contract_text ) exp = 2 ).
+    cl_abap_unit_assert=>assert_equals(
+      act = zcl_reing_contab_engine=>gt_contract_text[ ct_uuid = c_ct ]-ext_contract exp = 'EXT-A' ).
+    cl_abap_unit_assert=>assert_equals(
+      act = zcl_reing_contab_engine=>gt_contract_text[ ct_uuid = c_ct_b ]-ext_contract exp = 'EXT-B' ).
+    zcl_reing_contab_engine=>warm_config( VALUE #( ) ).
+    cl_abap_unit_assert=>assert_initial( zcl_reing_contab_engine=>gt_contract_text ).
+  ENDMETHOD.
+
+  METHOD text_header_missing_refresh.
+    given( ).
+    cl_abap_unit_assert=>assert_not_initial( zcl_reing_contab_engine=>gt_contract_text ).
+    sql_env->get_double( 'ZREING_CT2_A' )->clear( ).
+    warm( ).
+    cl_abap_unit_assert=>assert_initial( zcl_reing_contab_engine=>gt_contract_text ).
+    DATA(result) = process( ).
+    cl_abap_unit_assert=>assert_false( result-has_error ).
+    DATA(items) = result-documents[ 1 ]-items.
+    APPEND LINES OF result-documents[ 2 ]-items TO items.
+    LOOP AT items INTO DATA(item).
+      cl_abap_unit_assert=>assert_equals( act = item-item_text exp = 'Reintegros | EBA X MUR' ).
+    ENDLOOP.
+    assert_counts( iv_calls = 2 iv_docs = 2 iv_items = 10 iv_traces = 2 ).
+  ENDMETHOD.
+
+  METHOD text_header_blank_value.
+    given( ).
+    DATA headers TYPE STANDARD TABLE OF zreing_ct2_a WITH EMPTY KEY.
+    headers = VALUE #( ( ct_uuid = c_ct ext_contract = space ) ).
+    sql_env->get_double( 'ZREING_CT2_A' )->clear( ).
+    sql_env->insert_test_data( headers ).
+    warm( ).
+    cl_abap_unit_assert=>assert_equals( act = lines( zcl_reing_contab_engine=>gt_contract_text ) exp = 1 ).
+    DATA(result) = process( ).
+    cl_abap_unit_assert=>assert_false( result-has_error ).
+    cl_abap_unit_assert=>assert_equals( act = result-documents[ 1 ]-items[ 1 ]-item_text
+      exp = 'Reintegros | EBA X MUR' ).
+    cl_abap_unit_assert=>assert_equals( act = result-documents[ 2 ]-items[ 1 ]-item_text
+      exp = 'Reintegros | EBA X MUR' ).
+  ENDMETHOD.
+
+  METHOD text_header_post_payload.
+    given( iv_flow = 'Z' ).
+    line-line_status = 'POST_PROC'.
+    DATA(result) = process( 'P' ).
+    cl_abap_unit_assert=>assert_false( result-has_error ).
+    assert_document( is_result = result iv_index = 1 iv_type = 'AR' iv_total = 100 iv_mode = 'P' ).
+    assert_document( is_result = result iv_index = 2 iv_type = 'AP' iv_total = 150 iv_mode = 'P' ).
+    assert_document( is_result = result iv_index = 3 iv_type = 'ZZZ' iv_total = 25 iv_mode = 'P' ).
+    assert_counts( iv_calls = 3 iv_docs = 3 iv_items = 14 iv_traces = 3 ).
   ENDMETHOD.
 ENDCLASS.

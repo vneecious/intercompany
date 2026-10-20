@@ -38,6 +38,8 @@ CLASS zcl_reing_contab_doc DEFINITION
     DATA mv_contract_kostl TYPE kostl.
     " V001 (CC) - #121: every context assignment replaces the contract profit center.
     DATA mv_contract_prctr TYPE prctr.
+    " V001 (CC) - #122: external number belongs to the current context only.
+    DATA mv_contract_ext TYPE zreing_ct_ext_num.
     " V001 (CC) - #121: an omitted mapping context must clear the previous one.
     DATA mt_campana_map TYPE zif_reing_contab_types=>tt_campana_map.
     DATA mv_bukrs           TYPE bukrs.
@@ -171,6 +173,8 @@ CLASS zcl_reing_contab_doc IMPLEMENTATION.
   METHOD zif_reing_contab~set_context.
     ms_line_a        = is_line_a.
     mv_contract_kostl = iv_contract_kostl.
+    " V001 (CC) - #122: assignment also clears an omitted/empty external number.
+    mv_contract_ext = iv_contract_ext.
     mv_contract_prctr = iv_contract_prctr.
     IF mv_contract_prctr IS NOT INITIAL.
       mv_contract_prctr = |{ mv_contract_prctr ALPHA = IN }|.
@@ -1130,9 +1134,13 @@ CLASS zcl_reing_contab_doc IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD build_item_text.
-    " V001 (CC) - #122: preserve the ET separators and stored profit center.
-    rv_text = |{ is_item-role_code }{ is_item-campana }{ is_item-prctr }| &&
-      | \| { ms_line_a-bukrs_prest } X { ms_line_a-bukrs_recv }|.
+    " V001 (CC) - #122: one approved literal format for every document/item.
+    CONSTANTS lc_prefix TYPE c LENGTH 10 VALUE 'Reintegros'.
+    DATA(lv_external) = shift_left( val = shift_right( val = CONV string( mv_contract_ext ) ) ).
+    rv_text = |{ lc_prefix } \| { ms_line_a-bukrs_prest } X { ms_line_a-bukrs_recv }|.
+    IF lv_external IS NOT INITIAL.
+      rv_text = |{ rv_text } \| { lv_external }|.
+    ENDIF.
   ENDMETHOD.
 
   METHOD adjust_rounding.

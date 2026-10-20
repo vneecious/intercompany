@@ -44,6 +44,14 @@ INTERFACE zif_reing_contab_types PUBLIC.
          tt_contract_kostl TYPE HASHED TABLE OF ty_contract_kostl
            WITH UNIQUE KEY ct_uuid mat_uuid.
 
+  " V001 (CC) - #122: header text cache, independent of material/cost rules.
+  TYPES: BEGIN OF ty_contract_text,
+           ct_uuid TYPE zreing_ct2_a-ct_uuid,
+           ext_contract TYPE zreing_ct2_a-ext_contract,
+         END OF ty_contract_text,
+         tt_contract_text TYPE HASHED TABLE OF ty_contract_text
+           WITH UNIQUE KEY ct_uuid.
+
   " ---- Flujo de documentos (pasos de DOCFLOW_C para un OP_TYPE) ----
   " Lo devuelve ZCL_REING_CONTAB_ENGINE~load_flow_config, ordenado por SEQ.
   " Se tipa sobre la tabla real ZREING_DOCFLOW_C (incluye bukrs_rule/override

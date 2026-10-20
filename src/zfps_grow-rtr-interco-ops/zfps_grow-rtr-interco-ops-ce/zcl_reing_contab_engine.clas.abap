@@ -161,6 +161,8 @@ CLASS zcl_reing_contab_engine DEFINITION
     " configuracion, load_flow_config ya falla con un mensaje explicito.
     " V001 (CC) - bug107 CONTAB: one bulk lookup outside line and step loops.
     CLASS-DATA gt_contract_kostl TYPE zif_reing_contab_types=>tt_contract_kostl.
+    " V001 (CC) - #122: exact header identity for every document format.
+    CLASS-DATA gt_contract_text TYPE zif_reing_contab_types=>tt_contract_text.
     " V001 (CC) - #121: scope-limited mapping cache, never read inside processing loops.
     CLASS-DATA gt_campana_map TYPE zif_reing_contab_types=>tt_campana_map.
     CLASS-DATA gt_flow_all      TYPE zif_reing_contab_types=>ty_flow_t.
@@ -531,6 +533,10 @@ CLASS zcl_reing_contab_engine IMPLEMENTATION.
     DATA(lv_contract_prctr) = VALUE prctr( gt_contract_kostl[
       ct_uuid = is_line_a-ct_uuid mat_uuid = is_line_a-mat_uuid ]-prctr OPTIONAL ).
 
+    " V001 (CC) - #122: use the scoped contract header, never CT_ID/material.
+    DATA(lv_contract_ext) = VALUE zreing_ct_ext_num( gt_contract_text[
+      ct_uuid = is_line_a-ct_uuid ]-ext_contract OPTIONAL ).
+
     " --- Paso 3: iterar pasos del flujo (sin BD adentro) ---
     LOOP AT lt_flow INTO DATA(ls_step).
 
@@ -564,6 +570,7 @@ CLASS zcl_reing_contab_engine IMPLEMENTATION.
         iv_contract_kostl = lv_contract_kostl
         it_campana_map = gt_campana_map
         iv_contract_prctr = lv_contract_prctr
+        iv_contract_ext = lv_contract_ext
         iv_eba_off = COND #( WHEN iv_mode = zif_reing_ca_c=>contab_mode-storno
                             THEN abap_true ELSE mv_eba_off ) ).
 
@@ -1109,7 +1116,7 @@ CLASS zcl_reing_contab_engine IMPLEMENTATION.
     " construction: nothing runs between the CLEAR and the flush.
     " End Mod V005 (09.09.2026 | EXT_GONZALCA)
     CLEAR: gt_flow_all, gt_doctype_all, gt_optype_all, gt_orig_docs_all,
-           gt_doc_pending, gt_item_pending, gt_trace_pending, gt_trans_currencies, gt_contract_kostl, gt_campana_map.
+           gt_doc_pending, gt_item_pending, gt_trace_pending, gt_trans_currencies, gt_contract_kostl, gt_campana_map, gt_contract_text.
     gv_eba_off = abap_true.
 
     IF it_lines IS INITIAL.
@@ -1122,6 +1129,13 @@ CLASS zcl_reing_contab_engine IMPLEMENTATION.
     END-TEST-SEAM.
     " V001 (CC) - CB-01: bulk precision lookup before any document/line loop.
     warm_trans_precision( it_lines ).
+
+    " V001 (CC) - #122: one bulk read, after the nonempty-scope guard.
+    SELECT ct_uuid, ext_contract
+      FROM zreing_ct2_a
+      FOR ALL ENTRIES IN @it_lines
+      WHERE ct_uuid = @it_lines-ct_uuid
+      INTO TABLE @gt_contract_text.
 
     " OP_TYPEs distintos del scope completo. Begin Mod V006: el mismo loop
     " arma tambien los rangos de run y linea que usa la lectura de

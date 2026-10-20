@@ -187,6 +187,27 @@ CLASS zcl_interco_jeitem_bg IMPLEMENTATION.
     DATA(p_fiscalperiod) = parameters-fiscalperiod.
     DATA(p_paymenttype) = parameters-paymenttype.
 
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12o (7c.4): ruteo BG por AG técnico
+    " L consulta AG técnicos E; p_paymenttype conserva el tipo comercial solicitado.
+    IF lv_matag_activa_bg = abap_true.
+      DATA(lv_ag_paymenttype_bg) = COND zint_dte_paymenttype(
+        WHEN p_paymenttype = 'L' THEN 'E'
+        ELSE p_paymenttype ).
+
+      SELECT COUNT(*) FROM zint_a_jeitem_ag
+        WHERE companycode  = @p_companycode
+          AND fiscalyear   = @p_fiscalyear
+          AND fiscalperiod = @p_fiscalperiod
+          AND ledger       = @p_ledger
+          AND paymenttype  = @lv_ag_paymenttype_bg
+        INTO @DATA(lv_ag_count_bg).
+
+      IF lv_ag_count_bg = 0.
+        lv_matag_activa_bg = abap_false.
+      ENDIF.
+    ENDIF.
+    " Fin EXT_OSCUGALD 16.10.2026 - C12o (7c.4)
+
     FINAL(now) = utclong_current( ).
     FINAL(_24hbefore) = utclong_add( val = now hours = hours * -1 ).
 

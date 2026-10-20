@@ -23,19 +23,10 @@
     <REFKIND>D</REFKIND>
    </DD04V>
    <I18N_LANGS>
-    <LANGU>D</LANGU>
     <LANGU>P</LANGU>
     <LANGU>S</LANGU>
    </I18N_LANGS>
    <DD04_TEXTS>
-    <item>
-     <DDLANGUAGE>D</DDLANGUAGE>
-     <DDTEXT>Name der Rolle</DDTEXT>
-     <REPTEXT>Rolle</REPTEXT>
-     <SCRTEXT_S>Rolle</SCRTEXT_S>
-     <SCRTEXT_M>Rolle</SCRTEXT_M>
-     <SCRTEXT_L>Rolle</SCRTEXT_L>
-    </item>
     <item>
      <DDLANGUAGE>P</DDLANGUAGE>
      <DDTEXT>Nome da função</DDTEXT>

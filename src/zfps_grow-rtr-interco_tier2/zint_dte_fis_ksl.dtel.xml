@@ -15,19 +15,10 @@
     <REFKIND>D</REFKIND>
    </DD04V>
    <I18N_LANGS>
-    <LANGU>D</LANGU>
     <LANGU>P</LANGU>
     <LANGU>S</LANGU>
    </I18N_LANGS>
    <DD04_TEXTS>
-    <item>
-     <DDLANGUAGE>D</DDLANGUAGE>
-     <DDTEXT>Betrag in übergreifender Währung</DDTEXT>
-     <REPTEXT>Betrag in übergreifender Währung</REPTEXT>
-     <SCRTEXT_S>Betr. ÜW</SCRTEXT_S>
-     <SCRTEXT_M>Betrag in übergr. W.</SCRTEXT_M>
-     <SCRTEXT_L>Betrag in übergreifender Währung</SCRTEXT_L>
-    </item>
     <item>
      <DDLANGUAGE>P</DDLANGUAGE>
      <DDTEXT>Montante em moeda global</DDTEXT>

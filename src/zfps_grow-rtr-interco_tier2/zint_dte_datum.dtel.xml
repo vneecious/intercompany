@@ -18,18 +18,10 @@
     <REFKIND>D</REFKIND>
    </DD04V>
    <I18N_LANGS>
-    <LANGU>D</LANGU>
     <LANGU>P</LANGU>
     <LANGU>S</LANGU>
    </I18N_LANGS>
    <DD04_TEXTS>
-    <item>
-     <DDLANGUAGE>D</DDLANGUAGE>
-     <DDTEXT>Datum</DDTEXT>
-     <SCRTEXT_S>Datum</SCRTEXT_S>
-     <SCRTEXT_M>Datum</SCRTEXT_M>
-     <SCRTEXT_L>Datum</SCRTEXT_L>
-    </item>
     <item>
      <DDLANGUAGE>P</DDLANGUAGE>
      <DDTEXT>Data</DDTEXT>

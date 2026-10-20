@@ -24,19 +24,10 @@
     <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DD04L_EXTRA>
    <I18N_LANGS>
-    <LANGU>D</LANGU>
     <LANGU>P</LANGU>
     <LANGU>S</LANGU>
    </I18N_LANGS>
    <DD04_TEXTS>
-    <item>
-     <DDLANGUAGE>D</DDLANGUAGE>
-     <DDTEXT>Wahrheitswert: wahr/falsch</DDTEXT>
-     <REPTEXT>Wahrheitswert</REPTEXT>
-     <SCRTEXT_S>Wahrheits.</SCRTEXT_S>
-     <SCRTEXT_M>Wahrheitswert</SCRTEXT_M>
-     <SCRTEXT_L>Wahrheitswert</SCRTEXT_L>
-    </item>
     <item>
      <DDLANGUAGE>P</DDLANGUAGE>
      <DDTEXT>Valor verdadeiro: verdadeiro/falso</DDTEXT>

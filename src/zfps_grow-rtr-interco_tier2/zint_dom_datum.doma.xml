@@ -12,15 +12,10 @@
     <APPLCLASS>TEST</APPLCLASS>
    </DD01V>
    <I18N_LANGS>
-    <LANGU>D</LANGU>
     <LANGU>P</LANGU>
     <LANGU>S</LANGU>
    </I18N_LANGS>
    <DD01_TEXTS>
-    <item>
-     <DDLANGUAGE>D</DDLANGUAGE>
-     <DDTEXT>Datum</DDTEXT>
-    </item>
     <item>
      <DDLANGUAGE>P</DDLANGUAGE>
      <DDTEXT>Data</DDTEXT>

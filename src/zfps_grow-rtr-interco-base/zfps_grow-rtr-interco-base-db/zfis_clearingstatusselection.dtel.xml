@@ -19,19 +19,10 @@
     <REFKIND>D</REFKIND>
    </DD04V>
    <I18N_LANGS>
-    <LANGU>D</LANGU>
     <LANGU>P</LANGU>
     <LANGU>S</LANGU>
    </I18N_LANGS>
    <DD04_TEXTS>
-    <item>
-     <DDLANGUAGE>D</DDLANGUAGE>
-     <DDTEXT>Ausgleichsstatusselektion</DDTEXT>
-     <REPTEXT>Ausgleichsstatusselektion</REPTEXT>
-     <SCRTEXT_S>AusglStat.</SCRTEXT_S>
-     <SCRTEXT_M>Ausgleichsstatus</SCRTEXT_M>
-     <SCRTEXT_L>Ausgleichsstatusselektion</SCRTEXT_L>
-    </item>
     <item>
      <DDLANGUAGE>P</DDLANGUAGE>
      <DDTEXT>Seleção do status de compensação</DDTEXT>

@@ -21,19 +21,10 @@
     <REFKIND>D</REFKIND>
    </DD04V>
    <I18N_LANGS>
-    <LANGU>D</LANGU>
     <LANGU>P</LANGU>
     <LANGU>S</LANGU>
    </I18N_LANGS>
    <DD04_TEXTS>
-    <item>
-     <DDLANGUAGE>D</DDLANGUAGE>
-     <DDTEXT>Benutzername im Benutzerstamm</DDTEXT>
-     <REPTEXT>Benutzername</REPTEXT>
-     <SCRTEXT_S>Benutzer</SCRTEXT_S>
-     <SCRTEXT_M>Benutzer</SCRTEXT_M>
-     <SCRTEXT_L>Benutzer</SCRTEXT_L>
-    </item>
     <item>
      <DDLANGUAGE>P</DDLANGUAGE>
      <DDTEXT>Nome do usuário no mestre de usuários</DDTEXT>

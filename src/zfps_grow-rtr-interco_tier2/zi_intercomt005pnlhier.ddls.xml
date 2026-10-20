@@ -7,6 +7,7 @@
     <DDLANGUAGE>E</DDLANGUAGE>
     <DDTEXT>Agrup L5 a L0 via released GLAccount hierarchy (perf MT005)</DDTEXT>
     <SOURCE_TYPE>W</SOURCE_TYPE>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DDLS>
   </asx:values>
  </asx:abap>

@@ -1,30 +1,20 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"I_PRODUCT",
-"I_PRODUCTTEXT",
-"I_SUPPLIER",
-"ZI_REINGTXRULE"
-],
-"ASSOCIATED":
-[
-"I_COMPANYCODE",
-"I_COUNTRY",
-"I_PRODUCT",
-"I_SUPPLIER",
-"ZI_REINGTXTYPE"
-],
-"BASE":
-[
-"ZI_REINGTXRULE"
-],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "I_PRODUCT",
+      "I_PRODUCTTEXT",
+      "I_SUPPLIER",
+      "ZI_REINGTXRULE"
+    ],
+    "ASSOCIATED": [
+      "I_COMPANYCODE",
+      "I_COUNTRY",
+      "I_PRODUCT",
+      "I_SUPPLIER",
+      "ZI_REINGTXTYPE"
+    ],
+    "BASE": [
+      "ZI_REINGTXRULE"
+    ]
+  }
 }

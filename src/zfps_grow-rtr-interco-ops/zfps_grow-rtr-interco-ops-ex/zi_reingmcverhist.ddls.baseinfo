@@ -1,21 +1,10 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZREING_MC_HIST_A"
-],
-"ASSOCIATED":
-[
-"ZI_REINGMCVERSION"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZREING_MC_HIST_A"
+    ],
+    "ASSOCIATED": [
+      "ZI_REINGMCVERSION"
+    ]
+  }
 }

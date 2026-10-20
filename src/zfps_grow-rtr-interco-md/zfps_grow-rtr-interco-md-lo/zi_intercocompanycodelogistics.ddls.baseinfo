@@ -1,23 +1,12 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZINT_A_MD007"
-],
-"ASSOCIATED":
-[
-"I_PLANT",
-"I_PURCHASINGORGANIZATION",
-"I_SALESORGANIZATION"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZINT_A_MD007"
+    ],
+    "ASSOCIATED": [
+      "I_PLANT",
+      "I_PURCHASINGORGANIZATION",
+      "I_SALESORGANIZATION"
+    ]
+  }
 }

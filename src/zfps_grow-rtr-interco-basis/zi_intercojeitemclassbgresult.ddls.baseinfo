@@ -1,21 +1,10 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZINT_A_JEI"
-],
-"ASSOCIATED":
-[
-"ZI_INTERCOJEITEMCLASSBG"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZINT_A_JEI"
+    ],
+    "ASSOCIATED": [
+      "ZI_INTERCOJEITEMCLASSBG"
+    ]
+  }
 }

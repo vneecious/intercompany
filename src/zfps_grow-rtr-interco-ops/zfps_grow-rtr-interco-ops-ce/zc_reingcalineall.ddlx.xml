@@ -7,6 +7,7 @@
      <NAME>ZC_REINGCALINEALL</NAME>
      <DESCRIPTION>App CA - Motor de Calculo IC - UI Metadata Extension</DESCRIPTION>
      <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
+     <ABAP_LANGU_VERSION>5</ABAP_LANGU_VERSION>
     </METADATA>
    </DDLX>
   </asx:values>

@@ -49,6 +49,12 @@
      <VALEXI>X</VALEXI>
     </DD27P>
    </DD27P_TABLE>
+   <TABL_EXTRAS>
+    <TDDAT>
+     <TABNAME>ZREING_DOCTP_R_V</TABNAME>
+     <CCLASS>&amp;NC&amp;</CCLASS>
+    </TDDAT>
+   </TABL_EXTRAS>
    <I18N_LANGS>
     <LANGU>S</LANGU>
    </I18N_LANGS>

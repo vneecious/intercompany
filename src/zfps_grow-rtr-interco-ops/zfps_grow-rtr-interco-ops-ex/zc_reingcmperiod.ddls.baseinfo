@@ -1,24 +1,14 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZI_REINGCMPERIOD"
-],
-"ASSOCIATED":
-[
-"ZC_REINGCMHEADER",
-"ZI_REINGCMHEADER"
-],
-"BASE":
-[
-"ZI_REINGCMPERIOD"
-],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZI_REINGCMPERIOD"
+    ],
+    "ASSOCIATED": [
+      "ZC_REINGCMHEADER",
+      "ZI_REINGCMHEADER"
+    ],
+    "BASE": [
+      "ZI_REINGCMPERIOD"
+    ]
+  }
 }

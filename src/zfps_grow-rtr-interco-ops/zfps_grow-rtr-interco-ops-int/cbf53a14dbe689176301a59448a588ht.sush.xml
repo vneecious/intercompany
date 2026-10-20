@@ -7,6 +7,11 @@
     <TYPE>HT</TYPE>
     <DISPLAY_NAME>R3TR G4BA ZUI_FINT_POST_LOG_V4</DISPLAY_NAME>
    </HEAD>
+   <USOBHASH>
+    <PGMID>R3TR</PGMID>
+    <OBJECT>G4BA</OBJECT>
+    <OBJ_NAME>ZUI_FINT_POST_LOG_V4</OBJ_NAME>
+   </USOBHASH>
   </asx:values>
  </asx:abap>
 </abapGit>

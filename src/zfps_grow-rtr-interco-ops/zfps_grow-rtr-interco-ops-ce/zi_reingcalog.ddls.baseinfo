@@ -1,22 +1,11 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZREING_CA_LOG_A"
-],
-"ASSOCIATED":
-[
-"ZI_REINGCALINE",
-"ZI_REINGCARUN"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZREING_CA_LOG_A"
+    ],
+    "ASSOCIATED": [
+      "ZI_REINGCALINE",
+      "ZI_REINGCARUN"
+    ]
+  }
 }

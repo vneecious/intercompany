@@ -6,6 +6,7 @@
     <DCLNAME>ZI_INTERCOCLASSIFICATIONRULE</DCLNAME>
     <DCLLANGUAGE>E</DCLLANGUAGE>
     <DDTEXT>Intercompany: Access Control to ZI_IntercoClassificationRule</DDTEXT>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DCLS>
   </asx:values>
  </asx:abap>

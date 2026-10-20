@@ -13,6 +13,12 @@
     <UNICODE>5</UNICODE>
     <CLSDEFINT>ZI_INTERCORETENCIONESP_S</CLSDEFINT>
    </VSEOCLASS>
+   <DESCRIPTIONS_CLASS>
+    <SEOCLASSTX>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Behavior Implementation for ZI_IntercoRetencionesP</DESCRIPT>
+    </SEOCLASSTX>
+   </DESCRIPTIONS_CLASS>
   </asx:values>
  </asx:abap>
 </abapGit>

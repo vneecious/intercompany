@@ -1,25 +1,15 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"I_EXCHANGERATE"
-],
-"ASSOCIATED":
-[
-"I_CURRENCY",
-"I_EXCHANGERATETYPE",
-"I_EXCHANGERATETYPETEXT"
-],
-"BASE":
-[
-"I_EXCHANGERATE"
-],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "I_EXCHANGERATE"
+    ],
+    "ASSOCIATED": [
+      "I_CURRENCY",
+      "I_EXCHANGERATETYPE",
+      "I_EXCHANGERATETYPETEXT"
+    ],
+    "BASE": [
+      "I_EXCHANGERATE"
+    ]
+  }
 }

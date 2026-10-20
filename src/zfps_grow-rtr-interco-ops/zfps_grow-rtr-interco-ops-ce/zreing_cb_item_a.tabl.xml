@@ -139,6 +139,9 @@
      <DDTEXT>CONTAB - Documents Item FI</DDTEXT>
     </item>
    </DD02_TEXTS>
+   <TABL_EXTRAS>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </TABL_EXTRAS>
   </asx:values>
  </asx:abap>
 </abapGit>

@@ -1,19 +1,7 @@
 {
-"BASEINFO":
-{
-"FROM":
-[],
-"ASSOCIATED":
-[
-"ZR_INTERCODOCPARENTFLOW"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "ASSOCIATED": [
+      "ZR_INTERCODOCPARENTFLOW"
+    ]
+  }
 }

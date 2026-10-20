@@ -414,6 +414,9 @@
      <CARDLEFT>1</CARDLEFT>
     </DD08V>
    </DD08V_TABLE>
+   <TABL_EXTRAS>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </TABL_EXTRAS>
   </asx:values>
  </asx:abap>
 </abapGit>

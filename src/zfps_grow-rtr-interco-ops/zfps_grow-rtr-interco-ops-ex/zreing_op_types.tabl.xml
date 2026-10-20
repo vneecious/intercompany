@@ -94,6 +94,7 @@
      <TABNAME>ZREING_OP_TYPES</TABNAME>
      <CCLASS>&amp;NC&amp;</CCLASS>
     </TDDAT>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </TABL_EXTRAS>
   </asx:values>
  </asx:abap>

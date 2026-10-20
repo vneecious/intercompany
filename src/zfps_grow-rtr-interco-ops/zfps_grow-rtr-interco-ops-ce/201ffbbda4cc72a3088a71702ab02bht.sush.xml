@@ -7,6 +7,11 @@
     <TYPE>HT</TYPE>
     <DISPLAY_NAME>R3TR IWSV ZREING_CA_UI_V2                    0001</DISPLAY_NAME>
    </HEAD>
+   <USOBHASH>
+    <PGMID>R3TR</PGMID>
+    <OBJECT>IWSV</OBJECT>
+    <OBJ_NAME>ZREING_CA_UI_V2                    0001</OBJ_NAME>
+   </USOBHASH>
   </asx:values>
  </asx:abap>
 </abapGit>

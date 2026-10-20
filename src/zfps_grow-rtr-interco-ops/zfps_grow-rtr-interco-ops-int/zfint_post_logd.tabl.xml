@@ -246,6 +246,9 @@
      <MASK>  CHAR</MASK>
     </DD03P>
    </DD03P_TABLE>
+   <TABL_EXTRAS>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </TABL_EXTRAS>
   </asx:values>
  </asx:abap>
 </abapGit>

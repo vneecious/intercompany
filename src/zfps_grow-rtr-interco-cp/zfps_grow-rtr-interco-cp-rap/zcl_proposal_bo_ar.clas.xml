@@ -27,23 +27,6 @@
    </TPOOL>
    <I18N_TPOOL>
     <item>
-     <LANGUAGE>S</LANGUAGE>
-     <TEXTPOOL>
-      <item>
-       <ID>I</ID>
-       <KEY>001</KEY>
-       <ENTRY>Falta registro para determinar el Centro de Costos para Departamento:</ENTRY>
-       <LENGTH>100</LENGTH>
-      </item>
-      <item>
-       <ID>I</ID>
-       <KEY>002</KEY>
-       <ENTRY>Falta registro para determinar la Cuenta Contable para Tarifa/P&amp;L3/Depto:</ENTRY>
-       <LENGTH>100</LENGTH>
-      </item>
-     </TEXTPOOL>
-    </item>
-    <item>
      <LANGUAGE>P</LANGUAGE>
      <TEXTPOOL>
       <item>
@@ -56,6 +39,23 @@
        <ID>I</ID>
        <KEY>002</KEY>
        <ENTRY>Falta entrada para determinar Conta Contabil para Tarifa/P&amp;L3/Departamento:</ENTRY>
+       <LENGTH>100</LENGTH>
+      </item>
+     </TEXTPOOL>
+    </item>
+    <item>
+     <LANGUAGE>S</LANGUAGE>
+     <TEXTPOOL>
+      <item>
+       <ID>I</ID>
+       <KEY>001</KEY>
+       <ENTRY>Falta registro para determinar el Centro de Costos para Departamento:</ENTRY>
+       <LENGTH>100</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>002</KEY>
+       <ENTRY>Falta registro para determinar la Cuenta Contable para Tarifa/P&amp;L3/Depto:</ENTRY>
        <LENGTH>100</LENGTH>
       </item>
      </TEXTPOOL>

@@ -6,6 +6,7 @@
     <DCLNAME>ZI_INTERCOEXEMPTION</DCLNAME>
     <DCLLANGUAGE>E</DCLLANGUAGE>
     <DDTEXT>Intercompany: Access Control to ZI_IntercoExemption</DDTEXT>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DCLS>
   </asx:values>
  </asx:abap>

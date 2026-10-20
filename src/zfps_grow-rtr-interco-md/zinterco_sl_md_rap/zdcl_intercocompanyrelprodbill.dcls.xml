@@ -6,6 +6,7 @@
     <DCLNAME>ZDCL_INTERCOCOMPANYRELPRODBILL</DCLNAME>
     <DCLLANGUAGE>E</DCLLANGUAGE>
     <DDTEXT>Conceptos Facturables por Empresa Prestadora</DDTEXT>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DCLS>
   </asx:values>
  </asx:abap>

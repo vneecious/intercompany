@@ -65,59 +65,6 @@
    </TPOOL>
    <I18N_TPOOL>
     <item>
-     <LANGUAGE>S</LANGUAGE>
-     <TEXTPOOL>
-      <item>
-       <ID>I</ID>
-       <KEY>001</KEY>
-       <ENTRY>Línea</ENTRY>
-       <LENGTH>13</LENGTH>
-      </item>
-      <item>
-       <ID>I</ID>
-       <KEY>002</KEY>
-       <ENTRY>Sociedad</ENTRY>
-       <LENGTH>22</LENGTH>
-      </item>
-      <item>
-       <ID>I</ID>
-       <KEY>003</KEY>
-       <ENTRY>ID P&amp;L</ENTRY>
-       <LENGTH>16</LENGTH>
-      </item>
-      <item>
-       <ID>I</ID>
-       <KEY>004</KEY>
-       <ENTRY>Centro de Benefício</ENTRY>
-       <LENGTH>23</LENGTH>
-      </item>
-      <item>
-       <ID>I</ID>
-       <KEY>005</KEY>
-       <ENTRY>Concepto</ENTRY>
-       <LENGTH>17</LENGTH>
-      </item>
-      <item>
-       <ID>I</ID>
-       <KEY>006</KEY>
-       <ENTRY>Campana</ENTRY>
-       <LENGTH>46</LENGTH>
-      </item>
-      <item>
-       <ID>I</ID>
-       <KEY>007</KEY>
-       <ENTRY>CC. Allocation</ENTRY>
-       <LENGTH>24</LENGTH>
-      </item>
-      <item>
-       <ID>I</ID>
-       <KEY>008</KEY>
-       <ENTRY>CC. Consolidation</ENTRY>
-       <LENGTH>27</LENGTH>
-      </item>
-     </TEXTPOOL>
-    </item>
-    <item>
      <LANGUAGE>P</LANGUAGE>
      <TEXTPOOL>
       <item>
@@ -154,6 +101,59 @@
        <ID>I</ID>
        <KEY>006</KEY>
        <ENTRY>Hierarquia Std. de CC.</ENTRY>
+       <LENGTH>46</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>007</KEY>
+       <ENTRY>CC. Allocation</ENTRY>
+       <LENGTH>24</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>008</KEY>
+       <ENTRY>CC. Consolidation</ENTRY>
+       <LENGTH>27</LENGTH>
+      </item>
+     </TEXTPOOL>
+    </item>
+    <item>
+     <LANGUAGE>S</LANGUAGE>
+     <TEXTPOOL>
+      <item>
+       <ID>I</ID>
+       <KEY>001</KEY>
+       <ENTRY>Línea</ENTRY>
+       <LENGTH>13</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>002</KEY>
+       <ENTRY>Sociedad</ENTRY>
+       <LENGTH>22</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>003</KEY>
+       <ENTRY>ID P&amp;L</ENTRY>
+       <LENGTH>16</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>004</KEY>
+       <ENTRY>Centro de Benefício</ENTRY>
+       <LENGTH>23</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>005</KEY>
+       <ENTRY>Concepto</ENTRY>
+       <LENGTH>17</LENGTH>
+      </item>
+      <item>
+       <ID>I</ID>
+       <KEY>006</KEY>
+       <ENTRY>Campana</ENTRY>
        <LENGTH>46</LENGTH>
       </item>
       <item>

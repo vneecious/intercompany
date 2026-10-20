@@ -1,26 +1,16 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZI_INTERCOPROPOSAL",
-"ZI_INTRC_CPDLOG",
-"ZI_INTRC_CP_DOC"
-],
-"ASSOCIATED":
-[
-"ZI_INTERCOPROPOSAL",
-"ZI_INTRC_CP_DOC"
-],
-"BASE":
-[
-"ZI_INTRC_CPDLOG"
-],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZI_INTERCOPROPOSAL",
+      "ZI_INTRC_CPDLOG",
+      "ZI_INTRC_CP_DOC"
+    ],
+    "ASSOCIATED": [
+      "ZI_INTERCOPROPOSAL",
+      "ZI_INTRC_CP_DOC"
+    ],
+    "BASE": [
+      "ZI_INTRC_CPDLOG"
+    ]
+  }
 }

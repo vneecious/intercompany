@@ -1,20 +1,8 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"UHDT_NODE",
-"UHDT_VRSN"
-],
-"ASSOCIATED":
-[],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "UHDT_NODE",
+      "UHDT_VRSN"
+    ]
+  }
 }

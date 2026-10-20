@@ -121,6 +121,7 @@
      <TABNAME>ZINT_A_FEATURE</TABNAME>
      <CCLASS>&amp;NC&amp;</CCLASS>
     </TDDAT>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </TABL_EXTRAS>
   </asx:values>
  </asx:abap>

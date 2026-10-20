@@ -1,22 +1,11 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZREING_CT_CRON_A"
-],
-"ASSOCIATED":
-[
-"ZI_REINGCTCONTRACT",
-"ZI_REINGCTOPTYPE"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZREING_CT_CRON_A"
+    ],
+    "ASSOCIATED": [
+      "ZI_REINGCTCONTRACT",
+      "ZI_REINGCTOPTYPE"
+    ]
+  }
 }

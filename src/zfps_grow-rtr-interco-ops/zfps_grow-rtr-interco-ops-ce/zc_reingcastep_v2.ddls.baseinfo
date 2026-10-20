@@ -1,26 +1,16 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZI_REINGCASTEP"
-],
-"ASSOCIATED":
-[
-"ZC_REINGCALINE_V2",
-"ZC_REINGCARUN_V2",
-"ZI_REINGCALINE",
-"ZI_REINGCARUN"
-],
-"BASE":
-[
-"ZI_REINGCASTEP"
-],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZI_REINGCASTEP"
+    ],
+    "ASSOCIATED": [
+      "ZC_REINGCALINE_V2",
+      "ZC_REINGCARUN_V2",
+      "ZI_REINGCALINE",
+      "ZI_REINGCARUN"
+    ],
+    "BASE": [
+      "ZI_REINGCASTEP"
+    ]
+  }
 }

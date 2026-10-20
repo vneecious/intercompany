@@ -1,23 +1,12 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZI_INTERCOPROP_DOCTYP_SH",
-"ZFI_A_INTRC_CPDL"
-],
-"ASSOCIATED":
-[
-"ZI_INTERCOPROPOSAL",
-"ZI_INTRC_CP_DOC"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZI_INTERCOPROP_DOCTYP_SH",
+      "ZFI_A_INTRC_CPDL"
+    ],
+    "ASSOCIATED": [
+      "ZI_INTERCOPROPOSAL",
+      "ZI_INTRC_CP_DOC"
+    ]
+  }
 }

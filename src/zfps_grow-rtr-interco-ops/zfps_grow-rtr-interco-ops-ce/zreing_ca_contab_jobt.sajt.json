@@ -1,0 +1,23 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "catalogName": "ZREING_CA_CONTAB_JOBC"
+  },
+  "parameters": {
+    "singleValueParameters": [
+      {
+        "name": "P_MODE",
+        "value": ""
+      },
+      {
+        "name": "P_RUNID",
+        "value": ""
+      }
+    ]
+  }
+}

@@ -14,6 +14,9 @@
     <DDTEXT>TT for Proposal Item with add fields</DDTEXT>
     <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DD40V>
+   <DD40L_EXTRA>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD40L_EXTRA>
   </asx:values>
  </asx:abap>
 </abapGit>

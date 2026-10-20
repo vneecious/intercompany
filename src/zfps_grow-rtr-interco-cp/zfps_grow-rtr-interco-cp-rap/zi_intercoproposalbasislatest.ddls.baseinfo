@@ -1,23 +1,12 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZFI_A_INTRC_CPIB",
-"ZFI_A_INTRC_CPIC"
-],
-"ASSOCIATED":
-[
-"ZFI_A_INTRC_CPIB",
-"ZFI_A_INTRC_CPIC"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZFI_A_INTRC_CPIB",
+      "ZFI_A_INTRC_CPIC"
+    ],
+    "ASSOCIATED": [
+      "ZFI_A_INTRC_CPIB",
+      "ZFI_A_INTRC_CPIC"
+    ]
+  }
 }

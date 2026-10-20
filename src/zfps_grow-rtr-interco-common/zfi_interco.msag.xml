@@ -217,6 +217,142 @@
      </LINES>
     </item>
    </LONGTEXTS>
+   <I18N_LANGS>
+    <LANGU>P</LANGU>
+    <LANGU>S</LANGU>
+   </I18N_LANGS>
+   <T100_TEXTS>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>201</MSGNR>
+     <TEXT>&amp;1 Já existe um registro com a mesma chave no período de validade especif</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>202</MSGNR>
+     <TEXT>&amp;1 Intervalo inválido: a data &apos;Até&apos; não pode ser menor que a data &apos;De&apos;.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>203</MSGNR>
+     <TEXT>&amp;1 O campo é obrigatório.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>204</MSGNR>
+     <TEXT>&amp;1 Pelo menos um dos campos de entrada deve ser preenchido.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>205</MSGNR>
+     <TEXT>&amp;1 Não há relação entre o produto &amp;2 e a empresa &amp;3.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>206</MSGNR>
+     <TEXT>&amp;1 Já existe uma ou mais regras com os mesmos parâmetros de entrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>207</MSGNR>
+     <TEXT>Acesso negado: você não tem permissão para executar esta operação.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>209</MSGNR>
+     <TEXT>Já existe uma base com as mesmas chaves. Deseja sobrescrevê-la?</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>210</MSGNR>
+     <TEXT>Nenhum doc. faturável encontrado ou todos já estão em uso por Propostas.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>211</MSGNR>
+     <TEXT>O Centro de Lucro &amp;1 não está relacionado à Empresa Prestadora &amp;2.</TEXT>
+    </item>
+    <item>
+     <SPRSL>P</SPRSL>
+     <MSGNR>215</MSGNR>
+     <TEXT>Já existe um processamento em segundo plano em execução. Aguarde conclus</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>201</MSGNR>
+     <TEXT>&amp;1 Ya existe un registro con la misma clave en el período de validz espc.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>202</MSGNR>
+     <TEXT>&amp;1 Intervalo inválido:  &apos;Hasta&apos; no puede ser menor que &apos;Desde&apos;</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>203</MSGNR>
+     <TEXT>&amp;1 El campo es obligatorio.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>204</MSGNR>
+     <TEXT>&amp;1 Al menos uno de los campos de entrada debe estar completado.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>205</MSGNR>
+     <TEXT>&amp;1 No existe una relación entre el producto &amp;2 y la empresa &amp;3.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>206</MSGNR>
+     <TEXT>&amp;1 Ya existe una o más reglas con los mismos parámetros de entrada.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>207</MSGNR>
+     <TEXT>Acceso denegado: no tiene permiso para realizar esta operación.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>208</MSGNR>
+     <TEXT>&amp;1 &apos;&amp;2&apos; no es un(a) &amp;3 válida.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>209</MSGNR>
+     <TEXT>Ya existe una base con las mismas claves. ¿Desea sobrescribirla?</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>210</MSGNR>
+     <TEXT>No se encontraron doc. facturables o todos ya están en uso por Propuestas</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>211</MSGNR>
+     <TEXT>El CeBe &amp;1 no está relacionado con la Sociedad Proveedora &amp;2.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>212</MSGNR>
+     <TEXT>Ya existe un registro con la misma clave.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>213</MSGNR>
+     <TEXT>Creación de base iniciada en background.</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>215</MSGNR>
+     <TEXT>Ya hay un procesamiento en segundo plano en ejecución. Esperá a que final</TEXT>
+    </item>
+    <item>
+     <SPRSL>S</SPRSL>
+     <MSGNR>216</MSGNR>
+     <TEXT>&amp;1 ya esta cargado en el departamento &amp;2 (sociedad &amp;3, material &amp;4)</TEXT>
+    </item>
+   </T100_TEXTS>
   </asx:values>
  </asx:abap>
 </abapGit>

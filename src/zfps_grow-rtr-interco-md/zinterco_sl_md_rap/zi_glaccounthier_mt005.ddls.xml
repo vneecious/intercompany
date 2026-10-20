@@ -7,6 +7,7 @@
     <DDLANGUAGE>E</DDLANGUAGE>
     <DDTEXT>join z_pnl_mt005 and I_GLAccountHierarchyNode</DDTEXT>
     <SOURCE_TYPE>W</SOURCE_TYPE>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DDLS>
   </asx:values>
  </asx:abap>

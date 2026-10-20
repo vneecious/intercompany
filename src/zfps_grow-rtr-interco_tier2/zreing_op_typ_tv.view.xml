@@ -52,6 +52,12 @@
      <FIELDNAME>OP_TYPE_DESC</FIELDNAME>
     </DD27P>
    </DD27P_TABLE>
+   <TABL_EXTRAS>
+    <TDDAT>
+     <TABNAME>ZREING_OP_TYP_TV</TABNAME>
+     <CCLASS>&amp;NC&amp;</CCLASS>
+    </TDDAT>
+   </TABL_EXTRAS>
   </asx:values>
  </asx:abap>
 </abapGit>

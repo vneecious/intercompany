@@ -69,6 +69,7 @@
      <TABNAME>ZREING_ROLE_OP</TABNAME>
      <CCLASS>&amp;NC&amp;</CCLASS>
     </TDDAT>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </TABL_EXTRAS>
   </asx:values>
  </asx:abap>

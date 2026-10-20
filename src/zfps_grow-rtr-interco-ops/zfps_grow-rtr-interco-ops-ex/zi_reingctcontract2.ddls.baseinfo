@@ -1,23 +1,12 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZREING_CT2_A"
-],
-"ASSOCIATED":
-[
-"I_SUPPLIER",
-"ZI_REINGC2HIST",
-"ZI_REINGCTMATERIAL2"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZREING_CT2_A"
+    ],
+    "ASSOCIATED": [
+      "I_SUPPLIER",
+      "ZI_REINGC2HIST",
+      "ZI_REINGCTMATERIAL2"
+    ]
+  }
 }

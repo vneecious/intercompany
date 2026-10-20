@@ -10,6 +10,12 @@
     <STATE>1</STATE>
     <UNICODE>5</UNICODE>
    </VSEOINTERF>
+   <DESCRIPTIONS_INTERFACE>
+    <SEOCLASSTX>
+     <LANGU>S</LANGU>
+     <DESCRIPT>Orphan Recovery (F5) - Verify extension point</DESCRIPT>
+    </SEOCLASSTX>
+   </DESCRIPTIONS_INTERFACE>
   </asx:values>
  </asx:abap>
 </abapGit>

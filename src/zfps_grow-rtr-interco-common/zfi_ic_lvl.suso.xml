@@ -37,6 +37,7 @@
      <ACTVT>06</ACTVT>
     </TACTZ>
    </TACTZ>
+   <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
   </asx:values>
  </asx:abap>
 </abapGit>

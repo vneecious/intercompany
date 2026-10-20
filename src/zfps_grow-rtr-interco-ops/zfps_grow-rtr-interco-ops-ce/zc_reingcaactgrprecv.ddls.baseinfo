@@ -1,21 +1,10 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZI_REINGCAACTGRPRECV"
-],
-"ASSOCIATED":
-[
-"ZC_REINGCAACTIONGROUP"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZI_REINGCAACTGRPRECV"
+    ],
+    "ASSOCIATED": [
+      "ZC_REINGCAACTIONGROUP"
+    ]
+  }
 }

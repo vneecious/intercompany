@@ -6,6 +6,7 @@
     <DCLNAME>ZDCL_INTERCOCOMPANYRELPRODRATE</DCLNAME>
     <DCLLANGUAGE>E</DCLLANGUAGE>
     <DDTEXT>DCL - Intercompany Rate values for company</DDTEXT>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DCLS>
   </asx:values>
  </asx:abap>

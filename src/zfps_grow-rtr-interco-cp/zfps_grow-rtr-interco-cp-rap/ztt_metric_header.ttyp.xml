@@ -41,6 +41,9 @@
      <KEYFIELD>VERSION</KEYFIELD>
     </DD42V>
    </DD42V>
+   <DD40L_EXTRA>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD40L_EXTRA>
   </asx:values>
  </asx:abap>
 </abapGit>

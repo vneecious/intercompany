@@ -7,6 +7,7 @@
     <DDLANGUAGE>E</DDLANGUAGE>
     <DDTEXT>CT - VH Tipos Operacion sin Devengamiento y Nota Credito</DDTEXT>
     <SOURCE_TYPE>V</SOURCE_TYPE>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DDLS>
   </asx:values>
  </asx:abap>

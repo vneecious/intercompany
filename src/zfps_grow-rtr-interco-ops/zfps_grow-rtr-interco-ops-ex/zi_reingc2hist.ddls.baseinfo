@@ -1,21 +1,10 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZREING_C2_HIST_A"
-],
-"ASSOCIATED":
-[
-"ZI_REINGCTCONTRACT2"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZREING_C2_HIST_A"
+    ],
+    "ASSOCIATED": [
+      "ZI_REINGCTCONTRACT2"
+    ]
+  }
 }

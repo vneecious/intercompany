@@ -37,6 +37,9 @@
      <ENQMODE>E</ENQMODE>
     </DD27P>
    </DD27P_TABLE>
+   <DD25L_EXTRA>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </DD25L_EXTRA>
   </asx:values>
  </asx:abap>
 </abapGit>

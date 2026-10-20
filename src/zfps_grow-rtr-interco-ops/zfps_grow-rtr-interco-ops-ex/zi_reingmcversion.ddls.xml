@@ -7,6 +7,7 @@
     <DDLANGUAGE>E</DDLANGUAGE>
     <DDTEXT>CDS Root View Entity - Metric Version (Root del BO RAP)</DDTEXT>
     <SOURCE_TYPE>W</SOURCE_TYPE>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DDLS>
   </asx:values>
  </asx:abap>

@@ -1,19 +1,7 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"ZREING_CT2_MAT_A"
-],
-"ASSOCIATED":
-[],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "ZREING_CT2_MAT_A"
+    ]
+  }
 }

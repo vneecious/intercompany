@@ -2,3 +2,7 @@
 # A exclusao real do lado abapGit depende do exit CHANGE_TADIR (push)
 # e do IGNORE em .abapgit.xml (pull). Este arquivo cobre apenas clients git.
 /src/zfps_grow-rtr-interco-ops/
+
+# Objetos Z*REING* - outro projeto, misturados no pacote _tier2 com
+# objetos nossos, por isso o filtro e por nome e nao por pacote.
+z*reing*

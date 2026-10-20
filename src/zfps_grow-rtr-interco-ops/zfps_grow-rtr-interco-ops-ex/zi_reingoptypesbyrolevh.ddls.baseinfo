@@ -1,8 +1,0 @@
-{
-  "BASEINFO": {
-    "FROM": [
-      "ZREING_OP_TYPES",
-      "ZREING_ROLE_OP"
-    ]
-  }
-}

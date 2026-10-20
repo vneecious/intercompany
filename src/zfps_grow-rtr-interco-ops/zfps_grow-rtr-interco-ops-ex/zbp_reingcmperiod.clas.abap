@@ -1,5 +1,0 @@
-CLASS zbp_reingcmperiod DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_reingcmperiod.
-ENDCLASS.
-
-CLASS zbp_reingcmperiod IMPLEMENTATION.
-ENDCLASS.

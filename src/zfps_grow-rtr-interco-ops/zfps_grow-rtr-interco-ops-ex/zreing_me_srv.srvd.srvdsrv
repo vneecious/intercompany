@@ -1,9 +1,0 @@
-@EndUserText.label: 'Carga Metricas IC - Service'
-define service ZREING_ME_SRV {
-  expose ZC_ReingMEHeader     as MEHeader;
-  expose ZC_ReingMEItem       as MEItem;
-  expose ZI_ReingMECalcUsage  as CalcUsage;
-  expose ZI_ReingMEReceiverVH as ReceiverVH;
-  expose ZI_ReingGLRoles      as RoleVH;
-  expose ZI_ReingCTMetricVH   as MetricVH;
-}

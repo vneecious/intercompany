@@ -1,7 +1,0 @@
-{
-  "BASEINFO": {
-    "FROM": [
-      "ZI_FINT_POST_LOG"
-    ]
-  }
-}

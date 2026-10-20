@@ -1,8 +1,0 @@
-{
-  "BASEINFO": {
-    "FROM": [
-      "ZI_REINGMEITEM",
-      "ZREING_ME_H_A"
-    ]
-  }
-}

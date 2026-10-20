@@ -1,8 +1,0 @@
-{
-  "BASEINFO": {
-    "FROM": [
-      "ZREING_MCV_A",
-      "ZREING_MC_A"
-    ]
-  }
-}

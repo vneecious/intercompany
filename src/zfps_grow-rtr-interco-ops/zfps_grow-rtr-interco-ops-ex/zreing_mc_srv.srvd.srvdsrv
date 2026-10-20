@@ -1,7 +1,0 @@
-@EndUserText.label: 'Catalogo Metricas IC - Service'
-define service ZREING_MC_SRV {
-  expose ZC_ReingMCVersion     as MetricVersion;
-  expose ZI_ReingMCVersionList as MetricVersionList;
-  expose ZC_ReingMCContracts   as MetricContracts;
-  expose ZC_ReingMCVerHist     as MetricVersionHistory;
-}

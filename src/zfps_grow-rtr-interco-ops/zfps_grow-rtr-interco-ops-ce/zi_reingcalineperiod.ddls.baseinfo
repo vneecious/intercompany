@@ -1,8 +1,0 @@
-{
-  "BASEINFO": {
-    "FROM": [
-      "ZREING_CA_LINE_A",
-      "ZREING_CA_RUN_A"
-    ]
-  }
-}

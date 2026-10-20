@@ -1,7 +1,0 @@
-{
-  "BASEINFO": {
-    "FROM": [
-      "ZFINT_POST_LOG"
-    ]
-  }
-}

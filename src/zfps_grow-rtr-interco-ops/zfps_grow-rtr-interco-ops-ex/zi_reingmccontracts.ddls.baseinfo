@@ -1,9 +1,0 @@
-{
-  "BASEINFO": {
-    "FROM": [
-      "ZREING_CT2_A",
-      "ZREING_CT2_MAT_A",
-      "ZREING_CT2_MET_A"
-    ]
-  }
-}

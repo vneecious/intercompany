@@ -1,0 +1,4 @@
+# Pacote pertencente a outro projeto - nao versionado neste repo.
+# A exclusao real do lado abapGit depende do exit CHANGE_TADIR (push)
+# e do IGNORE em .abapgit.xml (pull). Este arquivo cobre apenas clients git.
+/src/zfps_grow-rtr-interco-ops/

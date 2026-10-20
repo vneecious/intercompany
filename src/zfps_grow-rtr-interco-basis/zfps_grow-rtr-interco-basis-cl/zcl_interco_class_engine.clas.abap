@@ -99,6 +99,8 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     " MODIFICADO DS4K9B5URA: fuente cambiada de ZR_IntercoJEItemClassV2 a ZI_INTERCOJEITEMPANDL
     " (menos JOINs, filtros WHERE de intercompany ya incorporados en la view).
 
+    "test git
+
     " Lee page_size desde TVARVC — mismo parametro que usa ZCL_INTERCO_JEITEM_BG
     SELECT SINGLE low FROM zi_tvarvc
       WHERE name = 'ZINTERCO_IC05_PAGESIZE'

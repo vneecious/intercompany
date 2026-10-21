@@ -23,9 +23,6 @@ define root view entity ZI_INTERCOCOMPANYRELPRODRATE
        _RecipientCompany.CompanyCodeName as RecipientCompanyName,
        product                           as Product,
        productname                       as ProductName,
-       -- AGREGADO EXT_OSCUGALD 30.09.2026 - Facturación Local CH/ARG - C25: expone PaymentType (opcional, vacío = aplica a ambos procesos)
-       payment_type                      as PaymentType,
-       -- Fin EXT_OSCUGALD 30.09.2026 - Facturación Local CH/ARG - C25
        validfrom                         as Validfrom,
        validto                           as Validto,
 

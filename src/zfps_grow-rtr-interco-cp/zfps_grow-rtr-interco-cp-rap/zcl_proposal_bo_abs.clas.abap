@@ -401,19 +401,7 @@ CLASS zcl_proposal_bo_abs DEFINITION
       RETURNING
         VALUE(obj) TYPE REF TO if_abap_behv_message .
 
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.10.2026 - C20a: helper de determinación BLART
-    METHODS determine_accounting_doctype
-      IMPORTING
-        i_provider_company_code  TYPE zi_intercodoctypedetermination-providercompanycode
-        i_recipient_company_code TYPE zi_intercodoctypedetermination-recipientcompanycode
-        i_document_type          TYPE zi_intercodoctypedetermination-doctype
-        i_payment_type           TYPE zi_intercodoctypedetermination-paymenttype
-        i_amount                 TYPE fis_wsl
-        i_fallback_blart         TYPE zi_intercodoctypedetermination-accountingdocumenttype
-        i_valid_at               TYPE zi_intercodoctypedetermination-validfrom DEFAULT sy-datum
-      RETURNING
-        VALUE(result)            TYPE zi_intercodoctypedetermination-accountingdocumenttype.
-    " Fin EXT_OSCUGALD 13.10.2026 - C20a
+
   PRIVATE SECTION.
     DATA: lv_dockey_test TYPE zfi_a_intrc_cpd-documentkey,
           iv_msg         TYPE symsgid. "only uses on unit test
@@ -422,7 +410,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_proposal_bo_abs IMPLEMENTATION.
+CLASS ZCL_PROPOSAL_BO_ABS IMPLEMENTATION.
 
 
   METHOD constructor.
@@ -1106,32 +1094,11 @@ CLASS zcl_proposal_bo_abs IMPLEMENTATION.
         v4       = v4 ).
   ENDMETHOD.
 
+
   METHOD new_message_with_text.
     obj = zcl_behavior_message=>_new_message_with_text(
             severity = severity
             text     = text
           ).
-  ENDMETHOD.
-
-  METHOD determine_accounting_doctype.
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.10.2026 - C20a: helper de determinación BLART
-
-    result = i_fallback_blart.
-
-    DATA(reader) = NEW zcl_interco_doc_blart(
-      i_valid_at              = i_valid_at
-      i_doctype               = i_document_type
-      i_provider_company_code = i_provider_company_code ).
-
-    DATA(found_blart) = reader->get(
-      i_recipientcompanycode = i_recipient_company_code
-      i_paymenttype          = i_payment_type
-      i_amount               = i_amount ).
-
-    IF found_blart IS NOT INITIAL.
-      result = found_blart.
-    ENDIF.
-
-    " Fin EXT_OSCUGALD 13.10.2026 - C20a
   ENDMETHOD.
 ENDCLASS.

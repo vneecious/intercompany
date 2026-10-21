@@ -27,15 +27,20 @@ CLASS zcl_interco_bgpf DEFINITION
 
 ENDCLASS.
 
-CLASS zcl_interco_bgpf IMPLEMENTATION.
+
+
+CLASS ZCL_INTERCO_BGPF IMPLEMENTATION.
+
 
   METHOD constructor.
     ms_input_params = iv_params.
   ENDMETHOD.
 
+
   METHOD get_input_params.
     rs_params = ms_input_params.
   ENDMETHOD.
+
 
   METHOD if_bgmc_op_single_tx_uncontr~execute.
 
@@ -55,29 +60,13 @@ CLASS zcl_interco_bgpf IMPLEMENTATION.
     DATA(lv_use_v3) = abap_false.
     IF lv_matag_param = 'X' AND ms_input_params-background IS INITIAL.
       DATA(lv_ag_count) = 0.
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 - C12o (7c.2): ruteo E/L por AG técnico
-      " L utiliza los mismos AG técnicos E; el tipo comercial solicitado se conserva.
-      DATA(lv_ag_paymenttype) = COND zint_dte_paymenttype(
-        WHEN ms_input_params-paymenttype = 'L' THEN 'E'
-        ELSE ms_input_params-paymenttype ).
-
-      " Comprobación anterior conservada como histórico.
-      " SELECT COUNT(*) FROM zint_a_jeitem_ag
-      "   WHERE companycode  = @ms_input_params-companycode
-      "     AND fiscalyear   = @ms_input_params-fiscalyear
-      "     AND fiscalperiod = @ms_input_params-fiscalperiod
-      "     AND ledger       = @ms_input_params-ledger
-      "     AND paymenttype  = @ms_input_params-paymenttype
-      "   INTO @lv_ag_count.
-
       SELECT COUNT(*) FROM zint_a_jeitem_ag
         WHERE companycode  = @ms_input_params-companycode
           AND fiscalyear   = @ms_input_params-fiscalyear
           AND fiscalperiod = @ms_input_params-fiscalperiod
           AND ledger       = @ms_input_params-ledger
-          AND paymenttype  = @lv_ag_paymenttype
+          AND paymenttype  = @ms_input_params-paymenttype
         INTO @lv_ag_count.
-      " Fin EXT_OSCUGALD 07.10.2026 - C12o (7c.2)
       IF lv_ag_count > 0.
         lv_use_v3 = abap_true.
       ENDIF.

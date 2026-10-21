@@ -12,7 +12,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_interco_jeitem_class IMPLEMENTATION.
+CLASS ZCL_INTERCO_JEITEM_CLASS IMPLEMENTATION.
 
 
   METHOD if_rap_query_provider~select.
@@ -43,29 +43,13 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
         WHERE name = 'ZINTERCO_IC05_MATAG_ACTIVA'
         INTO @DATA(lv_matag_activa_online).
       IF lv_matag_activa_online = 'X'.
-        " Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 - C12o (7c.1): ruteo E/L por AG técnico
-        " L utiliza los mismos AG técnicos E; el tipo comercial solicitado se conserva.
-        DATA(lv_ag_paymenttype_online) = COND zint_dte_paymenttype(
-          WHEN p_paymenttype = 'L' THEN 'E'
-          ELSE p_paymenttype ).
-
-        " Comprobación anterior conservada como histórico.
-        " SELECT COUNT(*) FROM zint_a_jeitem_ag
-        "   WHERE companycode  = @p_companycode
-        "     AND fiscalyear   = @p_fiscalyear
-        "     AND fiscalperiod = @p_fiscalperiod
-        "     AND ledger       = @p_ledger
-        "     AND paymenttype  = @p_paymenttype
-        "   INTO @DATA(ag_count_online).
-
         SELECT COUNT(*) FROM zint_a_jeitem_ag
           WHERE companycode  = @p_companycode
             AND fiscalyear   = @p_fiscalyear
             AND fiscalperiod = @p_fiscalperiod
             AND ledger       = @p_ledger
-            AND paymenttype  = @lv_ag_paymenttype_online
+            AND paymenttype  = @p_paymenttype
           INTO @DATA(ag_count_online).
-        " Fin EXT_OSCUGALD 07.10.2026 - C12o (7c.1)
         IF ag_count_online > 0.
           use_v3 = abap_true.
         ENDIF.
@@ -273,32 +257,17 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
       ENDIF.
     ELSE.
       IF p_bgprocessing = c_bgprocessing-on.
-        " Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 - C12o (7c.3): tipo comercial en consulta BG sin límite
-        " SELECT anterior conservado: usaba el indicador BG como PaymentType.
-        " SELECT (columns) FROM zc_intercojeitemclassbg(
-        "     p_companycode = @p_companycode,
-        "     p_ledger = @p_ledger,
-        "     p_fiscalyear = @p_fiscalyear,
-        "     p_fiscalperiod = @p_fiscalperiod,
-        "     p_paymenttype = @p_bgprocessing )
-        "     WHERE (where)
-        "          GROUP BY (groupby)
-        "          ORDER BY (orderby)
-        "     INTO CORRESPONDING FIELDS OF TABLE @results
-        "     OFFSET @offset.
-
         SELECT (columns) FROM zc_intercojeitemclassbg(
             p_companycode = @p_companycode,
             p_ledger = @p_ledger,
             p_fiscalyear = @p_fiscalyear,
             p_fiscalperiod = @p_fiscalperiod,
-            p_paymenttype = @p_paymenttype )
+            p_paymenttype = @p_bgprocessing )
             WHERE (where)
                  GROUP BY (groupby)
                  ORDER BY (orderby)
             INTO CORRESPONDING FIELDS OF TABLE @results
             OFFSET @offset.
-        " Fin EXT_OSCUGALD 07.10.2026 - C12o (7c.3)
       ELSEIF use_v3 = abap_true.
         " AGREGADO DS4K9B5URA: SELECT desde V3 sin limite (tabla materializada)
         SELECT (columns) FROM zc_intercojeitemclassv3(

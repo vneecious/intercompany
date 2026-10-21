@@ -27,7 +27,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_proposal_bo_pi IMPLEMENTATION.
+CLASS ZCL_PROPOSAL_BO_PI IMPLEMENTATION.
 
 
   METHOD preparedata.
@@ -225,13 +225,6 @@ CLASS zcl_proposal_bo_pi IMPLEMENTATION.
           RETURN.
         ENDIF.
 
-        " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20e: precargar BLART de previsión
-        DATA(lo_blart_pi) = NEW zcl_interco_doc_blart(
-          i_valid_at              = ld_lastday
-          i_doctype               = zcl_interco_doc_glaccount=>co_doc_type-accural_pi
-          i_provider_company_code = gs_header-providercompanycode ).
-        " Fin EXT_OSCUGALD 14.10.2026 - C20e
-
         LOOP AT recipient_glitems REFERENCE INTO FINAL(item_recla_ar)
             GROUP BY item_recla_ar->recipientcompanycode INTO FINAL(recipient_company_code).
 
@@ -243,23 +236,7 @@ CLASS zcl_proposal_bo_pi IMPLEMENTATION.
           journal_entry->%param-companycode = gs_header-providercompanycode.
           journal_entry->%param-documentdate = ld_lastday.
           journal_entry->%param-postingdate = ld_lastday.
-          " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20e: resolver BLART de previsión
-***          journal_entry->%param-accountingdocumenttype = 'CH'.
-
-          DATA(lv_amount_pi) = REDUCE fis_wsl(
-            INIT total = CONV fis_wsl( 0 )
-            FOR item_pi IN GROUP recipient_company_code
-            NEXT total = total + item_pi-amountintransactioncurrency ).
-
-          DATA(lv_blart_pi) = lo_blart_pi->get(
-            i_recipientcompanycode = recipient_company_code
-            i_paymenttype          = gs_header-paymenttype
-            i_amount               = lv_amount_pi ).
-
-          journal_entry->%param-accountingdocumenttype = COND #(
-            WHEN lv_blart_pi IS NOT INITIAL THEN lv_blart_pi
-            ELSE 'CH' ).
-          " Fin EXT_OSCUGALD 14.10.2026 - C20e
+          journal_entry->%param-accountingdocumenttype = 'CH'.
           journal_entry->%param-accountingdocumentheadertext = 'Prevision Incobrables'.
 *          journal_entry->%param-accountingdocumentheadertext = |{ gs_header-providercompanycode } { recipient_company_code } { gs_header-ProductName }|.
           journal_entry->%param-createdbyuser = cl_abap_context_info=>get_user_technical_name( ).

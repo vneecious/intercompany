@@ -58,15 +58,15 @@ CLASS zcl_interco_jeitem_bg DEFINITION
     "! items: siempre inclusivos (sign I, option EQ) - value-help multi-select no manda exclude,
     "! la exclusion siempre llega via la pestaña "Condiciones" (ranges).</p>
     CLASS-METHODS build_range_from_filter
-      IMPORTING is_filter       TYPE ty_filter
-      RETURNING VALUE(rt_range) TYPE tt_range_line.
+      IMPORTING is_filter        TYPE ty_filter
+      RETURNING VALUE(rt_range)  TYPE tt_range_line.
 
     "! <p>AGREGADO: regla exclusiva de PandLL0Id - intersecciona el filtro del usuario con el
     "! universo de L0 que tiene regla de clasificacion activa hoy (get_active_pandll0_range).
     "! Los demas niveles (L1-L5) NO tienen esta restriccion, son filtro directo del frontend.</p>
     CLASS-METHODS restrict_to_active_pandll0
-      IMPORTING it_user_range   TYPE tt_range_line
-      RETURNING VALUE(rt_range) TYPE zcl_interco_class_filter=>ty_pandl_range.
+      IMPORTING it_user_range    TYPE tt_range_line
+      RETURNING VALUE(rt_range)  TYPE zcl_interco_class_filter=>ty_pandl_range.
 
     METHODS: constructor
       IMPORTING
@@ -79,11 +79,13 @@ ENDCLASS.
 
 
 
-CLASS zcl_interco_jeitem_bg IMPLEMENTATION.
+CLASS ZCL_INTERCO_JEITEM_BG IMPLEMENTATION.
+
 
   METHOD constructor.
     me->id = id.
   ENDMETHOD.
+
 
   METHOD build_range_from_filter.
     LOOP AT is_filter-ranges INTO DATA(ls_range).
@@ -118,6 +120,7 @@ CLASS zcl_interco_jeitem_bg IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
+
   METHOD restrict_to_active_pandll0.
     rt_range = zcl_interco_class_filter=>get_active_pandll0_range( ).
     IF it_user_range IS NOT INITIAL.
@@ -130,6 +133,7 @@ CLASS zcl_interco_jeitem_bg IMPLEMENTATION.
       ENDLOOP.
     ENDIF.
   ENDMETHOD.
+
 
   METHOD if_bgmc_op_single_tx_uncontr~execute.
 
@@ -186,27 +190,6 @@ CLASS zcl_interco_jeitem_bg IMPLEMENTATION.
     DATA(p_fiscalyear) = parameters-fiscalyear.
     DATA(p_fiscalperiod) = parameters-fiscalperiod.
     DATA(p_paymenttype) = parameters-paymenttype.
-
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12o (7c.4): ruteo BG por AG técnico
-    " L consulta AG técnicos E; p_paymenttype conserva el tipo comercial solicitado.
-    IF lv_matag_activa_bg = abap_true.
-      DATA(lv_ag_paymenttype_bg) = COND zint_dte_paymenttype(
-        WHEN p_paymenttype = 'L' THEN 'E'
-        ELSE p_paymenttype ).
-
-      SELECT COUNT(*) FROM zint_a_jeitem_ag
-        WHERE companycode  = @p_companycode
-          AND fiscalyear   = @p_fiscalyear
-          AND fiscalperiod = @p_fiscalperiod
-          AND ledger       = @p_ledger
-          AND paymenttype  = @lv_ag_paymenttype_bg
-        INTO @DATA(lv_ag_count_bg).
-
-      IF lv_ag_count_bg = 0.
-        lv_matag_activa_bg = abap_false.
-      ENDIF.
-    ENDIF.
-    " Fin EXT_OSCUGALD 16.10.2026 - C12o (7c.4)
 
     FINAL(now) = utclong_current( ).
     FINAL(_24hbefore) = utclong_add( val = now hours = hours * -1 ).

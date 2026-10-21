@@ -16,9 +16,6 @@ define root view entity ZC_IntercoExemptionTP
       @ObjectModel.foreignKey.association: '_Product'
       @ObjectModel.text.element: ['ProductName']
       Product,
-      -- AGREGADO EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09: expone PaymentType (proyección, sin cambio de BDEF — es "use")
-      PaymentType,
-      -- Fin EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09
       ValidFrom,
       ValidTo,
       IsValid,

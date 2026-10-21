@@ -15,9 +15,6 @@ define root view entity ZR_INTERCOCLASSIFICATIONRULE
       ValidTo,
       CompanyCode,
       Ledger,
-      // AGREGADO EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C08: expone PaymentType (mapeado además en el BDEF)
-      PaymentType,
-      // Fin EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C08
       PAndLID,
       _PandL.Text                                                                                                              as PAndLName,
       PandLLevel,

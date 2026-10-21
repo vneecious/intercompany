@@ -25,9 +25,6 @@ define root view entity ZC_IntercoProposalTP
       IntercoBasisId,
       BasisDescription,
       Ledger,
-      -- Ini Facturación Local CH/ARG EXT_OSCUGALD 08.10.2026 - C22: proyectar tipo de facturación
-      PaymentType,
-      -- Fin EXT_OSCUGALD 08.10.2026 - C22
       GlobalCurrency,
       @Semantics.amount.currencyCode : 'GlobalCurrency'
       AmountInGlobalCurrency,

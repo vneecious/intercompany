@@ -40,9 +40,6 @@ define root view entity ZC_INTERCOCLASSIFICATIONRULE
       Product,
       ProductName,
       IsNotBillable,
-      -- Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C13F: exponer tipo de pago en la aplicación de reglas
-      PaymentType,
-      -- Fin EXT_OSCUGALD 06.10.2026 - C13F
       IsDeleted,
       IsNotDeleted,
       RuleCriticality,

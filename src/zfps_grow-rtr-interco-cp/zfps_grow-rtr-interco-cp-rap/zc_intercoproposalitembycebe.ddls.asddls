@@ -40,9 +40,6 @@ define root view entity ZC_IntercoProposalItemByCeBe
        GroupName,
        IsCostSharing,
        IsBermudas,
-       -- Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C23: exponer indicador para C24F
-       IsLocal,
-       -- Fin EXT_OSCUGALD 14.10.2026 - C23
        @Semantics.amount.currencyCode : 'BaseCurrencyProfitCenter'
        Baseamountprofitcenter,
 

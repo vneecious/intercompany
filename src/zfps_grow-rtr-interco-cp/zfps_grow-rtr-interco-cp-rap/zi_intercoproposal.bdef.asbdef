@@ -19,9 +19,7 @@ authorization master ( instance )
   association _Items { create; }
 
   field ( numbering : managed, readonly : update ) Id;
-  // Ini Facturación Local CH/ARG EXT_OSCUGALD 08.10.2026 - C22: tipo derivado de solo lectura
-  field ( readonly ) PaymentType;
-  // Fin EXT_OSCUGALD 08.10.2026 - C22
+
   action ( features : instance ) Invoice;
   action ( features : instance ) Simulate;
   action ( features : instance ) SetDelete;

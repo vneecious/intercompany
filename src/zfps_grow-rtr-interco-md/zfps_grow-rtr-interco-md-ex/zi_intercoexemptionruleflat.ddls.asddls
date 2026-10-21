@@ -16,9 +16,6 @@ define view entity ZI_IntercoExemptionRuleFlat
       _Exemption.ExemptionName,
       _Exemption.CompanyCode,
       _Exemption.Product,
-      -- AGREGADO EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09: expone PaymentType de la exclusión
-      _Exemption.PaymentType,
-      -- Fin EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09
       _Exemption.ValidFrom,
       _Exemption.ValidTo,
       FiscalYear,
@@ -33,10 +30,6 @@ define view entity ZI_IntercoExemptionRuleFlat
       case when AccountingDocumentType is not initial then 1 else 0 end +
       case when GLAccount is not initial then 1 else 0 end +
       case when ProfitCenter is not initial then 1 else 0 end +
-      case when CostCenter is not initial then 1 else 0 end +
-      -- AGREGADO EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09: suma PaymentType al score de especificidad
-      case when _Exemption.PaymentType is not initial then 1 else 0 end
-      -- Fin EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09
-  as Score,
+      case when CostCenter is not initial then 1 else 0 end as Score,
       _Exemption
 }

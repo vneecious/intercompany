@@ -293,17 +293,6 @@ annotate entity ZC_IntercoProposalTP with
   @Consumption.valueHelpDefinition: [{ entity: { name: 'I_Ledger', element: 'Ledger' }, useForValidation: true }]
   Ledger;
 
-  -- Ini Facturación Local CH/ARG EXT_OSCUGALD 08.10.2026 - C22: mostrar tipo de facturación
-  @UI: {
-    lineItem:        [ { position: 90, importance: #HIGH } ],
-    identification: [ { position: 90 } ],
-    selectionField: [ { position: 45 } ],
-    fieldGroup:     [ { qualifier: 'BasicData', position: 25 } ]
-  }
-  @Consumption.filter.selectionType: #SINGLE
-  @EndUserText.label: 'Tipo de facturación'
-  PaymentType;
-  -- Fin EXT_OSCUGALD 08.10.2026 - C22
   //  @UI.hidden: true
   //  GlobalCurrency;
 

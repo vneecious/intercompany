@@ -116,10 +116,7 @@ define view entity ZI_IntercoJEItem
       CreationDate,
       FiscalYearPeriod,
       JournalEntryItem.OriginObjectType,
-      -- Ini Facturación Local CH/ARG EXT_OSCUGALD 05.10.2026 - C04: normalizar PaymentType según OriginObjectType
-      -- case JournalEntryItem.OriginObjectType when '02' then 'E' else 'I' end             as PaymentType,
-      case JournalEntryItem.OriginObjectType when '02' then 'E' else '' end              as PaymentType,
-      -- Fin EXT_OSCUGALD 05.10.2026 - C04
+      case JournalEntryItem.OriginObjectType when '02' then 'E' else 'I' end             as PaymentType,
       JournalEntryItem._CurrentCostCenter.CostCenterStandardHierArea,
       // ZBCE
       JournalEntryItem.ChartOfAccounts,

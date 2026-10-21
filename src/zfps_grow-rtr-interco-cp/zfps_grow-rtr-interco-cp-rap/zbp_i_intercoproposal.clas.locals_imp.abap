@@ -487,28 +487,10 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
 *          WHERE companycode = @lt_proposal_item-recipientcompanycode
 *          INTO TABLE @DATA(lt_companies).
 
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 09.10.2026 - C21: determinar métrica al aplicar
-    " Código anterior conservado; la consulta del material sigue como fallback.
-***    SELECT SINGLE zi_intercoproduct~metric
-***      FROM zi_intercoproduct
-***      WHERE product EQ @ls_proposal->product
-***      INTO @DATA(lv_product_metric).
-
     SELECT SINGLE zi_intercoproduct~metric
       FROM zi_intercoproduct
       WHERE product EQ @ls_proposal->product
       INTO @DATA(lv_product_metric).
-
-    DATA(lv_metric_override) =
-      zcl_interco_metric_type=>get_instance( )->get_metric_type(
-        iv_providercompanycode = ls_proposal->providercompanycode
-        iv_product             = ls_proposal->product
-        iv_paymenttype         = ls_proposal->paymenttype ).
-
-    IF lv_metric_override IS NOT INITIAL.
-      lv_product_metric = lv_metric_override.
-    ENDIF.
-    " Fin EXT_OSCUGALD 09.10.2026 - C21
 
     IF lv_product_metric IS INITIAL.
       APPEND VALUE #( %key = ls_proposal->%key ) TO failed-zi_intercoproposal.
@@ -517,23 +499,10 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
     ENDIF.
 
     " IC = CX (Customer Experience), CS = Generales → ambos usan métrica local
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.10.2026 - C19: reconocer métricas locales
-***    DATA lv_is_local TYPE abap_boolean VALUE abap_false.
-***    IF lv_product_metric = 'IC' OR lv_product_metric = 'CS'.
-***      lv_is_local = abap_true.
-***    ENDIF.
-
-    SELECT low
-      FROM zi_tvarvc
-      WHERE name = 'ZINTERCO_LOCAL_METRIC_CODES'
-        AND low IS NOT INITIAL
-      INTO TABLE @DATA(lt_local_metric_codes).
-
     DATA lv_is_local TYPE abap_boolean VALUE abap_false.
-    IF line_exists( lt_local_metric_codes[ low = lv_product_metric ] ).
+    IF lv_product_metric = 'IC' OR lv_product_metric = 'CS'.
       lv_is_local = abap_true.
     ENDIF.
-    " Fin EXT_OSCUGALD 13.10.2026 - C19
 
 *Ini EXT_OSCUGALD - Bermudas MIC-USA (SDFPSINIC-23362)
 *  Dispatch por iniciativa: SM tiene flujo propio (ISAC NCP + dirección
@@ -629,73 +598,22 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
     IF lv_product_metric EQ 'TF'. "TODO - Buscar da TVARV
 
       "TODO - buscar o rate da ZC_IntercoCompanyRelProdRate - IC02F
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 08.10.2026 - C18: corregir vigencia de tarifa TF
-      " Anterior: condiciones de vigencia invertidas.
-***   SELECT *
-***       FROM zc_intercocompanyrelprodrate
-***       FOR ALL ENTRIES IN @lt_proposal_item
-***       WHERE product = @lt_proposal_item-product
-***         AND providercompanycode = @lt_proposal_item-providercompanycode
-***         AND recipientcompanycode = @lt_proposal_item-recipientcompanycode
-***         AND validfrom >= @sy-datum AND validto <= @sy-datum
-***       INTO TABLE @DATA(lv_product_rate).
-
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.10.2026 - C25: tarifas TF por tipo
-      " Se conserva la vigencia C18 y el vacío como tarifa compatible.
-***      SELECT *
-***          FROM zc_intercocompanyrelprodrate
-***          FOR ALL ENTRIES IN @lt_proposal_item
-***          WHERE product = @lt_proposal_item-product
-***            AND providercompanycode = @lt_proposal_item-providercompanycode
-***            AND recipientcompanycode = @lt_proposal_item-recipientcompanycode
-***            AND validfrom <= @sy-datum
-***            AND validto   >= @sy-datum
-***          INTO TABLE @DATA(lv_product_rate).
-
       SELECT *
           FROM zc_intercocompanyrelprodrate
           FOR ALL ENTRIES IN @lt_proposal_item
           WHERE product = @lt_proposal_item-product
             AND providercompanycode = @lt_proposal_item-providercompanycode
             AND recipientcompanycode = @lt_proposal_item-recipientcompanycode
-            AND validfrom <= @sy-datum
-            AND validto   >= @sy-datum
-            AND ( paymenttype = @ls_proposal->paymenttype
-               OR paymenttype IS INITIAL )
+            AND validfrom  >= @sy-datum AND validto <= @sy-datum
           INTO TABLE @DATA(lv_product_rate).
-      " Fin EXT_OSCUGALD 13.10.2026 - C25
-      " Fin EXT_OSCUGALD 08.10.2026 - C18
 
       IF lv_product_rate IS NOT INITIAL.
         LOOP AT lt_proposal_item INTO DATA(ls_proposal_item).
-          " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.10.2026 - C25: tarifa exacta y fallback
-          " Anterior: lectura sin tipo; podía tomar la tarifa del otro proceso.
-***          READ TABLE lv_product_rate INTO DATA(ls_product_rate) WITH KEY
-***                                                              product = ls_proposal->product
-***                                                              providercompanycode = ls_proposal->providercompanycode
-***                                                              recipientcompanycode = ls_proposal_item-recipientcompanycode.
-***          IF ls_product_rate IS NOT INITIAL.
-
-          DATA ls_product_rate LIKE LINE OF lv_product_rate.
-          " Evitar reutilizar la tarifa del ítem anterior si no hay coincidencia.
-          CLEAR ls_product_rate.
-
-          READ TABLE lv_product_rate INTO ls_product_rate WITH KEY
-            product              = ls_proposal->product
-            providercompanycode  = ls_proposal->providercompanycode
-            recipientcompanycode = ls_proposal_item-recipientcompanycode
-            paymenttype          = ls_proposal->paymenttype.
-
-          IF sy-subrc <> 0.
-            READ TABLE lv_product_rate INTO ls_product_rate WITH KEY
-              product              = ls_proposal->product
-              providercompanycode  = ls_proposal->providercompanycode
-              recipientcompanycode = ls_proposal_item-recipientcompanycode
-              paymenttype          = space.
-          ENDIF.
-
-          IF sy-subrc = 0.
-            " Fin EXT_OSCUGALD 13.10.2026 - C25
+          READ TABLE lv_product_rate INTO DATA(ls_product_rate) WITH KEY
+                                                              product = ls_proposal->product
+                                                              providercompanycode = ls_proposal->providercompanycode
+                                                              recipientcompanycode = ls_proposal_item-recipientcompanycode.
+          IF ls_product_rate IS NOT INITIAL.
             DATA: lv_global_amount_r    TYPE p DECIMALS 6,
                   lv_company_currency_r TYPE waers.
 
@@ -1268,26 +1186,9 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
 *   con todos los conceptos en cero (consistencia de tablas para que
 *   Simulation/Commit reusen el flujo estandar de BO_AR/BO_AP sin romper
 *   el patron de datos), sin consultar la tabla de tarifas.
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 09.10.2026 - C21: determinar métrica antes de ruta SM
-    " Código anterior conservado; la consulta del material sigue como fallback.
-***    SELECT SINGLE metric FROM zi_intercoproduct
-***      WHERE product = @ls_proposal->product
-***      INTO @DATA(lv_mic_metric_calc).
-
     SELECT SINGLE metric FROM zi_intercoproduct
       WHERE product = @ls_proposal->product
       INTO @DATA(lv_mic_metric_calc).
-
-    DATA(lv_metric_override) =
-      zcl_interco_metric_type=>get_instance( )->get_metric_type(
-        iv_providercompanycode = ls_proposal->providercompanycode
-        iv_product             = ls_proposal->product
-        iv_paymenttype         = ls_proposal->paymenttype ).
-
-    IF lv_metric_override IS NOT INITIAL.
-      lv_mic_metric_calc = lv_metric_override.
-    ENDIF.
-    " Fin EXT_OSCUGALD 09.10.2026 - C21
 
     IF lv_mic_metric_calc = 'SM'.
       SELECT * FROM zfi_a_intrc_cpib
@@ -2526,28 +2427,10 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
     READ TABLE lt_proposal REFERENCE INTO DATA(ls_proposal) INDEX 1.
 
     " 1.1 Obtener el código de métrica asociado al producto
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 09.10.2026 - C21: determinar métrica al listar
-    " Código anterior conservado; la consulta del material sigue como fallback.
-***    SELECT SINGLE zi_intercoproduct~metric
-***      FROM zi_intercoproduct
-***      WHERE product EQ @ls_proposal->product
-***      INTO @DATA(lv_product_metric).
-
     SELECT SINGLE zi_intercoproduct~metric
       FROM zi_intercoproduct
       WHERE product EQ @ls_proposal->product
       INTO @DATA(lv_product_metric).
-
-    DATA(lv_metric_override) =
-      zcl_interco_metric_type=>get_instance( )->get_metric_type(
-        iv_providercompanycode = ls_proposal->providercompanycode
-        iv_product             = ls_proposal->product
-        iv_paymenttype         = ls_proposal->paymenttype ).
-
-    IF lv_metric_override IS NOT INITIAL.
-      lv_product_metric = lv_metric_override.
-    ENDIF.
-    " Fin EXT_OSCUGALD 09.10.2026 - C21
 
     IF lv_product_metric IS INITIAL.
       RETURN.
@@ -2574,17 +2457,7 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
     ENDIF.
 *Fin EXT_OSCUGALD 28.07.2026 - Bermudas MIC
 
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.10.2026 - C19: listar métricas locales
-***    IF lv_product_metric = 'IC' OR lv_product_metric = 'CS'.
-
-    SELECT low
-      FROM zi_tvarvc
-      WHERE name = 'ZINTERCO_LOCAL_METRIC_CODES'
-        AND low IS NOT INITIAL
-      INTO TABLE @DATA(lt_local_metric_codes).
-
-    IF line_exists( lt_local_metric_codes[ low = lv_product_metric ] ).
-      " Fin EXT_OSCUGALD 13.10.2026 - C19
+    IF lv_product_metric = 'IC' OR lv_product_metric = 'CS'.
       " Métrica local: CS = Generales, IC = Customer Experience
       lt_metric_api = lo_cap_api->get_local_metric(
           EXPORTING iv_fiscal_period = ls_proposal->fiscalperiod

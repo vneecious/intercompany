@@ -78,9 +78,6 @@ define root view entity ZI_IntercoProposal
       intercobasisid                                                         as IntercoBasisId,
       _Basis.Description                                                     as BasisDescription,
       _Basis.Ledger                                                          as Ledger,
-      -- Ini Facturación Local CH/ARG EXT_OSCUGALD 08.10.2026 - C22: exponer tipo de la Base
-      _Basis.PaymentType                                                     as PaymentType,
-      -- Fin EXT_OSCUGALD 08.10.2026 - C22
       globalcurrency                                                         as GlobalCurrency,
       @Semantics.amount.currencyCode : 'GlobalCurrency'
       amountinglobalcurrency                                                 as AmountInGlobalCurrency,

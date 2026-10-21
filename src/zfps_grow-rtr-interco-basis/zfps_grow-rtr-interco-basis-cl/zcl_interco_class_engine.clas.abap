@@ -31,6 +31,7 @@ CLASS zcl_interco_class_engine DEFINITION
         RETURNING VALUE(result) TYPE REF TO zcl_interco_class_engine.
 
 
+protected section.
   PRIVATE SECTION.
 
     TYPES tt_classified_items TYPE TABLE OF zr_intercojeitemhelperclassitm WITH DEFAULT KEY.
@@ -88,18 +89,15 @@ ENDCLASS.
 
 
 
-CLASS zcl_interco_class_engine IMPLEMENTATION.
+CLASS ZCL_INTERCO_CLASS_ENGINE IMPLEMENTATION.
 
 
   METHOD materialize_agrupadores.
-
     " AGREGADO DS4K9B5URA: Lee los agrupadores resueltos y los persiste en
     " ZINT_A_JEITEM_AG a nivel de JE item. Esto habilita que apply_rules y
     " apply_exemptions lean desde tabla fisica en lugar de resolver jerarquias en cada llamada.
     " MODIFICADO DS4K9B5URA: fuente cambiada de ZR_IntercoJEItemClassV2 a ZI_INTERCOJEITEMPANDL
     " (menos JOINs, filtros WHERE de intercompany ya incorporados en la view).
-
-    "comment fusion
 
     " Lee page_size desde TVARVC — mismo parametro que usa ZCL_INTERCO_JEITEM_BG
     SELECT SINGLE low FROM zi_tvarvc
@@ -109,19 +107,15 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
       WHEN lv_pagesize_str IS NOT INITIAL THEN CONV int4( lv_pagesize_str )
       ELSE 500000 ).
 
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: reconstrucción unificada de agrupadores
-    " La cabecera vacía identifica la corrida, no una partición del origen.
-    " El borrado se limita a la misma sociedad, ejercicio, período y ledgers.
     IF iv_processing_type = co_processing_type-from_scratch.
       DELETE FROM zint_a_jeitem_ag
         WHERE companycode  = @header-companycode
           AND fiscalyear   = @header-fiscalyear
           AND fiscalperiod = @header-fiscalperiod
           AND ledger       = @header-ledger
-          AND sourceledger = @header-ledger.
-      " AND paymenttype  = @header-paymenttype.
+          AND sourceledger = @header-ledger
+          AND paymenttype  = @header-paymenttype.
     ENDIF.
-    " Fin EXT_OSCUGALD 06.10.2026 - C12
 
     DATA lt_ag TYPE TABLE OF zint_a_jeitem_ag.
     DATA(_createdat) = cl_abap_tstmp=>utclong2tstmp_short( cl_abap_tstmp=>tstmp2utclong( header-createdat ) ).
@@ -147,19 +141,14 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     DATA(range_glparentnode) = zcl_interco_class_filter=>get_active_glparentnode_range( ).
 * // AGREGADO (fix performance) <-
 
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: seleccionar gastos sin tipo de cabecera
-    " OriginObjectType 02 delimita el origen; E/L lo resuelve C10.
-    " Se conserva el filtro temporal existente para procesamiento delta.
     DATA(where) = |COMPANYCODE = '{ header-companycode }'| &&
       | AND FISCALYEAR = '{ header-fiscalyear }'| &&
       | AND FISCALPERIOD = '{ header-fiscalperiod }'| &&
       | AND LEDGER = '{ header-ledger }'| &&
       | AND SOURCELEDGER = '{ header-ledger }'| &&
-      " | AND PAYMENTTYPE = '{ header-paymenttype }'| &&
-      | AND ORIGINOBJECTTYPE = '02'| &&
+      | AND PAYMENTTYPE = '{ header-paymenttype }'| &&
       COND #( WHEN iv_processing_type = co_processing_type-delta THEN
       | AND CREATIONDATETIME >= '{ _createdat }' | ELSE space ).
-    " Fin EXT_OSCUGALD 06.10.2026 - C12
 
     SELECT
         sourceledger,
@@ -269,23 +258,12 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
       INTO @DATA(lv_use_ag_exe).
 
     IF lv_use_ag_exe = 'X'.
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: leer gastos materializados para exclusiones
-      " Anterior:
-      " DATA(where_ag_exe) = |COMPANYCODE = '{ header-companycode }'| &&
-      "   | AND FISCALYEAR = '{ header-fiscalyear }'| &&
-      "   | AND FISCALPERIOD = '{ header-fiscalperiod }'| &&
-      "   | AND LEDGER = '{ header-ledger }'| &&
-      "   | AND SOURCELEDGER = '{ header-ledger }'| &&
-      "   | AND PAYMENTTYPE = '{ header-paymenttype }'|.
-
-      " Nuevo: E en AG identifica el gasto de origen, no el resultado E/L.
       DATA(where_ag_exe) = |COMPANYCODE = '{ header-companycode }'| &&
         | AND FISCALYEAR = '{ header-fiscalyear }'| &&
         | AND FISCALPERIOD = '{ header-fiscalperiod }'| &&
         | AND LEDGER = '{ header-ledger }'| &&
         | AND SOURCELEDGER = '{ header-ledger }'| &&
-        | AND PAYMENTTYPE = 'E'|.
-      " Fin EXT_OSCUGALD 06.10.2026 - C12
+        | AND PAYMENTTYPE = '{ header-paymenttype }'|.
 
       SELECT DISTINCT
           companycode,
@@ -305,29 +283,15 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
               INTO CORRESPONDING FIELDS OF TABLE @items.
     ELSE.
 *     Flujo V2 original - fallback cuando ZINTERCO_IC05_MATAG_ACTIVA <> 'X'
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: seleccionar gastos en fallback de exclusiones
-      " Anterior:
-      " DATA(where_exe) = |COMPANYCODE = '{ header-companycode }'| &&
-      "   | AND FISCALYEAR = '{ header-fiscalyear }'| &&
-      "   | AND FISCALPERIOD = '{ header-fiscalperiod }'| &&
-      "   | AND LEDGER = '{ header-ledger }'| &&
-      "   | AND SOURCELEDGER = '{ header-ledger }'| &&
-      "   | AND PAYMENTTYPE = '{ header-paymenttype }'| &&
-      "   COND #( WHEN iv_processing_type = co_processing_type-delta THEN
-      "   | AND CREATIONDATETIME >= '{ _createdat }' |
-      "   ELSE space ).
-
-      " Nuevo: seleccionar origen 02 y conservar la fecha del delta.
       DATA(where_exe) = |COMPANYCODE = '{ header-companycode }'| &&
         | AND FISCALYEAR = '{ header-fiscalyear }'| &&
         | AND FISCALPERIOD = '{ header-fiscalperiod }'| &&
         | AND LEDGER = '{ header-ledger }'| &&
         | AND SOURCELEDGER = '{ header-ledger }'| &&
-        | AND ORIGINOBJECTTYPE = '02'| &&
+        | AND PAYMENTTYPE = '{ header-paymenttype }'| &&
         COND #( WHEN iv_processing_type = co_processing_type-delta THEN
         | AND CREATIONDATETIME >= '{ _createdat }' |
         ELSE space ).
-      " Fin EXT_OSCUGALD 06.10.2026 - C12
 
       SELECT DISTINCT
           companycode,
@@ -356,14 +320,11 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
 
     LOOP AT  items REFERENCE INTO  DATA(lr_classified_item_complete).
       DATA(index) = sy-tabix.
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C11: cruzar con el resultado de clasificación
-      " El tipo de origen puede ser E y la regla ganadora asignar L.
-      " Compararlos aquí descartaría el ítem antes de evaluar sus exclusiones.
       READ TABLE it_classified_items REFERENCE INTO DATA(lr_classified_item)
         WITH KEY fiscalyear = lr_classified_item_complete->fiscalyear
                      fiscalperiod = lr_classified_item_complete->fiscalperiod
                      ledger = lr_classified_item_complete->ledger
-                     " paymenttype = lr_classified_item_complete->paymenttype
+                     paymenttype = lr_classified_item_complete->paymenttype
                      pandll5id = lr_classified_item_complete->pandll5id
                      profitcenter = lr_classified_item_complete->profitcenter
                      ccallocation = lr_classified_item_complete->ccallocation
@@ -375,10 +336,7 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
         CONTINUE.
       ENDIF.
 
-      " Las exclusiones reciben el tipo ya resuelto por C10.
-      lr_classified_item_complete->paymenttype = lr_classified_item->paymenttype.
       lr_classified_item_complete->ruleid = lr_classified_item->ruleid.
-      " Fin EXT_OSCUGALD 06.10.2026 - C11
       TRY.
           " Correcion de BUG (31/7/2026) ->
           " lr_classified_item_complete->product = lt_classification_rules[ ruleid = lr_classified_item->ruleid ].
@@ -401,45 +359,21 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
       glaccount,
       exemptionid
   FROM zr_intercojeitemhelperclassexe WITH PRIVILEGED ACCESS
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: recuperar exclusiones E/L para delta
-      " Anterior:
-      " WHERE companycode = @header-companycode
-      "   AND fiscalyear = @header-fiscalyear
-      "   AND fiscalperiod = @header-fiscalperiod
-      "   AND ledger = @header-ledger
-      "   AND paymenttype = @header-paymenttype
-      " INTO TABLE @DATA(db_exemptions).
-
-      " Nuevo: recuperar ambos tipos resueltos dentro del mismo ámbito.
       WHERE companycode = @header-companycode
         AND fiscalyear = @header-fiscalyear
         AND fiscalperiod = @header-fiscalperiod
         AND ledger = @header-ledger
-        AND paymenttype IN ( 'E', 'L' )
+        AND paymenttype = @header-paymenttype
       INTO TABLE @DATA(db_exemptions).
-      " Fin EXT_OSCUGALD 06.10.2026 - C12
 
       " Check whether the new items were already classified or not
       LOOP AT items REFERENCE INTO DATA(item).
         index = sy-tabix.
-        " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: distinguir tipo resuelto en delta
-        " Anterior:
-        " IF line_exists( db_exemptions[ profitcenter = item->profitcenter
-        "                              costcenter = item->costcenter
-        "                              glaccount = item->glaccount ] ).
-        "   DELETE items INDEX index.
-        " ENDIF.
-
-        " Nuevo: una exclusión E previa no debe omitir evaluar un ítem L.
-        " C11 ya propagó a item el tipo ganador antes de este bloque.
-        IF line_exists( db_exemptions[
-                          paymenttype = item->paymenttype
-                          profitcenter = item->profitcenter
-                          costcenter = item->costcenter
-                          glaccount = item->glaccount ] ).
+        IF line_exists( db_exemptions[ profitcenter = item->profitcenter
+                                             costcenter = item->costcenter
+                                             glaccount = item->glaccount ] ).
           DELETE items INDEX index.
         ENDIF.
-        " Fin EXT_OSCUGALD 06.10.2026 - C12
       ENDLOOP.
 
       excluded_items = CORRESPONDING #( db_exemptions ).
@@ -450,21 +384,10 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     ENDIF.
 
     " Get exemptions
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C11: leer tipo de la exclusión
-    " Antes la consulta no recuperaba PaymentType.
-    " SELECT id, product, externalid, companycode,
-    "        profitcenter, costcenter, glaccount
-    " FROM zi_intercoexemptionruleflat WITH PRIVILEGED ACCESS
-    " WHERE ( companycode = @header-companycode OR companycode IS INITIAL )
-    "   AND validfrom <= @valid_date AND validto >= @valid_date
-    " ORDER BY score DESCENDING
-    " INTO TABLE @DATA(exemptions).
-
     SELECT id,
           product,
           externalid,
           companycode,
-          paymenttype,
           profitcenter,
           costcenter,
           glaccount
@@ -474,47 +397,17 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
 *        and isdeleted is initial
           ORDER BY score DESCENDING
           INTO TABLE @DATA(exemptions).
-    " Fin EXT_OSCUGALD 06.10.2026 - C11
 
     "  APply exemptions
     DO lines( items ) TIMES.
       item = REF #( items[ sy-index ] ).
 
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C11: matching por tipo resuelto
-      " Antes el matching no distinguía Exportación de Locales.
-      " LOOP AT exemptions REFERENCE INTO DATA(exemption)
-      "     WHERE ( companycode = item->companycode OR companycode IS INITIAL ) AND
-      "           ( product = item->product OR product IS INITIAL ) AND
-      "           ( profitcenter = item->profitcenter OR profitcenter IS INITIAL ) AND
-      "           ( costcenter = item->costcenter OR costcenter IS INITIAL ) AND
-      "           ( glaccount = item->glaccount OR glaccount IS INITIAL ).
-
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 08.10.2026 - C11: vacío compatible solo con E
-      " Código anterior conservado; el vacío también permitía excluir Locales.
-      " Tipo vacío en la exclusión: aplica a E y L.
-      " LOOP AT exemptions REFERENCE INTO DATA(exemption)
-      "     WHERE ( companycode = item->companycode OR companycode IS INITIAL ) AND
-      "           ( product = item->product OR product IS INITIAL ) AND
-      "           ( paymenttype = item->paymenttype OR paymenttype IS INITIAL ) AND
-      "           ( profitcenter = item->profitcenter OR profitcenter IS INITIAL ) AND
-      "           ( costcenter = item->costcenter OR costcenter IS INITIAL ) AND
-      "           ( glaccount = item->glaccount OR glaccount IS INITIAL ).
-
-      " Para E se admite también vacío; para L se admite únicamente L.
-      DATA(compatible_exemption_type) = COND zint_dte_paymenttype(
-        WHEN item->paymenttype = 'E' THEN space
-        ELSE item->paymenttype ).
-
       LOOP AT exemptions REFERENCE INTO DATA(exemption)
           WHERE ( companycode = item->companycode OR companycode IS INITIAL ) AND
                 ( product = item->product OR product IS INITIAL ) AND
-                ( paymenttype = item->paymenttype OR
-                  paymenttype = compatible_exemption_type ) AND
                 ( profitcenter = item->profitcenter OR profitcenter IS INITIAL ) AND
                 ( costcenter = item->costcenter OR costcenter IS INITIAL ) AND
                 ( glaccount = item->glaccount OR glaccount IS INITIAL ).
-        " Fin EXT_OSCUGALD 08.10.2026 - C11
-        " Fin EXT_OSCUGALD 06.10.2026 - C11
 
         APPEND INITIAL LINE TO excluded_items REFERENCE INTO DATA(line_excluded).
         line_excluded->* = CORRESPONDING #( item->* ).
@@ -522,11 +415,7 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
         line_excluded->ledger = header-ledger.
         line_excluded->fiscalyear = header-fiscalyear.
         line_excluded->fiscalperiod = header-fiscalperiod.
-        " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C11: conservar tipo del ítem excluido
-        " El header identifica la corrida, no el tipo resuelto del ítem.
-        " line_excluded->paymenttype = header-paymenttype.
-        line_excluded->paymenttype = item->paymenttype.
-        " Fin EXT_OSCUGALD 06.10.2026 - C11
+        line_excluded->paymenttype = header-paymenttype.
         line_excluded->exemptionid = exemption->externalid.
         EXIT.
       ENDLOOP.
@@ -583,17 +472,12 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
       INTO @DATA(lv_use_ag_rules).
 
     IF lv_use_ag_rules = 'X'.
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: leer agrupadores de gastos
-      " AG conserva el tipo de origen: E corresponde a OriginObjectType 02.
-      " Este filtro no limita el tipo E/L que asigna la regla ganadora.
       DATA(where_ag) = |COMPANYCODE = '{ header-companycode }'| &&
         | AND FISCALYEAR = '{ header-fiscalyear }'| &&
         | AND FISCALPERIOD = '{ header-fiscalperiod }'| &&
         | AND LEDGER = '{ header-ledger }'| &&
         | AND SOURCELEDGER = '{ header-ledger }'| &&
-        " | AND PAYMENTTYPE = '{ header-paymenttype }'|.
-        | AND PAYMENTTYPE = 'E'|.
-      " Fin EXT_OSCUGALD 06.10.2026 - C12
+        | AND PAYMENTTYPE = '{ header-paymenttype }'|.
 
       SELECT DISTINCT
           companycode,
@@ -616,29 +500,16 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
               INTO TABLE @DATA(items).
     ELSE.
 *     Flujo V2 original - fallback cuando ZINTERCO_IC05_MATAG_ACTIVA <> 'X'
-*      DATA(where) = |COMPANYCODE = '{ header-companycode }'| &&
-*        | AND FISCALYEAR = '{ header-fiscalyear }'| &&
-*        | AND FISCALPERIOD = '{ header-fiscalperiod }'| &&
-*        | AND LEDGER = '{ header-ledger }'| &&
-*        | AND SOURCELEDGER = '{ header-ledger }'| &&
-*        | AND PAYMENTTYPE = '{ header-paymenttype }'| &&
-*        COND #( WHEN iv_processing_type = co_processing_type-delta THEN
-*        | AND CREATIONDATETIME >= '{ _createdat }' |
-*        ELSE space ).
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: seleccionar gastos en fallback V2
-      " La cabecera vacía no debe excluir los gastos de origen.
-      " Se conserva el filtro temporal del delta.
       DATA(where) = |COMPANYCODE = '{ header-companycode }'| &&
         | AND FISCALYEAR = '{ header-fiscalyear }'| &&
         | AND FISCALPERIOD = '{ header-fiscalperiod }'| &&
         | AND LEDGER = '{ header-ledger }'| &&
         | AND SOURCELEDGER = '{ header-ledger }'| &&
-        " | AND PAYMENTTYPE = '{ header-paymenttype }'| &&
-        | AND ORIGINOBJECTTYPE = '02'| &&
+        | AND PAYMENTTYPE = '{ header-paymenttype }'| &&
         COND #( WHEN iv_processing_type = co_processing_type-delta THEN
         | AND CREATIONDATETIME >= '{ _createdat }' |
         ELSE space ).
-      " Fin EXT_OSCUGALD 06.10.2026 - C12
+
       SELECT DISTINCT
           companycode,
           fiscalyear,
@@ -664,51 +535,26 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     DATA classified_items TYPE TABLE OF zr_intercojeitemhelperclassitm.
 
     IF iv_processing_type = co_processing_type-delta.
-*      SELECT
-*      ledger,
-*      companycode,
-*      fiscalyear,
-*      fiscalperiod,
-*      paymenttype,
-*      pandll5id,
-*      profitcenter,
-*      costcenterstandardhierarea,
-*      ccallocation,
-*      ccconsolidation,
-*      ruleid
-*  FROM zr_intercojeitemhelperclassitm
-*      WITH PRIVILEGED ACCESS
-*      WHERE companycode = @header-companycode
-*        AND fiscalyear = @header-fiscalyear
-*        AND fiscalperiod = @header-fiscalperiod
-*        AND ledger = @header-ledger
-*        AND paymenttype = @header-paymenttype
-*      INTO TABLE @DATA(db_items).
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: recuperar resultados E/L para delta
-      " Recuperar ambos tipos resueltos, no el tipo vacío de la cabecera.
-      " No arrastrar tipos legados I/vacío fuera del resultado válido E/L.
       SELECT
-          ledger,
-          companycode,
-          fiscalyear,
-          fiscalperiod,
-          paymenttype,
-          pandll5id,
-          profitcenter,
-          costcenterstandardhierarea,
-          ccallocation,
-          ccconsolidation,
-          ruleid
-        FROM zr_intercojeitemhelperclassitm
-        WITH PRIVILEGED ACCESS
-        WHERE companycode  = @header-companycode
-          AND fiscalyear   = @header-fiscalyear
-          AND fiscalperiod = @header-fiscalperiod
-          AND ledger       = @header-ledger
-          " AND paymenttype = @header-paymenttype
-          AND paymenttype IN ( 'E', 'L' )
-        INTO TABLE @DATA(db_items).
-      " Fin EXT_OSCUGALD 06.10.2026 - C12
+      ledger,
+      companycode,
+      fiscalyear,
+      fiscalperiod,
+      paymenttype,
+      pandll5id,
+      profitcenter,
+      costcenterstandardhierarea,
+      ccallocation,
+      ccconsolidation,
+      ruleid
+  FROM zr_intercojeitemhelperclassitm
+      WITH PRIVILEGED ACCESS
+      WHERE companycode = @header-companycode
+        AND fiscalyear = @header-fiscalyear
+        AND fiscalperiod = @header-fiscalperiod
+        AND ledger = @header-ledger
+        AND paymenttype = @header-paymenttype
+      INTO TABLE @DATA(db_items).
 
       " Check wheter the new items were already classified or not
       LOOP AT items REFERENCE INTO DATA(item).
@@ -730,34 +576,10 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     ENDIF.
 
     "  Get Rules
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C10: leer PaymentType de las reglas
-    " Consulta anterior: no recuperaba el tipo de facturación de la regla.
-    " SELECT id,
-    "     ruleid,
-    "     companycode,
-    "     ledger,
-    "     pandlid,
-    "     pandllevel,
-    "     profitcenter,
-    "     ccstdhierarea,
-    "     ccallocation,
-    "     ccconsolidation,
-    "     lastchangedat
-    " FROM zi_intercoclassificationrule
-    " WITH PRIVILEGED ACCESS
-    " WHERE ( companycode = @header-companycode OR companycode IS INITIAL )
-    "     AND validfrom <= @valid_date AND validto >= @valid_date
-    "     AND isdeleted IS INITIAL
-    "     ORDER BY score DESCENDING
-    "     INTO TABLE @DATA(rules).
-
-    " PaymentType es una salida de la regla ganadora.
-    " Se conserva el orden por Score y el matching existente por Ledger.
     SELECT id,
         ruleid,
         companycode,
         ledger,
-        paymenttype,
         pandlid,
         pandllevel,
         profitcenter,
@@ -772,7 +594,6 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
         AND isdeleted IS INITIAL
         ORDER BY score DESCENDING
         INTO TABLE @DATA(rules).
-    " Fin EXT_OSCUGALD 06.10.2026 - C10
 
     " Apply Rules
     DO lines( items ) TIMES.
@@ -806,16 +627,7 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
         line_classified->ledger = header-ledger.
         line_classified->fiscalyear = header-fiscalyear.
         line_classified->fiscalperiod = header-fiscalperiod.
-        " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C10: asignar tipo de la regla ganadora
-        " Antes se copiaba el tipo del header; ahora lo determina la regla.
-        " line_classified->paymenttype = header-paymenttype.
-
-        " Una regla con tipo vacío conserva Exportación como fallback.
-        line_classified->paymenttype =
-          COND #( WHEN rule->paymenttype IS NOT INITIAL
-                  THEN rule->paymenttype
-                  ELSE 'E' ).
-        " Fin EXT_OSCUGALD 06.10.2026 - C10
+        line_classified->paymenttype = header-paymenttype.
         line_classified->ruleid = rule->ruleid.
         EXIT.
       ENDLOOP.
@@ -841,109 +653,29 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
 
 
   METHOD for.
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: inicio FOR anterior conservado
-    "
-    "    valid_date = i_fiscalyear && i_fiscalperiod+1 && '01'.
-    "    SELECT SINGLE * FROM zr_intercojeitemhelperclass
-    "        WHERE companycode  = @i_companycode
-    "           AND fiscalyear   = @i_fiscalyear
-    "           AND fiscalperiod = @i_fiscalperiod
-    "           AND ledger       = @i_ledger
-    "           AND paymenttype  = @i_paymenttype
-    "                  INTO @header.
-    "
-    "    IF sy-subrc = 0.
-    "      APPEND header TO headers.
-    "    ELSE.
-    "      header-companycode = i_companycode.
-    "      header-fiscalyear = i_fiscalyear.
-    "      header-fiscalperiod = i_fiscalperiod.
-    "      header-ledger = i_ledger.
-    "      header-paymenttype = i_paymenttype.
-    "      APPEND header TO headers.
-    "      RETURN instance.
-    "    ENDIF.
-    " Fin EXT_OSCUGALD 06.10.2026 - C12
 
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: normalizar E/L antes de leer la estrategia
-    " El singleton no debe arrastrar fechas ni flags de otro ámbito.
-    CLEAR: header, headers, rule_last_changed_at,
-           exemption_last_changed_at, docline_last_creationdate.
     valid_date = i_fiscalyear && i_fiscalperiod+1 && '01'.
-
-    DATA(run_paymenttype) = i_paymenttype.
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12i: retirar reproceso adicional
-    " DATA(force_pending) = abap_false.
-    " Fin EXT_OSCUGALD 16.10.2026 - C12i
-
-    IF i_paymenttype = 'E' OR i_paymenttype = 'L'.
-      " Conservar la solicitud pendiente del padre E/L antes de consultar el coordinador.
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12i: usar estado de coordinadora
-      " SELECT SINGLE isruleprocessed, isexemptionprocessed
-      " FROM zr_intercojeitemhelperclass
-      " WHERE companycode = @i_companycode
-      " AND fiscalyear = @i_fiscalyear
-      " AND fiscalperiod = @i_fiscalperiod
-      " AND ledger = @i_ledger
-      " AND paymenttype = @i_paymenttype
-      " INTO @DATA(requested_status).
-      " force_pending = xsdbool(
-      " sy-subrc <> 0 OR
-      " requested_status-isruleprocessed IS INITIAL OR
-      " requested_status-isexemptionprocessed IS INITIAL ).
-      " Fin EXT_OSCUGALD 16.10.2026 - C12i
-
-      " Normalizar solo E/L; I y otros valores no se reinterpretan como una corrida nueva.
-      CLEAR run_paymenttype.
-    ENDIF.
-
     SELECT SINGLE * FROM zr_intercojeitemhelperclass
-      WHERE companycode = @i_companycode
-        AND fiscalyear = @i_fiscalyear
-        AND fiscalperiod = @i_fiscalperiod
-        AND ledger = @i_ledger
-        AND paymenttype = @run_paymenttype
-      INTO @header.
+        WHERE companycode  = @i_companycode
+           AND fiscalyear   = @i_fiscalyear
+           AND fiscalperiod = @i_fiscalperiod
+           AND ledger       = @i_ledger
+           AND paymenttype  = @i_paymenttype
+                  INTO @header.
 
     IF sy-subrc = 0.
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12i: retirar reset adicional
-      " IF force_pending = abap_true.
-      " Un coordinador completo no cancela una solicitud pendiente del padre E/L.
-      " Los flags vacíos fuerzan from_scratch en evaluate_processing_strategy.
-      " Conservar CreatedAt y el flujo de comprobaciones posterior.
-      " CLEAR: header-isruleprocessed, header-isexemptionprocessed.
-      " ENDIF.
-      " Fin EXT_OSCUGALD 16.10.2026 - C12i
       APPEND header TO headers.
     ELSE.
-      " Header quedó limpio al iniciar: sin metadata heredada de un período anterior.
       header-companycode = i_companycode.
       header-fiscalyear = i_fiscalyear.
       header-fiscalperiod = i_fiscalperiod.
       header-ledger = i_ledger.
-      header-paymenttype = run_paymenttype.
+      header-paymenttype = i_paymenttype.
       APPEND header TO headers.
       RETURN instance.
     ENDIF.
-    " Fin EXT_OSCUGALD 06.10.2026 - C12
 
     " Retrieve all previously used rules to check if any were modified after the last classification
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: detectar cambios de reglas en resultados E/L
-    " Código anterior conservado para trazabilidad:
-    " SELECT COUNT(*)
-    "   FROM zr_intercojeitemhelperclassitm AS usage
-    "   LEFT OUTER JOIN zi_intercoclassificationrule WITH PRIVILEGED ACCESS AS ex
-    "     ON ex~ruleid = usage~ruleid
-    "   WHERE usage~companycode  = @header-companycode
-    "     AND usage~fiscalyear   = @header-fiscalyear
-    "     AND usage~fiscalperiod = @header-fiscalperiod
-    "     AND usage~ledger       = @header-ledger
-    "     AND usage~paymenttype  = @header-paymenttype
-    "     AND ( ex~lastchangedat   >= @header-createdat OR
-    "           ( ex~ruleid IS NULL OR ex~ruleid IS INITIAL ) )
-    "     INTO @DATA(changed_rules_count).
-
-    " La cabecera unificada tiene tipo vacío; los resultados conservan E/L.
     SELECT COUNT(*)
       FROM zr_intercojeitemhelperclassitm AS usage
       LEFT OUTER JOIN zi_intercoclassificationrule WITH PRIVILEGED ACCESS AS ex
@@ -952,11 +684,10 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
         AND usage~fiscalyear   = @header-fiscalyear
         AND usage~fiscalperiod = @header-fiscalperiod
         AND usage~ledger       = @header-ledger
-        AND usage~paymenttype  IN ( 'E', 'L' )
+        AND usage~paymenttype  = @header-paymenttype
         AND ( ex~lastchangedat   >= @header-createdat OR
               ( ex~ruleid IS NULL OR ex~ruleid IS INITIAL ) )
         INTO @DATA(changed_rules_count).
-    " Fin EXT_OSCUGALD 06.10.2026 - C12
 
     " If any of them were changed, force reprocessing from scratch
     IF changed_rules_count > 0.
@@ -981,22 +712,6 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     ENDIF.
 
     " Check if any previously used exemption was changed after the last classification
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: detectar cambios de exclusiones en resultados E/L
-    " Código anterior conservado para trazabilidad:
-    " SELECT COUNT(*)
-    "   FROM zr_intercojeitemhelperclassexe AS usage
-    "   LEFT OUTER JOIN zi_intercoexemption WITH PRIVILEGED ACCESS AS ex
-    "     ON ex~externalid = usage~exemptionid
-    "   WHERE usage~companycode  = @header-companycode
-    "     AND usage~fiscalyear   = @header-fiscalyear
-    "     AND usage~fiscalperiod = @header-fiscalperiod
-    "     AND usage~ledger       = @header-ledger
-    "     AND usage~paymenttype  = @header-paymenttype
-    "     AND ( ex~lastchangedat   >= @( cl_abap_tstmp=>tstmp2utclong( header-createdat ) ) OR
-    "          ( ex~externalid IS NULL OR ex~externalid IS INITIAL ) )
-    "     INTO @DATA(changed_exemptions_count).
-
-    " La cabecera unificada tiene tipo vacío; las exclusiones conservan E/L.
     SELECT COUNT(*)
       FROM zr_intercojeitemhelperclassexe AS usage
       LEFT OUTER JOIN zi_intercoexemption WITH PRIVILEGED ACCESS AS ex
@@ -1005,11 +720,10 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
         AND usage~fiscalyear   = @header-fiscalyear
         AND usage~fiscalperiod = @header-fiscalperiod
         AND usage~ledger       = @header-ledger
-        AND usage~paymenttype  IN ( 'E', 'L' )
+        AND usage~paymenttype  = @header-paymenttype
         AND ( ex~lastchangedat   >= @( cl_abap_tstmp=>tstmp2utclong( header-createdat ) ) OR
              ( ex~externalid IS NULL OR ex~externalid IS INITIAL ) )
         INTO @DATA(changed_exemptions_count).
-    " Fin EXT_OSCUGALD 06.10.2026 - C12
 
     " If any of them were changed, force reprocessing from scratch
     IF changed_exemptions_count > 0.
@@ -1034,19 +748,6 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     IF header-isexemptionprocessed = abap_true OR
        header-isruleprocessed = abap_true.
 
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C12: detectar nuevos gastos por OriginObjectType 02
-      " Código anterior conservado para trazabilidad:
-      " SELECT SINGLE MAX( creationdatetime )
-      " FROM zi_intercojeitem
-      " WITH PRIVILEGED ACCESS
-      " WHERE sourceledger = @i_ledger
-      " AND companycode = @i_companycode
-      " AND fiscalyear = @i_fiscalyear
-      " AND fiscalperiod = @i_fiscalperiod
-      " AND paymenttype = @i_paymenttype
-      " INTO @docline_last_creationdate.
-
-      " El tipo de cabecera no identifica el gasto; el origen 02 sí.
       SELECT SINGLE MAX( creationdatetime )
       FROM zi_intercojeitem
       WITH PRIVILEGED ACCESS
@@ -1054,16 +755,14 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
       AND companycode = @i_companycode
       AND fiscalyear = @i_fiscalyear
       AND fiscalperiod = @i_fiscalperiod
-      AND originobjecttype = '02'
+      AND paymenttype = @i_paymenttype
       INTO @docline_last_creationdate.
-      " Fin EXT_OSCUGALD 06.10.2026 - C12
 
     ENDIF.
 
     RETURN instance.
 
   ENDMETHOD.
-
 
 
   METHOD new.
@@ -1073,35 +772,8 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     RETURN instance.
   ENDMETHOD.
 
+
   METHOD run.
-
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 16.10.2026 - C12j: simplificación acotada de RUN
-    " Se retiran solo validaciones generales; se conserva publicación E/L.
-
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 -
-    " C12-6c.2: preparación común y reemplazo controlado E/L
-    CONSTANTS:
-      " C12j: constante del control retirado, conservada como referencia.
-      " error_data TYPE string VALUE
-      " 'Los datos de la clasificación requieren revisión. Contacte a soporte.',
-      error_save TYPE string VALUE
-        'No se pudo completar la clasificación. Contacte a soporte.',
-      error_undo TYPE string VALUE
-        'No se pudo confirmar la recuperación. Contacte a soporte.'.
-
-    CLEAR error_text.
-    DATA(db_pending) = abap_false.
-    DATA(is_coordinator) = xsdbool( header-paymenttype IS INITIAL ).
-
-    " C12j: validación general anterior desactivada.
-    " IF is_coordinator = abap_true AND
-    " ( header-companycode IS INITIAL OR
-    " header-fiscalyear IS INITIAL OR
-    " header-fiscalperiod IS INITIAL OR
-    " header-ledger IS INITIAL ).
-    " error_text = error_data.
-    " RETURN instance.
-    " ENDIF.
 
     DATA(processing_type) = evaluate_processing_strategy( ).
 
@@ -1113,306 +785,83 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    " Proteger hijos históricos vacíos antes del COMMIT interno de AG.
-    " C12j: bloqueos por hijos vacíos anteriores desactivados.
-    " IF is_coordinator = abap_true.
-    " SELECT SINGLE paymenttype FROM zint_a_jeitem_ci
-    " WHERE companycode  = @header-companycode
-    " AND fiscalyear   = @header-fiscalyear
-    " AND fiscalperiod = @header-fiscalperiod
-    " AND ledger       = @header-ledger
-    " AND paymenttype  = @space
-    " INTO @DATA(existing_blank_ci).
-    " IF sy-subrc = 0.
-    " error_text = error_data.
-    " RETURN instance.
-    " ENDIF.
-
-    " SELECT SINGLE paymenttype FROM zint_a_jeitem_ce
-    " WHERE companycode  = @header-companycode
-    " AND fiscalyear   = @header-fiscalyear
-    " AND fiscalperiod = @header-fiscalperiod
-    " AND ledger       = @header-ledger
-    " AND paymenttype  = @space
-    " INTO @DATA(existing_blank_ce).
-    " IF sy-subrc = 0.
-    " error_text = error_data.
-    " RETURN instance.
-    " ENDIF.
-    " ENDIF.
-
-    TRY.
-        IF lv_matag_activa = 'X'.
-          " Si AG falla antes de confirmar, queda DML para revertir.
-          db_pending = abap_true.
-          materialize_agrupadores( iv_processing_type = processing_type ).
-          db_pending = abap_false.
-        ENDIF.
-
-        " Secuencia original: C10/C11 conservan el matching y resuelven E/L.
-        DATA(classified_items) =
-          apply_rules( iv_processing_type = processing_type ).
-        DATA(exemption_items) =
-          apply_exemptions(
-            iv_processing_type  = processing_type
-            it_classified_items = classified_items ).
-
-        DATA create TYPE TABLE FOR CREATE zr_intercojeitemhelperclass.
-        create = VALUE #( (
-          %cid                 = 'create'
-          companycode          = header-companycode
-          fiscalperiod         = header-fiscalperiod
-          fiscalyear           = header-fiscalyear
-          paymenttype          = header-paymenttype
-          ledger               = header-ledger
-          isexemptionprocessed = abap_true
-          isruleprocessed      = abap_true ) ).
-
-        DATA ch_tab TYPE TABLE OF zint_a_jeitem_ch.
-        DATA ci_tab TYPE TABLE OF zint_a_jeitem_ci.
-        DATA ce_tab TYPE TABLE OF zint_a_jeitem_ce.
-
-        ch_tab = CORRESPONDING #( create MAPPING FROM ENTITY ).
-        IF is_coordinator = abap_true.
-          " Reutilizar la cabecera para agregar los padres de resultados.
-          DATA(parent_ch) = ch_tab[ 1 ].
-          parent_ch-paymenttype = 'E'.
-          APPEND parent_ch TO ch_tab.
-          parent_ch-paymenttype = 'L'.
-          APPEND parent_ch TO ch_tab.
-        ENDIF.
-
-        " Conversión y deduplicación de filas idénticas del RUN original.
-        SORT ch_tab.
-        DELETE ADJACENT DUPLICATES FROM ch_tab.
-        ci_tab = CORRESPONDING #( classified_items ).
-        SORT ci_tab.
-        DELETE ADJACENT DUPLICATES FROM ci_tab.
-        ce_tab = CORRESPONDING #( exemption_items ).
-        SORT ce_tab.
-        DELETE ADJACENT DUPLICATES FROM ce_tab.
-
-        IF is_coordinator = abap_true.
-          " Mandante implícito de Open SQL; RuleID/ExemptionID no son clave.
-          " C12j: controles generales de ámbito/colisiones desactivados.
-          " DATA ci_keys TYPE HASHED TABLE OF zint_a_jeitem_ci
-          " WITH UNIQUE KEY ledger companycode fiscalyear fiscalperiod
-          " paymenttype pandll5id profitcenter costcenterstandardhierarea
-          " ccallocation ccconsolidation.
-          " DATA ce_keys TYPE HASHED TABLE OF zint_a_jeitem_ce
-          " WITH UNIQUE KEY ledger companycode fiscalyear fiscalperiod
-          " paymenttype profitcenter costcenter glaccount.
-
-          " LOOP AT ci_tab INTO DATA(ci_row).
-          " IF ci_row-companycode  <> header-companycode OR
-          " ci_row-fiscalyear   <> header-fiscalyear OR
-          " ci_row-fiscalperiod <> header-fiscalperiod OR
-          " ci_row-ledger       <> header-ledger OR
-          " ( ci_row-paymenttype <> 'E' AND ci_row-paymenttype <> 'L' ).
-          " error_text = error_data.
-          " RETURN instance.
-          " ENDIF.
-          " INSERT ci_row INTO TABLE ci_keys.
-          " IF sy-subrc <> 0.
-          " error_text = error_data.
-          " RETURN instance.
-          " ENDIF.
-          " ENDLOOP.
-
-          " LOOP AT ce_tab INTO DATA(ce_row).
-          " IF ce_row-companycode  <> header-companycode OR
-          " ce_row-fiscalyear   <> header-fiscalyear OR
-          " ce_row-fiscalperiod <> header-fiscalperiod OR
-          " ce_row-ledger       <> header-ledger OR
-          " ( ce_row-paymenttype <> 'E' AND ce_row-paymenttype <> 'L' ).
-          " error_text = error_data.
-          " RETURN instance.
-          " ENDIF.
-          " INSERT ce_row INTO TABLE ce_keys.
-          " IF sy-subrc <> 0.
-          " error_text = error_data.
-          " RETURN instance.
-          " ENDIF.
-          " ENDLOOP.
-
-          db_pending = abap_true.
-          DELETE FROM zint_a_jeitem_ce
-            WHERE companycode  = @header-companycode
-              AND fiscalyear   = @header-fiscalyear
-              AND fiscalperiod = @header-fiscalperiod
-              AND ledger       = @header-ledger
-              AND paymenttype IN ( 'E', 'L' ).
-          DELETE FROM zint_a_jeitem_ci
-            WHERE companycode  = @header-companycode
-              AND fiscalyear   = @header-fiscalyear
-              AND fiscalperiod = @header-fiscalperiod
-              AND ledger       = @header-ledger
-              AND paymenttype IN ( 'E', 'L' ).
-          DELETE FROM zint_a_jeitem_ch
-            WHERE companycode  = @header-companycode
-              AND fiscalyear   = @header-fiscalyear
-              AND fiscalperiod = @header-fiscalperiod
-              AND ledger       = @header-ledger
-              AND ( paymenttype = @space OR paymenttype IN ( 'E', 'L' ) ).
-        ELSE.
-          " Mecanismo de borrado anterior para cabeceras no normalizadas.
-          DATA delete TYPE TABLE FOR DELETE zr_intercojeitemhelperclass.
-          IF header-createdat IS NOT INITIAL.
-            APPEND CORRESPONDING #( header ) TO delete.
-            CLEAR header-createdat.
-          ENDIF.
-          MODIFY ENTITIES OF zr_intercojeitemhelperclass
-            ENTITY header DELETE FROM delete.
-          COMMIT ENTITIES.
-        ENDIF.
-
-        GET TIME STAMP FIELD DATA(created_at).
-        LOOP AT ch_tab REFERENCE INTO DATA(ch).
-          ch->created_at = created_at.
-          ch->created_by = sy-uname.
-        ENDLOOP.
-
-        " INSERT comunes: cada resultado conserva su PaymentType.
-        db_pending = abap_true.
-        INSERT zint_a_jeitem_ch FROM TABLE @ch_tab.
-        IF is_coordinator = abap_true AND
-           ( sy-subrc <> 0 OR sy-dbcnt <> lines( ch_tab ) ).
-          error_text = error_save.
-        ENDIF.
-
-        IF error_text IS INITIAL.
-          INSERT zint_a_jeitem_ci FROM TABLE @ci_tab.
-          IF is_coordinator = abap_true AND
-             ( sy-subrc <> 0 OR sy-dbcnt <> lines( ci_tab ) ).
-            error_text = error_save.
-          ENDIF.
-        ENDIF.
-
-        IF error_text IS INITIAL.
-          INSERT zint_a_jeitem_ce FROM TABLE @ce_tab.
-          IF is_coordinator = abap_true AND
-             ( sy-subrc <> 0 OR sy-dbcnt <> lines( ce_tab ) ).
-            error_text = error_save.
-          ENDIF.
-        ENDIF.
-
-        IF error_text IS INITIAL AND iv_commit = abap_true.
-          COMMIT ENTITIES.
-          IF is_coordinator = abap_true AND sy-subrc <> 0.
-            error_text = error_save.
-          ELSE.
-            db_pending = abap_false.
-          ENDIF.
-        ENDIF.
-      CATCH cx_root.
-        error_text = error_save.
-    ENDTRY.
-
-    IF error_text IS NOT INITIAL AND db_pending = abap_true.
-      TRY.
-          ROLLBACK WORK.
-        CATCH cx_root.
-          error_text = error_undo.
-      ENDTRY.
+    IF lv_matag_activa = 'X'.
+      materialize_agrupadores( iv_processing_type = processing_type ).
     ENDIF.
 
-    " iv_commit=false deja los INSERT pendientes a cargo del caller.
-    " El rollback no revierte AG si MATERIALIZE ya hizo su COMMIT.
+    DATA(classified_items) = apply_rules( iv_processing_type = processing_type ).
+    DATA(exemption_items) = apply_exemptions( iv_processing_type  = processing_type
+                                              it_classified_items = classified_items ).
+
+    DATA delete TYPE TABLE FOR DELETE zr_intercojeitemhelperclass.
+    DATA create TYPE TABLE FOR CREATE zr_intercojeitemhelperclass.
+    DATA create_exemptions TYPE TABLE FOR CREATE zr_intercojeitemhelperclass\_itemsexemptions.
+    DATA create_items TYPE TABLE FOR CREATE zr_intercojeitemhelperclass\_items.
+
+    IF header-createdat IS NOT INITIAL.
+      APPEND CORRESPONDING #( header ) TO delete.
+      CLEAR header-createdat.
+    ENDIF.
+
+    create = VALUE #( ( %cid                 = 'create'
+                        companycode          = header-companycode
+                        fiscalperiod         = header-fiscalperiod
+                        fiscalyear           = header-fiscalyear
+                        paymenttype          = header-paymenttype
+                        ledger               = header-ledger
+                        isexemptionprocessed = abap_true
+                        isruleprocessed      = abap_true ) ).
+
+    create_items = VALUE #( ( %cid_ref = 'create'
+                              %target  = VALUE #( FOR c IN classified_items ( CORRESPONDING #( c ) ) )
+    ) ).
+
+    create_exemptions = VALUE #( ( %cid_ref = 'create'
+                                   %target  = VALUE #( FOR e IN exemption_items
+                                                    ( CORRESPONDING #( e ) ) )
+    ) ).
+
+    MODIFY ENTITIES OF zr_intercojeitemhelperclass
+    ENTITY header
+      DELETE FROM delete.
+    COMMIT ENTITIES.
+
+    DATA ch_tab TYPE TABLE OF zint_a_jeitem_ch.
+    DATA ci_tab TYPE TABLE OF zint_a_jeitem_ci.
+    DATA ce_tab TYPE TABLE OF zint_a_jeitem_ce.
+
+    ch_tab = CORRESPONDING #( create MAPPING FROM ENTITY ).
+    SORT ch_tab.
+    DELETE ADJACENT DUPLICATES FROM ch_tab.
+    ci_tab = CORRESPONDING #( classified_items ).
+    SORT ci_tab.
+    DELETE ADJACENT DUPLICATES FROM ci_tab.
+    ce_tab = CORRESPONDING #( exemption_items ).
+    SORT ce_tab.
+    DELETE ADJACENT DUPLICATES FROM ce_tab.
+
+    LOOP AT ch_tab REFERENCE INTO DATA(ch).
+      GET TIME STAMP FIELD ch->created_at.
+      ch->created_by = sy-uname.
+    ENDLOOP.
+
+    INSERT zint_a_jeitem_ch FROM TABLE @ch_tab.
+    INSERT zint_a_jeitem_ci FROM TABLE @ci_tab.
+    INSERT zint_a_jeitem_ce FROM TABLE @ce_tab.
+
+*    MODIFY ENTITIES OF zr_intercojeitemhelperclass
+*    ENTITY header
+*      CREATE FIELDS ( companycode fiscalyear fiscalperiod ledger paymenttype isexemptionprocessed isruleprocessed ) WITH create
+*      CREATE BY \_items FIELDS ( ccallocation ccconsolidation costcenterstandardhierarea pandll5id profitcenter ruleid ) AUTO FILL CID WITH create_items
+*      CREATE BY \_itemsexemptions FIELDS ( costcenter profitcenter glaccount exemptionid ) AUTO FILL CID WITH create_exemptions
+*      MAPPED DATA(mapped)
+*      REPORTED DATA(reported)
+*      FAILED DATA(failed).
+
+    IF iv_commit = abap_true.
+      COMMIT ENTITIES.
+    ENDIF.
+
     RETURN instance.
-    " Fin EXT_OSCUGALD 07.10.2026 - C12-6c.2
-    " Fin EXT_OSCUGALD 16.10.2026 - C12j
-
-***  METHOD run.
-***
-***    DATA(processing_type) = evaluate_processing_strategy( ).
-***
-***    SELECT SINGLE low FROM zi_tvarvc
-***      WHERE name = 'ZINTERCO_IC05_MATAG_ACTIVA'
-***      INTO @DATA(lv_matag_activa).
-***
-***    IF processing_type = co_processing_type-skip.
-***      RETURN.
-***    ENDIF.
-***
-***    IF lv_matag_activa = 'X'.
-***      materialize_agrupadores( iv_processing_type = processing_type ).
-***    ENDIF.
-***
-***    DATA(classified_items) = apply_rules( iv_processing_type = processing_type ).
-***    DATA(exemption_items) = apply_exemptions( iv_processing_type  = processing_type
-***                                              it_classified_items = classified_items ).
-***
-***    DATA delete TYPE TABLE FOR DELETE zr_intercojeitemhelperclass.
-***    DATA create TYPE TABLE FOR CREATE zr_intercojeitemhelperclass.
-***    DATA create_exemptions TYPE TABLE FOR CREATE zr_intercojeitemhelperclass\_itemsexemptions.
-***    DATA create_items TYPE TABLE FOR CREATE zr_intercojeitemhelperclass\_items.
-***
-***    IF header-createdat IS NOT INITIAL.
-***      APPEND CORRESPONDING #( header ) TO delete.
-***      CLEAR header-createdat.
-***    ENDIF.
-***
-***    create = VALUE #( ( %cid                 = 'create'
-***                        companycode          = header-companycode
-***                        fiscalperiod         = header-fiscalperiod
-***                        fiscalyear           = header-fiscalyear
-***                        paymenttype          = header-paymenttype
-***                        ledger               = header-ledger
-***                        isexemptionprocessed = abap_true
-***                        isruleprocessed      = abap_true ) ).
-***
-***    create_items = VALUE #( ( %cid_ref = 'create'
-***                              %target  = VALUE #( FOR c IN classified_items ( CORRESPONDING #( c ) ) )
-***    ) ).
-***
-***    create_exemptions = VALUE #( ( %cid_ref = 'create'
-***                                   %target  = VALUE #( FOR e IN exemption_items
-***                                                    ( CORRESPONDING #( e ) ) )
-***    ) ).
-***
-***    MODIFY ENTITIES OF zr_intercojeitemhelperclass
-***    ENTITY header
-***      DELETE FROM delete.
-***    COMMIT ENTITIES.
-***
-***    DATA ch_tab TYPE TABLE OF zint_a_jeitem_ch.
-***    DATA ci_tab TYPE TABLE OF zint_a_jeitem_ci.
-***    DATA ce_tab TYPE TABLE OF zint_a_jeitem_ce.
-***
-***    ch_tab = CORRESPONDING #( create MAPPING FROM ENTITY ).
-***    SORT ch_tab.
-***    DELETE ADJACENT DUPLICATES FROM ch_tab.
-***    ci_tab = CORRESPONDING #( classified_items ).
-***    SORT ci_tab.
-***    DELETE ADJACENT DUPLICATES FROM ci_tab.
-***    ce_tab = CORRESPONDING #( exemption_items ).
-***    SORT ce_tab.
-***    DELETE ADJACENT DUPLICATES FROM ce_tab.
-***
-***    LOOP AT ch_tab REFERENCE INTO DATA(ch).
-***      GET TIME STAMP FIELD ch->created_at.
-***      ch->created_by = sy-uname.
-***    ENDLOOP.
-***
-***    INSERT zint_a_jeitem_ch FROM TABLE @ch_tab.
-***    INSERT zint_a_jeitem_ci FROM TABLE @ci_tab.
-***    INSERT zint_a_jeitem_ce FROM TABLE @ce_tab.
-***
-****    MODIFY ENTITIES OF zr_intercojeitemhelperclass
-****    ENTITY header
-****      CREATE FIELDS ( companycode fiscalyear fiscalperiod ledger paymenttype isexemptionprocessed isruleprocessed ) WITH create
-****      CREATE BY \_items FIELDS ( ccallocation ccconsolidation costcenterstandardhierarea pandll5id profitcenter ruleid ) AUTO FILL CID WITH create_items
-****      CREATE BY \_itemsexemptions FIELDS ( costcenter profitcenter glaccount exemptionid ) AUTO FILL CID WITH create_exemptions
-****      MAPPED DATA(mapped)
-****      REPORTED DATA(reported)
-****      FAILED DATA(failed).
-***
-***    IF iv_commit = abap_true.
-***      COMMIT ENTITIES.
-***    ENDIF.
-***
-***    RETURN instance.
-***  ENDMETHOD.
   ENDMETHOD.
-
 ENDCLASS.

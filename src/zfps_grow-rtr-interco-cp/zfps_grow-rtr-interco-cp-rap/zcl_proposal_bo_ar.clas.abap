@@ -43,7 +43,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_proposal_bo_ar IMPLEMENTATION.
+CLASS ZCL_PROPOSAL_BO_AR IMPLEMENTATION.
 
 
   METHOD exe_bo.
@@ -171,13 +171,6 @@ CLASS zcl_proposal_bo_ar IMPLEMENTATION.
       i_product               = gs_header-product
       i_provider_company_code = gs_header-providercompanycode
       i_valid_at              = last_day_of_month ).
-
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20b: precargar BLART fuera de los bucles
-    DATA(lo_blart_ar) = NEW zcl_interco_doc_blart(
-      i_valid_at              = last_day_of_month
-      i_doctype               = zcl_interco_doc_glaccount=>co_doc_type-ar
-      i_provider_company_code = gs_header-providercompanycode ).
-    " Fin EXT_OSCUGALD 14.10.2026 - C20b
 
     DATA(proposal) = mo_data->get_all( ).
 
@@ -762,20 +755,7 @@ CLASS zcl_proposal_bo_ar IMPLEMENTATION.
       " HEADER
       """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       journal_entry->%cid = gs_header-providercompanycode && gs_header-product && sy-datum && sy-index.
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.10.2026 - C20b: determinar BLART de ventas
-***      journal_entry->%param-accountingdocumenttype = COND #(  WHEN total_posting_in_trans_curr >= 0 THEN 'IC' ELSE 'AI' ).
-
-      " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20b: resolver desde configuración precargada
-      DATA(lv_found_blart_ar) = lo_blart_ar->get(
-        i_recipientcompanycode = recipient_company_code
-        i_paymenttype          = gs_header-paymenttype
-        i_amount               = total_posting_in_trans_curr ).
-
-      journal_entry->%param-accountingdocumenttype = COND #(
-        WHEN lv_found_blart_ar IS NOT INITIAL THEN lv_found_blart_ar
-        WHEN total_posting_in_trans_curr >= 0 THEN 'IC'
-        ELSE 'AI' ).
-      " Fin EXT_OSCUGALD 14.10.2026 - C20b
+      journal_entry->%param-accountingdocumenttype = COND #(  WHEN total_posting_in_trans_curr >= 0 THEN 'IC' ELSE 'AI' ).
       journal_entry->%param-createdbyuser = sy-uname.
       journal_entry->%param-accountingdocumentheadertext = |{ gs_header-providercompanycode } { recipient_company_code } { gs_header-productname }|.
       journal_entry->%param-companycode = gs_header-providercompanycode.
@@ -1637,6 +1617,8 @@ CLASS zcl_proposal_bo_ar IMPLEMENTATION.
     ENDLOOP.
 * Fin EXT_OSCUGALD 10.03.2026 - Clean Core IVA Codes BR
   ENDMETHOD.
+
+
   METHOD mapping_bo_sec_mic.
 *───────────────────────────────────────────────────────────────────────────
 * EXT_OSCUGALD 29.07.2026 - Bermudas MIC-USA (SDFPSINIC-23362)

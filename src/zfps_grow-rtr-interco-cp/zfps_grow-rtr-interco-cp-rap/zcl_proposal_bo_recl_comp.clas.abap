@@ -24,7 +24,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_proposal_bo_recl_comp IMPLEMENTATION.
+CLASS ZCL_PROPOSAL_BO_RECL_COMP IMPLEMENTATION.
 
 
   METHOD preparedata.
@@ -41,7 +41,6 @@ CLASS zcl_proposal_bo_recl_comp IMPLEMENTATION.
     DATA lv_recipientcompanycode TYPE zfi_proposalitem_add-recipientcompanycode.
     DATA lv_jecid TYPE n LENGTH 5.
     DATA: lv_profitcenter_i TYPE i,
-
           lv_profitcenter_c TYPE c LENGTH 10.
 
     FIELD-SYMBOLS <tariff_type> TYPE zint_tariff_type.
@@ -554,13 +553,6 @@ CLASS zcl_proposal_bo_recl_comp IMPLEMENTATION.
 
         DATA lv_rc_err_datetime TYPE zfi_a_intrc_cpid-createdat.
 
-        " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20f: precargar BLART de reclasificación
-        DATA(lo_blart_rc) = NEW zcl_interco_doc_blart(
-          i_valid_at              = ld_lastday
-          i_doctype               = zcl_interco_doc_glaccount=>co_doc_type-reclassification_ar
-          i_provider_company_code = gs_header-providercompanycode ).
-        " Fin EXT_OSCUGALD 14.10.2026 - C20f
-
         LOOP AT recipient_glitems REFERENCE INTO FINAL(item_recla_ar)
             GROUP BY item_recla_ar->recipientcompanycode INTO FINAL(recipient_company_code).
 
@@ -615,23 +607,7 @@ CLASS zcl_proposal_bo_recl_comp IMPLEMENTATION.
 *Fin EXT_OSCUGALD 23.06.2026 - CS Fix RECL COMP
           journal_entry->%param-documentdate = ld_lastday.
           journal_entry->%param-postingdate = ld_lastday.
-          " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20f: resolver BLART por receptora
-***          journal_entry->%param-accountingdocumenttype = 'CH'.
-
-          DATA(lv_amount_rc) = REDUCE fis_wsl(
-            INIT total = CONV fis_wsl( 0 )
-            FOR item_rc IN GROUP recipient_company_code
-            NEXT total = total + item_rc-amountintransactioncurrency ).
-
-          DATA(lv_blart_rc) = lo_blart_rc->get(
-            i_recipientcompanycode = recipient_company_code
-            i_paymenttype          = gs_header-paymenttype
-            i_amount               = lv_amount_rc ).
-
-          journal_entry->%param-accountingdocumenttype = COND #(
-            WHEN lv_blart_rc IS NOT INITIAL THEN lv_blart_rc
-            ELSE 'CH' ).
-          " Fin EXT_OSCUGALD 14.10.2026 - C20f
+          journal_entry->%param-accountingdocumenttype = 'CH'.
           journal_entry->%param-accountingdocumentheadertext = |{ gs_header-providercompanycode } { recipient_company_code } { gs_header-productname }|.
 *Ini EXT_OSCUGALD 24.06.2026 - CS Fix RECL COMP: codigo material en referencia cabecera
           IF lv_is_cs = abap_true.
@@ -776,9 +752,6 @@ CLASS zcl_proposal_bo_recl_comp IMPLEMENTATION.
   ENDMETHOD.
 
 
-
-
-
   METHOD mapping_reverse_sec.
     DATA: ld_today  TYPE d.
     ld_today = cl_abap_context_info=>get_system_date( ).
@@ -912,6 +885,7 @@ CLASS zcl_proposal_bo_recl_comp IMPLEMENTATION.
       APPEND LINES OF lo_recl_comp_par->gt_doc_map_rc TO me->gt_doc_map.
     ENDLOOP.
   ENDMETHOD.
+
 
   METHOD mapping_bo_sec_mic.
 *───────────────────────────────────────────────────────────────────────────

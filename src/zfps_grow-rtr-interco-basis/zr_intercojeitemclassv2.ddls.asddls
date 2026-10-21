@@ -94,9 +94,7 @@ define root view entity ZR_IntercoJEItemClassV2
                                                                                     and _classificationsCC.CompanyCode                = I_JournalEntryItem.CompanyCode
                                                                                     and _classificationsCC.FiscalYear                 = I_JournalEntryItem.FiscalYear
                                                                                     and _classificationsCC.FiscalPeriod               = I_JournalEntryItem.FiscalPeriod
-                                                                                    -- Ini Facturación Local CH/ARG EXT_OSCUGALD 05.10.2026 - C06: quitar filtro fijo E para permitir clasificación E/L
-                                                                                    -- and _classificationsCC.PaymentType                = 'E'
-                                                                                    -- Fin EXT_OSCUGALD 05.10.2026 - C06
+                                                                                    and _classificationsCC.PaymentType                = 'E'
                                                                                     and _classificationsCC.PandLL5ID                  = _mt005CC.IdL5
                                                                                     and _classificationsCC.CcConsolidation            = _ccconsolidationparentnode.HierarchyNodeVal
                                                                                     and _classificationsCC.CostCenterStandardHierArea = _currentcostcenter.CostCenterStandardHierArea
@@ -107,9 +105,7 @@ define root view entity ZR_IntercoJEItemClassV2
                                                                                     and _classificationsPC.CompanyCode                = I_JournalEntryItem.CompanyCode
                                                                                     and _classificationsPC.FiscalYear                 = I_JournalEntryItem.FiscalYear
                                                                                     and _classificationsPC.FiscalPeriod               = I_JournalEntryItem.FiscalPeriod
-                                                                                    -- Ini Facturación Local CH/ARG EXT_OSCUGALD 05.10.2026 - C06: quitar filtro fijo E para permitir clasificación E/L
-                                                                                    -- and _classificationsPC.PaymentType                = 'E'
-                                                                                    -- Fin EXT_OSCUGALD 05.10.2026 - C06
+                                                                                    and _classificationsPC.PaymentType                = 'E'
                                                                                     and _classificationsPC.PandLL5ID                  = _mt005PC.IdL5
                                                                                     and _classificationsPC.CcConsolidation            = _ccconsolidationparentnode.HierarchyNodeVal
                                                                                     and _classificationsPC.CostCenterStandardHierArea = _currentcostcenter.CostCenterStandardHierArea
@@ -126,46 +122,10 @@ define root view entity ZR_IntercoJEItemClassV2
                                                                                     and _exemptions.CompanyCode  = I_JournalEntryItem.CompanyCode
                                                                                     and _exemptions.FiscalYear   = I_JournalEntryItem.FiscalYear
                                                                                     and _exemptions.FiscalPeriod = I_JournalEntryItem.FiscalPeriod
-                                                                                    -- Ini Facturación Local CH/ARG EXT_OSCUGALD 05.10.2026 - C06: quitar filtro fijo E para permitir exclusiones E/L
-                                                                                    -- and _exemptions.PaymentType  = 'E'
-                                                                                    -- Fin EXT_OSCUGALD 05.10.2026 - C06
+                                                                                    and _exemptions.PaymentType  = 'E'
                                                                                     and _exemptions.CostCenter   = I_JournalEntryItem.CostCenter
                                                                                     and _exemptions.GLAccount    = I_JournalEntryItem.GLAccount
                                                                                     and _exemptions.ProfitCenter = I_JournalEntryItem.ProfitCenter
-    -- Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 - C12m (7a): exclusión por tipo resuelto en origen 02
-    and (
-      I_JournalEntryItem.OriginObjectType <> '02'
-      or (
-        I_JournalEntryItem.OriginObjectType = '02'
-        and (
-          (
-            _ccconsolidationparentnode.HierarchyNodeVal is not null
-            and (
-              ( _classificationsCC.PaymentType = 'L'
-                and _exemptions.PaymentType = 'L' )
-              or (
-                ( _classificationsCC.PaymentType is null
-                  or _classificationsCC.PaymentType <> 'L' )
-                and _exemptions.PaymentType = 'E'
-              )
-            )
-          )
-          or (
-            _ccconsolidationparentnode.HierarchyNodeVal is null
-            and (
-              ( _classificationsPC.PaymentType = 'L'
-                and _exemptions.PaymentType = 'L' )
-              or (
-                ( _classificationsPC.PaymentType is null
-                  or _classificationsPC.PaymentType <> 'L' )
-                and _exemptions.PaymentType = 'E'
-              )
-            )
-          )
-        )
-      )
-    )
-    -- Fin EXT_OSCUGALD 07.10.2026 - C12m (7a)                                                                                    
     left outer join ZI_IntercoDepartmentRule       as _departmentruleCC             on  _departmentruleCC.CompanyCode  = I_JournalEntryItem.CompanyCode
                                                                                     and _departmentruleCC.PAndLId      = _mt005CC.IdL3
                                                                                     and _departmentruleCC.Product      = _classificationruleCC.Product
@@ -210,32 +170,7 @@ define root view entity ZR_IntercoJEItemClassV2
       I_JournalEntryItem.CostCenter,
       I_JournalEntryItem.ProfitCenter,
       // Intercompany Specifics
-      -- Ini Facturación Local CH/ARG EXT_OSCUGALD 05.10.2026 - C06: liberar el valor I; el tipo definitivo se asigna por regla
-      -- case I_JournalEntryItem.OriginObjectType when '02' then 'E' else 'I' end                      as PaymentType,
-      -- case I_JournalEntryItem.OriginObjectType when '02' then 'E' else '' end                       as PaymentType,
-      -- Fin EXT_OSCUGALD 05.10.2026 - C06
-
-      -- Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 - C12m (7a): tipo resuelto de la rama CC/PC
-      cast(
-        case
-          when I_JournalEntryItem.OriginObjectType = '02'
-               and _ccconsolidationparentnode.HierarchyNodeVal is not null
-               and _classificationsCC.PaymentType = 'L'
-            then _classificationsCC.PaymentType
-          when I_JournalEntryItem.OriginObjectType = '02'
-               and _ccconsolidationparentnode.HierarchyNodeVal is null
-               and _classificationsPC.PaymentType = 'L'
-            then _classificationsPC.PaymentType
-          else
-            case I_JournalEntryItem.OriginObjectType
-              when '02' then 'E'
-              else ''
-            end
-        end
-        as zint_dte_paymenttype preserving type
-      ) as PaymentType,
-      -- Fin EXT_OSCUGALD 07.10.2026 - C12m (7a)
-      
+      case I_JournalEntryItem.OriginObjectType when '02' then 'E' else 'I' end                      as PaymentType,
       _intercocompanycode.SiteCode,
       _intercocompanycode.SiteName,
       _currentcostcenter.CostCenterStandardHierArea,

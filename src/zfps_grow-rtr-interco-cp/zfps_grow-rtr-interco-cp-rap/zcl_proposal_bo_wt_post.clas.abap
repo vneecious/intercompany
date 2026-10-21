@@ -352,7 +352,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
+CLASS ZCL_PROPOSAL_BO_WT_POST IMPLEMENTATION.
 
 
   METHOD exe_bo.
@@ -640,20 +640,6 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
     ENDIF.
 
     me->get_tvarvc( IMPORTING iv_tvarvc_data = ls_tvarvc_data ).
-
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20j: precargar BLART 190/200
-    IF gt_doc_map_si IS NOT INITIAL
-       AND ls_tvarvc_data-doctype IS NOT INITIAL
-       AND ( gv_proposal_type = zcl_proposal_bo_abs=>c_document_type-bd_withholding_post
-          OR gv_proposal_type = zcl_proposal_bo_abs=>c_document_type-si_withholding_post ).
-
-      DATA(lo_blart_wt) = NEW zcl_interco_doc_blart(
-        i_valid_at              = lv_lastday
-        i_doctype               = ls_tvarvc_data-doctype
-        i_provider_company_code = gs_header-providercompanycode ).
-
-    ENDIF.
-    " Fin EXT_OSCUGALD 14.10.2026 - C20j
 
     IF gt_doc_map_si IS NOT INITIAL.
 
@@ -1216,31 +1202,13 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
           ENDIF.
 
           IF lv_error = abap_false.
-            " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20j: resolver BLART 190/200
-            DATA(lv_blart_wt) = ls_tvarvc_data-blart.
-
-            IF lo_blart_wt IS BOUND.
-              DATA(lv_found_blart_wt) = lo_blart_wt->get(
-                i_recipientcompanycode = ls_item_1-recipientcompanycode
-                i_paymenttype          = gs_header-paymenttype
-                i_amount               = lv_wth_amt_doc ).
-
-              IF lv_found_blart_wt IS NOT INITIAL.
-                lv_blart_wt = lv_found_blart_wt.
-              ENDIF.
-            ENDIF.
-            " Fin EXT_OSCUGALD 14.10.2026 - C20j
-
             "Header plus items
             APPEND INITIAL LINE TO gta_journalentry_post ASSIGNING FIELD-SYMBOL(<je_deep>).
             <je_deep>-%cid = |INT{ sy-tabix }|.
             <je_deep>-%param = VALUE #(  companycode                  = lv_company
                                          documentdate                 = <lfs_with_item>-documentdate
                                          postingdate                  = <lfs_with_item>-postingdate
-***                                         accountingdocumenttype       = ls_tvarvc_data-blart
-                                         " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20j
-                                         accountingdocumenttype       = lv_blart_wt
-                                         " Fin EXT_OSCUGALD 14.10.2026 - C20j
+                                         accountingdocumenttype       = ls_tvarvc_data-blart
                                          accountingdocumentheadertext = |{ ls_item_1-providercompanycode } { ls_item_1-recipientcompanycode  } { gs_header-productname }|
                                          createdbyuser                = cl_abap_context_info=>get_user_technical_name( )
                                         _glitems                      = lt_glitems  ).
@@ -1320,6 +1288,7 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD preparedata_uy.
 * EXT_OSCUGALD - DF438 Asientos contables Uruguay
     LOOP AT gtd_items_add ASSIGNING FIELD-SYMBOL(<fs_items>) .
@@ -1391,6 +1360,7 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
                            AND documenttype <> zcl_proposal_bo_abs=>c_document_type-je_sales.
 * EXT_OSCUGALD - DF438 Asientos contables Uruguay
   ENDMETHOD.
+
 
   METHOD preparedata_recl.
 * ext_oscugald - Reclassification Grossing Up
@@ -2231,6 +2201,8 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
+
+
   METHOD grossingup_reclassif.
 
     TYPES: lsty_post    TYPE STRUCTURE FOR ACTION IMPORT i_journalentrytp~post,
@@ -2278,17 +2250,6 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
       CATCH cx_sy_conversion_no_date INTO DATA(exc).
         lv_lastday = |{ gs_header-fiscalyear }{ gs_header-fiscalperiod }31|.
     ENDTRY.
-
-    " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20j: precargar BLART 230
-    IF gt_doc_map_si IS NOT INITIAL.
-
-      DATA(lo_blart_gu) = NEW zcl_interco_doc_blart(
-        i_valid_at              = lv_lastday
-        i_doctype               = zcl_interco_doc_glaccount=>co_doc_type-accural_ap
-        i_provider_company_code = gs_header-providercompanycode ).
-
-    ENDIF.
-    " Fin EXT_OSCUGALD 14.10.2026 - C20j
 
     IF gt_doc_map_si IS NOT INITIAL.
 
@@ -2410,33 +2371,13 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
           " 3. Prepara cabecera del documento (Una sola vez por grupo)
           READ TABLE lt_JournalEntryItem INTO DATA(ls_JournalEntryItem) WITH KEY AccountingDocument = ls_doc_map-documentkey.
 
-          " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20j: resolver BLART 230
-          DATA(lv_amount_gu) = REDUCE fis_wsl(
-            INIT total = CONV fis_wsl( 0 )
-            FOR wt_origin IN lt_JournalEntryItem
-            WHERE ( companycode = ls_doc_map-companycode
-                AND fiscalyear = ls_doc_map-fiscalyear
-                AND accountingdocument = ls_doc_map-documentkey(10) )
-            NEXT total = total + wt_origin-amountintransactioncurrency ).
-
-          DATA(lv_blart_gu) = lo_blart_gu->get(
-            i_recipientcompanycode = ls_item_1-recipientcompanycode
-            i_paymenttype          = gs_header-paymenttype
-            i_amount               = lv_amount_gu ).
-          " Fin EXT_OSCUGALD 14.10.2026 - C20j
-
           "Header plus items
           APPEND INITIAL LINE TO gta_journalentry_post ASSIGNING FIELD-SYMBOL(<je_deep>).
           <je_deep>-%cid = |INT{ sy-tabix }|.
           <je_deep>-%param = VALUE #(  companycode                  = ls_item_1-recipientcompanycode
                                        documentdate                 = ls_JournalEntryItem-documentdate
                                        postingdate                  = ls_JournalEntryItem-postingdate
-***                                        accountingdocumenttype       = 'CH'
-                                       " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20j
-                                       accountingdocumenttype       = COND #( WHEN lv_blart_gu IS NOT INITIAL
-                                                                              THEN lv_blart_gu
-                                                                              ELSE 'CH' )
-                                       " Fin EXT_OSCUGALD 14.10.2026 - C20j
+                                       accountingdocumenttype       = 'CH'
                                        accountingdocumentheadertext = |{ ls_item_1-providercompanycode } { ls_item_1-recipientcompanycode  } { gs_header-productname }|
                                        createdbyuser                = cl_abap_context_info=>get_user_technical_name( )
                                        LedgerGroup                  = 'INUS'
@@ -2467,6 +2408,7 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
 
   METHOD journalentryitem.
 
@@ -2549,6 +2491,8 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
     ENDLOOP.
     et_glitems = lt_glitems.
   ENDMETHOD.
+
+
   METHOD provision_retencion_uruguay.
     TYPES: lsty_post    TYPE STRUCTURE FOR ACTION IMPORT i_journalentrytp~post,
            lsty_glitems TYPE LINE OF lsty_post-%param-_glitems,
@@ -2892,6 +2836,8 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
 
 
   ENDMETHOD.
+
+
   METHOD calculate_uruguay_wht.
     DATA: lv_ali_grossup TYPE p LENGTH 7 DECIMALS 6,
           lv_perc_wth    TYPE p LENGTH 7 DECIMALS 6,
@@ -2935,6 +2881,7 @@ CLASS zcl_proposal_bo_wt_post IMPLEMENTATION.
       rs_totals-found        = abap_true.
     ENDLOOP.
   ENDMETHOD.
+
 
   METHOD get_item_sum_loop.
     DATA: lv_cc_code    TYPE zde_cc_code,

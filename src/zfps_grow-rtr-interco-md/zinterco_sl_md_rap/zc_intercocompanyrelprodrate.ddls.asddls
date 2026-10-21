@@ -13,9 +13,6 @@ define root view entity ZC_IntercoCompanyRelProdRate
       RecipientCompanyName,
       Product,
       ProductName,
-      -- AGREGADO EXT_OSCUGALD 30.09.2026 - Facturación Local CH/ARG - C25: expone PaymentType
-      PaymentType,
-      -- Fin EXT_OSCUGALD 30.09.2026 - Facturación Local CH/ARG - C25
       Validfrom,
       Validto,
       Markup,

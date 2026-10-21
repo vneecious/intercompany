@@ -362,31 +362,7 @@ annotate view ZC_INTERCOCLASSIFICATIONRULE with
   }
   @EndUserText.label: '{@i18n>IsNotBillable}'
   IsNotBillable;
-  -- Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C13F: mostrar y filtrar el tipo de pago
-  @UI: {
-    // List Page
-    lineItem: [{
-        position: 30,
-        importance: #HIGH
-    }],
-    selectionField: [{
-        position: 30
-    }],
-    // Object Page
-    fieldGroup: [{
-        qualifier: 'SectionRuleOutput',
-        position: 15
-    }]
-  }
-  @EndUserText.label: 'Payment Type'
-  @Consumption.valueHelpDefinition: [{
-    entity.name: 'ZI_IntercoPaymentTypeVH',
-    entity.element: 'PaymentType',
-    distinctValues: true,
-    useForValidation: true
-  }]
-  PaymentType;
-  -- Fin EXT_OSCUGALD 06.10.2026 - C13F
+
   @UI: {
     // List Page
     lineItem: [{

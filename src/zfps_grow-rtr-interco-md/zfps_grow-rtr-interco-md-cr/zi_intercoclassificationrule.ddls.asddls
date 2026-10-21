@@ -39,9 +39,6 @@ define view entity ZI_IntercoClassificationRule
       valid_to                                         as ValidTo,
       company_code                                     as CompanyCode,
       ledger                                           as Ledger,
-      -- AGREGADO EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C08: expone PaymentType de la regla ganadora
-      payment_type                                     as PaymentType,
-      -- Fin EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C08
       p_and_l_id                                       as PAndLID,
       p_and_l_level                                    as PandLLevel,
       profit_center                                    as ProfitCenter,

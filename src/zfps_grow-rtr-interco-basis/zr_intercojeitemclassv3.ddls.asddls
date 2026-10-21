@@ -15,17 +15,17 @@
     dataClass: #MIXED
 }
 define root view entity ZR_IntercoJEItemClassV3
-  as select from    I_JournalEntryItem
+  as select from I_JournalEntryItem
   // AGREGADO DS4K9B5URA: 1 JOIN a tabla materializada reemplaza 16 JOINs de jerarquias
-    inner join      zint_a_jeitem_ag               as _ag                 on  _ag.companycode        = I_JournalEntryItem.CompanyCode
+    inner join zint_a_jeitem_ag                    as _ag                 on  _ag.companycode        = I_JournalEntryItem.CompanyCode
                                                                           and _ag.ledger             = I_JournalEntryItem.Ledger
                                                                           and _ag.sourceledger       = I_JournalEntryItem.SourceLedger
                                                                           and _ag.fiscalyear         = I_JournalEntryItem.FiscalYear
                                                                           and _ag.fiscalperiod       = I_JournalEntryItem.FiscalPeriod
                                                                           and _ag.accountingdocument = I_JournalEntryItem.AccountingDocument
                                                                           and _ag.ledgergllineitem   = I_JournalEntryItem.LedgerGLLineItem
-    inner join      ZI_IntercoCompanyCode          as _intercocompanycode on _intercocompanycode.CompanyCode = I_JournalEntryItem.CompanyCode
-    inner join      I_CostCenter                   as _currentcostcenter  on  I_JournalEntryItem.ControllingArea   = _currentcostcenter.ControllingArea
+    inner join ZI_IntercoCompanyCode               as _intercocompanycode on  _intercocompanycode.CompanyCode = I_JournalEntryItem.CompanyCode
+    inner join I_CostCenter                        as _currentcostcenter  on  I_JournalEntryItem.ControllingArea   = _currentcostcenter.ControllingArea
                                                                           and I_JournalEntryItem.CostCenter        = _currentcostcenter.CostCenter
                                                                           and _currentcostcenter.ValidityStartDate <= $session.system_date
                                                                           and _currentcostcenter.ValidityEndDate   >= $session.system_date
@@ -43,50 +43,24 @@ define root view entity ZR_IntercoJEItemClassV3
                                                                           and _currentbasisitem.ExecutionStatus     =       'COMPLETED'
   // AGREGADO DS4K9B5URA: clasificacion desde tabla fisica ZINT_A_JEITEM_CI (en lugar del CDS view helper)
     left outer join zint_a_jeitem_ci               as _ci                 on  _ci.ledger                     = I_JournalEntryItem.Ledger
-                                                                          and _ci.companycode                = I_JournalEntryItem.CompanyCode
-                                                                          and _ci.fiscalyear                 = I_JournalEntryItem.FiscalYear
-                                                                          and _ci.fiscalperiod               = I_JournalEntryItem.FiscalPeriod
-    -- Ini Facturación Local CH/ARG EXT_OSCUGALD 05.10.2026 - C07: quitar filtro fijo E para permitir clasificación E/L
-    -- and _ci.paymenttype                 = 'E'
-    -- Fin EXT_OSCUGALD 05.10.2026 - C07
-                                                                          and _ci.pandll5id                  = _ag.pandll5id
-                                                                          and _ci.ccconsolidation            = _ag.ccconsolidation
-                                                                          and _ci.costcenterstandardhierarea = _ag.costcenterstandardhierarea
-                                                                          and _ci.ccallocation               = _ag.ccallocation
-                                                                          and _ci.profitcenter               = I_JournalEntryItem.ProfitCenter
-    left outer join ZI_IntercoClassificationRule   as _classificationrule on _ci.ruleid = _classificationrule.RuleID
-    left outer join ZR_INTERCOJEITEMHELPERCLASSEXE as _exemptions         on  _exemptions.Ledger           =  I_JournalEntryItem.Ledger
-                                                                          and _exemptions.CompanyCode      =  I_JournalEntryItem.CompanyCode
-                                                                          and _exemptions.FiscalYear       =  I_JournalEntryItem.FiscalYear
-                                                                          and _exemptions.FiscalPeriod     =  I_JournalEntryItem.FiscalPeriod
-    -- Ini Facturación Local CH/ARG EXT_OSCUGALD 05.10.2026 - C07: quitar filtro fijo E para permitir exclusiones E/L
-    -- and _exemptions.PaymentType  = 'E'
-    -- Fin EXT_OSCUGALD 05.10.2026 - C07
-                                                                          and _exemptions.CostCenter       =  I_JournalEntryItem.CostCenter
-                                                                          and _exemptions.GLAccount        =  I_JournalEntryItem.GLAccount
-                                                                          and _exemptions.ProfitCenter     =  I_JournalEntryItem.ProfitCenter
-    -- Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 - C12m (7a): exclusión por tipo resuelto
-                                                                          and (
-                                                                             (
-                                                                               _ci.paymenttype             =  'E'
-                                                                               and _exemptions.PaymentType =  'E'
-                                                                             )
-                                                                             or(
-                                                                               _ci.paymenttype             =  'L'
-                                                                               and _exemptions.PaymentType =  'L'
-                                                                             )
-                                                                             or(
-                                                                               (
-                                                                                 _ci.paymenttype           is null
-                                                                                 or(
-                                                                                   _ci.paymenttype         <> 'E'
-                                                                                   and _ci.paymenttype     <> 'L'
-                                                                                 )
-                                                                               )
-                                                                               and _exemptions.PaymentType =  _ag.paymenttype
-                                                                             )
-                                                                           )
-  -- Fin EXT_OSCUGALD 07.10.2026 - C12m (7a)
+                                                                          and _ci.companycode                 = I_JournalEntryItem.CompanyCode
+                                                                          and _ci.fiscalyear                  = I_JournalEntryItem.FiscalYear
+                                                                          and _ci.fiscalperiod                = I_JournalEntryItem.FiscalPeriod
+                                                                          and _ci.paymenttype                 = 'E'
+                                                                          and _ci.pandll5id                   = _ag.pandll5id
+                                                                          and _ci.ccconsolidation             = _ag.ccconsolidation
+                                                                          and _ci.costcenterstandardhierarea  = _ag.costcenterstandardhierarea
+                                                                          and _ci.ccallocation                = _ag.ccallocation
+                                                                          and _ci.profitcenter                = I_JournalEntryItem.ProfitCenter
+    left outer join ZI_IntercoClassificationRule   as _classificationrule on  _ci.ruleid = _classificationrule.RuleID
+    left outer join ZR_INTERCOJEITEMHELPERCLASSEXE as _exemptions         on  _exemptions.Ledger       = I_JournalEntryItem.Ledger
+                                                                          and _exemptions.CompanyCode  = I_JournalEntryItem.CompanyCode
+                                                                          and _exemptions.FiscalYear   = I_JournalEntryItem.FiscalYear
+                                                                          and _exemptions.FiscalPeriod = I_JournalEntryItem.FiscalPeriod
+                                                                          and _exemptions.PaymentType  = 'E'
+                                                                          and _exemptions.CostCenter   = I_JournalEntryItem.CostCenter
+                                                                          and _exemptions.GLAccount    = I_JournalEntryItem.GLAccount
+                                                                          and _exemptions.ProfitCenter = I_JournalEntryItem.ProfitCenter
   // AGREGADO DS4K9B5URA: regla de departamento unificada (antes CC/PC separados)
     left outer join ZI_IntercoDepartmentRule       as _departmentrule     on  _departmentrule.CompanyCode = I_JournalEntryItem.CompanyCode
                                                                           and _departmentrule.PAndLId     = _ag.pandll3id
@@ -95,12 +69,12 @@ define root view entity ZR_IntercoJEItemClassV3
     left outer join I_CostCenterHierarchyNode      as _allocnodetext      on  _allocnodetext.CostCenterHierarchy = 'H101/ML00/ALLOC_CC'
                                                                           and _allocnodetext.ControllingArea     = I_JournalEntryItem.ControllingArea
                                                                           and _allocnodetext.HierarchyNodeVal    = _ag.ccallocation
-    left outer join I_CostCenterHierarchyNode      as _consnodetext       on  _consnodetext.CostCenterHierarchy = 'H101/ML00/CONS_CC'
-                                                                          and _consnodetext.ControllingArea     = I_JournalEntryItem.ControllingArea
-                                                                          and _consnodetext.HierarchyNodeVal    = _ag.ccconsolidation
-    left outer join I_CostCenterHierarchyNode      as _stdnodetext        on  _stdnodetext.CostCenterHierarchy = '0101/ML00/ML00'
-                                                                          and _stdnodetext.ControllingArea     = I_JournalEntryItem.ControllingArea
-                                                                          and _stdnodetext.HierarchyNodeVal    = _ag.costcenterstandardhierarea
+    left outer join I_CostCenterHierarchyNode      as _consnodetext       on  _consnodetext.CostCenterHierarchy  = 'H101/ML00/CONS_CC'
+                                                                          and _consnodetext.ControllingArea      = I_JournalEntryItem.ControllingArea
+                                                                          and _consnodetext.HierarchyNodeVal     = _ag.ccconsolidation
+    left outer join I_CostCenterHierarchyNode      as _stdnodetext        on  _stdnodetext.CostCenterHierarchy   = '0101/ML00/ML00'
+                                                                          and _stdnodetext.ControllingArea       = I_JournalEntryItem.ControllingArea
+                                                                          and _stdnodetext.HierarchyNodeVal      = _ag.costcenterstandardhierarea
 {
   key I_JournalEntryItem.SourceLedger,
   key I_JournalEntryItem.CompanyCode,
@@ -138,43 +112,31 @@ define root view entity ZR_IntercoJEItemClassV3
       I_JournalEntryItem.CostCenter,
       I_JournalEntryItem.ProfitCenter,
       // AGREGADO DS4K9B5URA: agrupadores desde tabla materializada
-      -- Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 - C12m (7a): tipo resuelto de clasificación
-      -- _ag.paymenttype as PaymentType,
-
-      cast(
-        case
-          when _ci.paymenttype = 'E' then _ci.paymenttype
-          when _ci.paymenttype = 'L' then _ci.paymenttype
-          else _ag.paymenttype
-        end
-        as zint_dte_paymenttype preserving type
-      )                                                                                             as PaymentType,
-
-      -- Fin EXT_OSCUGALD 07.10.2026 - C12m (7a)
+      _ag.paymenttype                                                       as PaymentType,
       _intercocompanycode.SiteCode,
       _intercocompanycode.SiteName,
-      _ag.costcenterstandardhierarea                                                                as CostCenterStandardHierArea,
-      _ag.glaccountparentnode                                                                       as GLAccountParentNode,
-      _ag.ccconsolidation                                                                           as CCConsolidation,
-      _ag.pcconsolidation                                                                           as PCConsolidation,
-      _ag.ccallocation                                                                              as CCAllocation,
+      _ag.costcenterstandardhierarea                                        as CostCenterStandardHierArea,
+      _ag.glaccountparentnode                                               as GLAccountParentNode,
+      _ag.ccconsolidation                                                   as CCConsolidation,
+      _ag.pcconsolidation                                                   as PCConsolidation,
+      _ag.ccallocation                                                      as CCAllocation,
       // P&L directo desde tabla materializada (antes: CASE WHEN _mt005CC vs _mt005PC)
-      _ag.pandll0id                                                                                 as PandLL0Id,
-      _ag.pandll0name                                                                               as PandLL0Name,
-      _ag.pandll1id                                                                                 as PandLL1Id,
-      _ag.pandll1name                                                                               as PandLL1Name,
-      _ag.pandll2id                                                                                 as PandLL2Id,
-      _ag.pandll2name                                                                               as PandLL2Name,
-      _ag.pandll3id                                                                                 as PandLL3Id,
-      _ag.pandll3name                                                                               as PandLL3Name,
-      _ag.pandll4id                                                                                 as PandLL4Id,
-      _ag.pandll4name                                                                               as PandLL4Name,
-      _ag.pandll5id                                                                                 as PandLL5Id,
-      _ag.pandll5name                                                                               as PandLL5Name,
+      _ag.pandll0id                                                         as PandLL0Id,
+      _ag.pandll0name                                                       as PandLL0Name,
+      _ag.pandll1id                                                         as PandLL1Id,
+      _ag.pandll1name                                                       as PandLL1Name,
+      _ag.pandll2id                                                         as PandLL2Id,
+      _ag.pandll2name                                                       as PandLL2Name,
+      _ag.pandll3id                                                         as PandLL3Id,
+      _ag.pandll3name                                                       as PandLL3Name,
+      _ag.pandll4id                                                         as PandLL4Id,
+      _ag.pandll4name                                                       as PandLL4Name,
+      _ag.pandll5id                                                         as PandLL5Id,
+      _ag.pandll5name                                                       as PandLL5Name,
       // Classification Rule unificada (CC+PC)
-      _classificationrule.ID                                                                        as ClassificationRuleID,
-      cast( coalesce( _ci.ruleid, '0000000000' ) as zint_rule_id )                                  as ClassificationRuleExtID,
-      _classificationrule.RuleName                                                                  as RuleName,
+      _classificationrule.ID                                                as ClassificationRuleID,
+      cast( coalesce( _ci.ruleid, '0000000000' ) as zint_rule_id )         as ClassificationRuleExtID,
+      _classificationrule.RuleName                                          as RuleName,
 
       case
         when _currentbasisitem.Id is not null
@@ -184,7 +146,7 @@ define root view entity ZR_IntercoJEItemClassV3
             when 'E' then '--'
             else cast( coalesce( _classificationrule.Product, '--' ) as matnr )
           end
-      end                                                                                           as Concept,
+      end                                                                   as Concept,
 
       case
         when $projection.DescriptionBase = '' or $projection.DescriptionBase is null
@@ -193,13 +155,13 @@ define root view entity ZR_IntercoJEItemClassV3
                else _classificationrule._Product.ProductName
              end
         else _currentbasisitem._Product.ProductName
-      end                                                                                           as ConceptName,
+      end                                                                   as ConceptName,
 
-      _classificationrule.IsNotBillable                                                             as IsNotBillableFromMasterData,
-      _classificationrule.Score                                                                     as ClassificationRuleScore,
+      _classificationrule.IsNotBillable                                     as IsNotBillableFromMasterData,
+      _classificationrule.Score                                             as ClassificationRuleScore,
       // Exemption
-      _exemptions._ExemptionRule.ID                                                                 as ClassificationExemptionID,
-      cast( coalesce( _exemptions.ExemptionID, '0000000000' ) as zint_exemption_id )                as ClassificationExemptionExtID,
+      _exemptions._ExemptionRule.ID                                         as ClassificationExemptionID,
+      cast( coalesce( _exemptions.ExemptionID, '0000000000' ) as zint_exemption_id ) as ClassificationExemptionExtID,
       _exemptions._ExemptionRule.ExemptionName,
       cast( case when _exemptions.ExemptionID is not initial then 'X' else '' end as abap_boolean ) as IsNotBillableFromExemption,
 
@@ -211,43 +173,43 @@ define root view entity ZR_IntercoJEItemClassV3
           else 'B'
         end
         as zint_billable_status
-      )                                                                                             as IsBillable,
+      )                                                                     as IsBillable,
 
       case $projection.IsBillable
         when 'B' then 3
         when 'N' then 1
         when 'E' then 2
         else 0
-      end                                                                                           as IsBillableCriticality,
-      _currentbasisitem.Id                                                                          as IdBase,
-      _currentbasisitem._header.Description                                                         as DescriptionBase,
-      _currentbasisitem._header.IsReleased                                                          as IsReleased,
-      _currentbasisitem._header.CompanyCode                                                         as CurrentBasis_CompanyCode,
-      _currentbasisitem._header.Ledger                                                              as CurrentBasis_Ledger,
-      _currentbasisitem._header.FiscalYear                                                          as CurrentBasis_FiscalYear,
-      _currentbasisitem._header.FiscalPeriod                                                        as CurrentBasis_FiscalPeriod,
-      _currentbasisitem._header.PaymentType                                                         as CurrentBasis_PaymentType,
-      _currentbasisitem.Department                                                                  as CurrentBasis_Department,
-      _currentbasisitem._Department.Description                                                     as CurrentBasis_DepartmentDescr,
-      _departmentrule.Department                                                                    as departmentrule_Department,
-      _departmentrule._Department.Description                                                       as departmentrule_description,
+      end                                                                   as IsBillableCriticality,
+      _currentbasisitem.Id                                                  as IdBase,
+      _currentbasisitem._header.Description                                 as DescriptionBase,
+      _currentbasisitem._header.IsReleased                                  as IsReleased,
+      _currentbasisitem._header.CompanyCode                                 as CurrentBasis_CompanyCode,
+      _currentbasisitem._header.Ledger                                      as CurrentBasis_Ledger,
+      _currentbasisitem._header.FiscalYear                                  as CurrentBasis_FiscalYear,
+      _currentbasisitem._header.FiscalPeriod                                as CurrentBasis_FiscalPeriod,
+      _currentbasisitem._header.PaymentType                                 as CurrentBasis_PaymentType,
+      _currentbasisitem.Department                                          as CurrentBasis_Department,
+      _currentbasisitem._Department.Description                             as CurrentBasis_DepartmentDescr,
+      _departmentrule.Department                                            as departmentrule_Department,
+      _departmentrule._Department.Description                               as departmentrule_description,
       // TEMP INDEX ->
-      I_JournalEntryItem.CompanyCode                                                                as IndexCompanyCode,
-      _allocnodetext._Text[1: Language = $session.system_language].HierarchyNodeText                as IndexAllocation,
-      _consnodetext._Text[1: Language = $session.system_language].HierarchyNodeText                 as IndexConsolidation,
-      _stdnodetext._Text[1: Language = $session.system_language].HierarchyNodeText                  as IndexArea,
+      I_JournalEntryItem.CompanyCode                                        as IndexCompanyCode,
+      _allocnodetext._Text[1: Language = $session.system_language].HierarchyNodeText as IndexAllocation,
+      _consnodetext._Text[1: Language = $session.system_language].HierarchyNodeText  as IndexConsolidation,
+      _stdnodetext._Text[1: Language = $session.system_language].HierarchyNodeText   as IndexArea,
       _pchierarchyflat._BusinessUnitText[1: Language = $session.system_language ].HierarchyNodeText as IndexBusinessUnit,
-      $projection.PandLL0Name                                                                       as IndexPYL0,
-      $projection.PandLL1Name                                                                       as IndexPYL1,
-      $projection.PandLL2Name                                                                       as IndexPYLCLASIFICADO,
-      I_JournalEntryItem.CostCenter                                                                 as IndexCostCenter,
-      I_JournalEntryItem.GLAccount                                                                  as IndexAccountNro,
-      concat(I_JournalEntryItem.FiscalYear, substring(I_JournalEntryItem.FiscalPeriod, 2, 2))       as IndexMonth,
-      I_JournalEntryItem.AmountInGlobalCurrency                                                     as IndexTotal,
-      $projection.ConceptName                                                                       as IndexFacturacion
+      $projection.PandLL0Name                                               as IndexPYL0,
+      $projection.PandLL1Name                                               as IndexPYL1,
+      $projection.PandLL2Name                                               as IndexPYLCLASIFICADO,
+      I_JournalEntryItem.CostCenter                                         as IndexCostCenter,
+      I_JournalEntryItem.GLAccount                                          as IndexAccountNro,
+      concat(I_JournalEntryItem.FiscalYear, substring(I_JournalEntryItem.FiscalPeriod, 2, 2)) as IndexMonth,
+      I_JournalEntryItem.AmountInGlobalCurrency                             as IndexTotal,
+      $projection.ConceptName                                               as IndexFacturacion
       // TEMP INDEX <-
 }
 where
-     I_JournalEntryItem.GLAccountType = 'P'
-  or I_JournalEntryItem.GLAccountType = 'N'
-  or I_JournalEntryItem.GLAccountType = 'S'
+      I_JournalEntryItem.GLAccountType    = 'P'
+   or I_JournalEntryItem.GLAccountType    = 'N'
+   or I_JournalEntryItem.GLAccountType    = 'S'

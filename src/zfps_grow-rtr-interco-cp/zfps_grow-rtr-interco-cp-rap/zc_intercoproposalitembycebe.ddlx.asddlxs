@@ -86,11 +86,6 @@ annotate entity ZC_IntercoProposalItemByCeBe with
   @UI.hidden: true
   IsBermudas;
 
-  -- Ini Facturación Local CH/ARG EXT_OSCUGALD 15.10.2026 - C23: indicador técnico Local, patrón IsBermudas
-  @UI.hidden: true
-  IsLocal;
-  -- Fin EXT_OSCUGALD 15.10.2026 - C23
-
   @UI: { lineItem: [ { position: 30, label: 'Product' } ],
          identification: [ { position: 30, label: 'Product' } ] }
   ProductName;

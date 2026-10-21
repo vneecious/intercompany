@@ -81,9 +81,6 @@ with additional save
       ExemptionName = exemption_name;
       CompanyCode   = bukrs;
       Product       = matnr;
-      // AGREGADO EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09: mapea PaymentType
-      PaymentType   = payment_type;
-      // Fin EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09
       ValidFrom     = valid_from;
       ValidTo       = valid_to;
       LastChangedAt = last_changed_at;

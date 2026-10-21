@@ -15,9 +15,7 @@
    <DD07V_TAB>
     <DD07V>
      <VALPOS>0001</VALPOS>
-     <DDLANGUAGE>E</DDLANGUAGE>
-     <DOMVALUE_L>L</DOMVALUE_L>
-     <DDTEXT>Local</DDTEXT>
+     <DOMVALUE_L>I</DOMVALUE_L>
     </DD07V>
     <DD07V>
      <VALPOS>0002</VALPOS>
@@ -45,18 +43,6 @@
    </DD01_TEXTS>
    <DD07_TEXTS>
     <item>
-     <VALPOS>0001</VALPOS>
-     <DDLANGUAGE>P</DDLANGUAGE>
-     <DOMVALUE_L>L</DOMVALUE_L>
-     <DDTEXT>Locais</DDTEXT>
-    </item>
-    <item>
-     <VALPOS>0001</VALPOS>
-     <DDLANGUAGE>S</DDLANGUAGE>
-     <DOMVALUE_L>L</DOMVALUE_L>
-     <DDTEXT>Locales</DDTEXT>
-    </item>
-    <item>
      <VALPOS>0002</VALPOS>
      <DDLANGUAGE>P</DDLANGUAGE>
      <DOMVALUE_L>E</DOMVALUE_L>
@@ -66,7 +52,7 @@
      <VALPOS>0002</VALPOS>
      <DDLANGUAGE>S</DDLANGUAGE>
      <DOMVALUE_L>E</DOMVALUE_L>
-     <DDTEXT>Exportación</DDTEXT>
+     <DDTEXT>Gastos</DDTEXT>
     </item>
    </DD07_TEXTS>
   </asx:values>

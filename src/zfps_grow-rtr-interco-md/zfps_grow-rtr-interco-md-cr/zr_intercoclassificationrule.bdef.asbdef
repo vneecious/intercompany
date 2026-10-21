@@ -102,9 +102,6 @@ with additional save
       ValidTo            = valid_to;
       CompanyCode        = company_code;
       Ledger             = ledger;
-      // AGREGADO EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C08: mapea PaymentType al campo nuevo de la tabla
-      PaymentType        = payment_type;
-      // Fin EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C08
       PAndLID            = p_and_l_id;
       ProfitCenter       = profit_center;
       CcStdHierArea      = cc_std_hier_area;

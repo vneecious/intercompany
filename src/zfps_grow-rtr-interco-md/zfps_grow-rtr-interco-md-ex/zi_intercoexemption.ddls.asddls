@@ -15,9 +15,6 @@ define view entity ZI_IntercoExemption
       exemption_id    as ExternalID,
       exemption_name  as ExemptionName,
       matnr           as Product,
-      -- AGREGADO EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09: expone PaymentType
-      payment_type    as PaymentType,
-      -- Fin EXT_OSCUGALD 28.09.2026 - Facturación Local CH/ARG - C09
       valid_from      as ValidFrom,
       valid_to        as ValidTo,
       is_deleted      as IsDeleted,

@@ -283,31 +283,10 @@ where
     )
     // Base Acumulada <-
   )
-  -- Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 - C12n (7b): consumo por tipo resuelto E/L
-  -- Filtro anterior por origen conservado como histórico.
-  -- and(
-  --   (
-  --               $parameters.P_PaymentType    =  'E'
-  --     and       OriginObjectType             =  '02'
-  --   )
-  --   or(
-  --               $parameters.P_PaymentType    =  'I'
-  --     and(
-  --               OriginObjectType             =  '01'
-  --       or      OriginObjectType             =  '45'
-  --     )
-  --   )
-  -- )
-
-  -- E/L se filtran por el resultado de clasificación; se conserva la ruta histórica I.
   and(
     (
-      (
                 $parameters.P_PaymentType    =  'E'
-        or      $parameters.P_PaymentType    =  'L'
-      )
       and       OriginObjectType             =  '02'
-      and       PaymentType                  = $parameters.P_PaymentType
     )
     or(
                 $parameters.P_PaymentType    =  'I'
@@ -317,4 +296,3 @@ where
       )
     )
   )
--- Fin EXT_OSCUGALD 07.10.2026 - C12n (7b)

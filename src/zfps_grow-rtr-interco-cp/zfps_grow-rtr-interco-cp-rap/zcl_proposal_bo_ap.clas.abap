@@ -173,7 +173,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_proposal_bo_ap IMPLEMENTATION.
+CLASS ZCL_PROPOSAL_BO_AP IMPLEMENTATION.
 
 
   METHOD exe_bo.
@@ -941,14 +941,6 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
         ENDIF.
 *Fin EXT_OSCUGALD 24.06.2026 - CS Fix AP: salida anticipada si P&L sin mapeo
 
-        " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20c: precargar BLART de compras
-        IF lt_items IS NOT INITIAL.
-          DATA(lo_blart_ap) = NEW zcl_interco_doc_blart(
-            i_valid_at              = last_day_of_month
-            i_doctype               = zcl_interco_doc_glaccount=>co_doc_type-ap
-            i_provider_company_code = gs_header-providercompanycode ).
-        ENDIF.
-        " Fin EXT_OSCUGALD 14.10.2026 - C20c
         "1. Agrupa por recipientcompanycode y realiza sumatoria.
         LOOP AT lt_items INTO DATA(ls_items)
              GROUP BY ls_items-recipientcompanycode INTO DATA(recipient).
@@ -993,18 +985,7 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
             lv_doctype = 'AJ'.
           ENDIF.
 
-          " Ini Facturación Local CH/ARG EXT_OSCUGALD 14.10.2026 - C20c: resolver BLART por receptora
-***          journal_entry->%param-accountingdocumenttype = lv_doctype.
-
-          DATA(lv_blart_ap) = lo_blart_ap->get(
-            i_recipientcompanycode = recipient
-            i_paymenttype          = gs_header-paymenttype
-            i_amount               = lv_totalamount ).
-
-          journal_entry->%param-accountingdocumenttype = COND #(
-            WHEN lv_blart_ap IS NOT INITIAL THEN lv_blart_ap
-            ELSE lv_doctype ).
-          " Fin EXT_OSCUGALD 14.10.2026 - C20c
+          journal_entry->%param-accountingdocumenttype = lv_doctype.
           journal_entry->%param-createdbyuser = sy-uname.
           journal_entry->%param-accountingdocumentheadertext = |{ gs_header-providercompanycode } { recipient } { gs_header-productname }|.
 *Ini EXT_OSCUGALD 24.06.2026 - CS Fix AP: codigo material en referencia cabecera
@@ -1883,6 +1864,7 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD process_baogl_for_company_ars.
 *"*------------------------------------------------------------------*
 *"* EXT_OSCUGALD [AJUSTE-CPIC-ARS] 04.05.2026
@@ -2395,6 +2377,7 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
     et_taxitems   = lt_taxitems.
 
   ENDMETHOD.
+
 
   METHOD mapping_bo_sec_mic.
 *───────────────────────────────────────────────────────────────────────────

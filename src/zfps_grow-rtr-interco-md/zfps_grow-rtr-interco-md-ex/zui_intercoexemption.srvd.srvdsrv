@@ -4,5 +4,4 @@ define service ZUI_IntercoExemption {
   expose ZC_IntercoExemptionTP     as Exemptions;
   expose ZC_IntercoExemptionRuleTP as ExemptionRules;
   expose ZI_intercoCompanyCodeVH;
-  expose ZI_IntercoPaymentTypeVH   as PaymentTypeVH;
 }

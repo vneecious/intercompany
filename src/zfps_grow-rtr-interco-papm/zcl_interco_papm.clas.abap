@@ -32,7 +32,8 @@ CLASS zcl_interco_papm IMPLEMENTATION.
     DATA lt_reversed_proposals_range TYPE RANGE OF zi_intercoproposal-id.
     DATA lt_commited_proposals_range TYPE RANGE OF zi_intercoproposal-id.
 
-    SELECT proposal~id, proposal~status
+    "EXT_OSCUGALD 22.10.2026 - PAPM: excluir productos fusion BR (ICSRV52-55) se agrega proposal~product
+    SELECT proposal~id, proposal~status, proposal~product
     FROM zi_intercoproposal AS proposal
     WHERE id IN @gr_keys
       INTO TABLE @DATA(lt_proposals).
@@ -42,9 +43,26 @@ CLASS zcl_interco_papm IMPLEMENTATION.
                                               WHERE ( status = zcl_proposal_bo_abs=>c_proposal_status-anulated )
                                            ( sign = 'I' option = 'EQ' low = ls_rev-id ) ).
 
+*Ini EXT_OSCUGALD 22.10.2026 - PAPM: excluir productos BR (ICSRV52-55)
+    " Negocio: estos productos no deben cargarse en PAPM.
+    " Lista maestra en TVARVC ZINTERCO_PAPM_EXCL_PRODUCT (un valor por fila en LOW).
+    SELECT low FROM zi_tvarvc
+      WHERE name = 'ZINTERCO_PAPM_EXCL_PRODUCT'
+      INTO TABLE @DATA(lt_excl_products).
+
+    DATA lr_excl_product TYPE RANGE OF zi_intercoproposal-product.
+    lr_excl_product = VALUE #( FOR ls_ex IN lt_excl_products
+                               ( sign = 'I' option = 'EQ' low = ls_ex-low ) ).
+
     lt_commited_proposals_range = VALUE #( FOR ls_com IN lt_proposals
-                                              WHERE ( status = zcl_proposal_bo_abs=>c_proposal_status-invoiced )
+                                              WHERE ( status = zcl_proposal_bo_abs=>c_proposal_status-invoiced
+                                                  AND product NOT IN lr_excl_product )
                                            ( sign = 'I' option = 'EQ' low = ls_com-id ) ).
+*Fin EXT_OSCUGALD 22.10.2026 - PAPM: excluir productos BR (ICSRV52-55)
+
+*    lt_commited_proposals_range = VALUE #( FOR ls_com IN lt_proposals
+*                                              WHERE ( status = zcl_proposal_bo_abs=>c_proposal_status-invoiced )
+*                                           ( sign = 'I' option = 'EQ' low = ls_com-id ) ).
 
 
     IF lt_reversed_proposals_range IS NOT INITIAL.

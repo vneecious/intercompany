@@ -657,6 +657,13 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
 
   METHOD if_ex_fi_int_sap01~end_of_programm.
 
+    " [TR] Havendo documento TR na execução: nada a fazer aqui (a Mora não se aplica).
+    LOOP AT it_ipf ASSIGNING FIELD-SYMBOL(<ls_ipf_tr>).
+      IF is_tr_item( <ls_ipf_tr> ) = abap_true.
+        RETURN.
+      ENDIF.
+    ENDLOOP.
+
     IF is_mora_active( ) = abap_false.
       RETURN.
     ENDIF.
@@ -831,6 +838,10 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
         ELSE.
           " Fallback: al menos un registro SC por documento de interés
           LOOP AT it_ipf ASSIGNING FIELD-SYMBOL(<ls_bipf>).
+            " [TR] documentos TR nao geram log de Mora
+            IF is_tr_item( <ls_bipf> ) = abap_true.
+              CONTINUE.
+            ENDIF.
             TRY.
                 lv_uuid = cl_system_uuid=>create_uuid_c32_static( ).
               CATCH cx_uuid_error.
@@ -1033,11 +1044,20 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
 
   METHOD if_ex_fi_int_sap01~int_add_items.
 
+    " [TR] Fora do toggle de Mora: identifica clientes TR e dispara o fluxo TR.
+    remember_tr_customers( ct_knb1 ).
+
+    " Havendo item TR: dispara o fluxo TR e ENCERRA (sem passar pela Mora).
+    LOOP AT ct_items ASSIGNING FIELD-SYMBOL(<ls_tr>).
+      IF is_tr_item( <ls_tr> ) = abap_true.
+        call_tr_process( ).
+        RETURN.
+      ENDIF.
+    ENDLOOP.
+
     IF is_mora_active( ) = abap_false.
       RETURN.
     ENDIF.
-
-    remember_tr_customers( ct_knb1 ).
 
     DATA(lt_bseg) = get_bseg_data( ct_items ).
 
@@ -1062,8 +1082,8 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
 
     LOOP AT ct_items ASSIGNING FIELD-SYMBOL(<ls_item>).
 
+      " [TR] itens TR nao entram na logica de Mora (call_tr_process ja chamado acima)
       IF is_tr_item( <ls_item> ) = abap_true.
-        call_tr_process( ).
         CONTINUE.
       ENDIF.
 
@@ -1118,6 +1138,15 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
     " (LFI_INT_POSTF05). Por eso el ARRAY debe estar en los ITEMS, no solo en
     " CT_SUM (INT_GROUP). Misma clave: BUKRS+VBUND+CONCEPTO+WAERS+(GJAHR+POPER run).
     " ============================================================================
+
+    " [TR] Havendo item TR: dispara o fluxo TR e ENCERRA (sem passar pela Mora).
+    LOOP AT ct_items ASSIGNING FIELD-SYMBOL(<ls_tr>).
+      IF is_tr_item( <ls_tr> ) = abap_true.
+        call_tr_process( ).
+        RETURN.
+      ENDIF.
+    ENDLOOP.
+
     IF is_mora_active( ) = abap_false.
       RETURN.
     ENDIF.
@@ -1136,8 +1165,8 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
 
     LOOP AT ct_items ASSIGNING FIELD-SYMBOL(<ls_item>).
 
+      " [TR] itens TR nao entram na logica de Mora (call_tr_process ja chamado acima)
       IF is_tr_item( <ls_item> ) = abap_true.
-        call_tr_process( ).
         CONTINUE.
       ENDIF.
 
@@ -1161,12 +1190,10 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
 
 
   METHOD if_ex_fi_int_sap01~int_formula.
-    IF is_mora_active( ) = abap_false.
-      RETURN.
-    ENDIF.
 
-    IF id_int_ind = 'TR'.
-      call_tr_process( ).
+    " O indicador TR tambem deve passar pela formula propria desta BAdI.
+
+    IF is_mora_active( ) = abap_false.
       RETURN.
     ENDIF.
 
@@ -1206,11 +1233,21 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
     " - CONCEPTO     = XBLNR del header (I_JournalEntry) via get_header_data.
     " - GJAHR/POPER  = periodo del run (get_run_date PROVISORIO = ultimo dia mes actual).
     " ============================================================================
+
+    " [TR] Fora do toggle de Mora: identifica clientes TR e dispara o fluxo TR.
+    remember_tr_customers( it_knb1 ).
+
+    " Havendo item TR: dispara o fluxo TR e ENCERRA (sem passar pela Mora).
+    LOOP AT ct_sum ASSIGNING FIELD-SYMBOL(<ls_tr>).
+      IF is_tr_item( <ls_tr> ) = abap_true.
+        call_tr_process( ).
+        RETURN.
+      ENDIF.
+    ENDLOOP.
+
     IF is_mora_active( ) = abap_false.
       RETURN.
     ENDIF.
-
-    remember_tr_customers( it_knb1 ).
 
     DATA(lt_bseg) = get_bseg_data( it_items ).
 
@@ -1227,8 +1264,8 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
 
     LOOP AT ct_sum ASSIGNING FIELD-SYMBOL(<ls_sum>).
 
+      " [TR] itens TR nao entram na logica de Mora (call_tr_process ja chamado acima)
       IF is_tr_item( <ls_sum> ) = abap_true.
-        call_tr_process( ).
         CONTINUE.
       ENDIF.
 
@@ -1290,10 +1327,20 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
 
   METHOD if_ex_fi_int_sap01~int_modify_items.
 
-    " [TR] Multa moratória — fora do toggle de Mora.
-    " Chamada dinâmica à classe TR (sem dependência estática); envia só itens TR.
-    call_tr_class( EXPORTING iv_method = 'APPLY_MULTA'
-                   CHANGING  ct_items  = ct_items ).
+    " A rotina dinamica TR só roda no fluxo legado sem codigo de juros TR.
+    IF mt_tr_knb1 IS INITIAL.
+      call_tr_class( EXPORTING iv_method = 'APPLY_MULTA'
+                     CHANGING  ct_items  = ct_items ).
+    ENDIF.
+
+    " [TR] Fora do toggle de Mora: havendo item TR, dispara o fluxo TR e ENCERRA
+    " (a execução TR não passa pela lógica de Mora, nem pelo is_mora_active).
+    LOOP AT ct_items ASSIGNING FIELD-SYMBOL(<ls_tr>).
+      IF is_tr_item( <ls_tr> ) = abap_true.
+        call_tr_process( ).
+        RETURN.
+      ENDIF.
+    ENDLOOP.
 
     IF is_mora_active( ) = abap_false.
       RETURN.
@@ -1318,13 +1365,15 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
       lv_umbral_usd = '5000.00'.
     ENDIF.
 
+    " Data de referência = 1º item NÃO TR (o TR não participa da Mora)
     DATA lv_ref_date TYPE datum.
-    READ TABLE ct_items INDEX 1 INTO DATA(ls_first_item).
-    IF sy-subrc = 0.
-      lv_ref_date = ls_first_item-bldat.
-    ELSE.
-      lv_ref_date = sy-datum.
-    ENDIF.
+    lv_ref_date = sy-datum.
+    LOOP AT ct_items ASSIGNING FIELD-SYMBOL(<ls_ref>).
+      IF is_tr_item( <ls_ref> ) = abap_false.
+        lv_ref_date = <ls_ref>-bldat.
+        EXIT.
+      ENDIF.
+    ENDLOOP.
     TYPES: BEGIN OF ty_cur,
              waers TYPE waers,
            END OF ty_cur.
@@ -1365,8 +1414,8 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
 
     LOOP AT ct_items ASSIGNING FIELD-SYMBOL(<ls_item>).
 
+      " [TR] itens TR nao entram na logica de Mora (call_tr_process ja chamado acima)
       IF is_tr_item( <ls_item> ) = abap_true.
-        call_tr_process( ).
         CONTINUE.
       ENDIF.
 
@@ -1402,12 +1451,9 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
 
   METHOD if_ex_fi_int_sap01~int_post.
 
-    IF is_mora_active( ) = abap_false.
-      RETURN.
-    ENDIF.
+    " Mesmo com is_knb1-vzskz = 'TR', executar a logica propria desta BAdI.
 
-    IF is_knb1-vzskz = 'TR'.
-      call_tr_process( ).
+    IF is_mora_active( ) = abap_false.
       RETURN.
     ENDIF.
 
@@ -1880,6 +1926,22 @@ CLASS zcl_im_im_fi_int_sap01 IMPLEMENTATION.
   METHOD is_tr_item.
     rv_tr = abap_false.
 
+    " FINT com VZSKZ = TR usa esta implementacao para todas as linhas da selecao.
+    " A lista de clientes TR define o modo global e evita o filtro item a item.
+    IF mt_tr_knb1 IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+
+    " Reconhecimento pelo próprio item (INT_IND = 'TR'): não depende de estado
+    " preenchido por outro método.
+    FIELD-SYMBOLS <lv_ind> TYPE any.
+    ASSIGN COMPONENT 'INT_IND' OF STRUCTURE is_item TO <lv_ind>.
+    IF <lv_ind> IS ASSIGNED AND <lv_ind> = 'TR'.
+      rv_tr = abap_true.
+      RETURN.
+    ENDIF.
+
+    " Reserva: clientes TR memorizados (CT/IT_KNB1)
     IF mt_tr_knb1 IS INITIAL.
       RETURN.
     ENDIF.

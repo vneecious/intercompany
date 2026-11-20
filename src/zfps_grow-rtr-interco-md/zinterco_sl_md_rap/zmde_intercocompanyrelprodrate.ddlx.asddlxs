@@ -123,6 +123,11 @@ annotate entity ZC_IntercoCompanyRelProdRate with
   @UI.fieldGroup: [{ qualifier: 'DataGroup', position: 40 }]
   RecipientCompanyName;
 
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_IntercoPaymentTypeVH', element: 'PaymentType' } }]
+  @UI: {lineItem: [{ position: 36 }], identification: [{ position: 36 }]}
+  @UI.fieldGroup: [{ qualifier: 'DataGroup', position: 55 }]
+  @EndUserText.label: 'Tipo Fac. Interco'
+  PaymentType;
 
   @UI: { lineItem: [ { position: 40 } ],selectionField: [{ position: 30 }],identification:[ { position: 40 } ]}
   @Consumption.valueHelpDefinition: [{ entity: { name:'ZI_IntercoProduct_SH', element: 'Product' } }]

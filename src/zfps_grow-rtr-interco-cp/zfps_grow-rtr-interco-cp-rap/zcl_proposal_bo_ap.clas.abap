@@ -82,7 +82,47 @@ CLASS zcl_proposal_bo_ap DEFINITION
       mapping_bo_sec REDEFINITION,
       mapping_reverse_sec REDEFINITION.
   PRIVATE SECTION.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04H: tipos y método para impuesto Local sobre el total
+    TYPES: BEGIN OF ty_g04h_tax_base,
+             currency TYPE waers,
+             amount   TYPE wrbtr,
+           END OF ty_g04h_tax_base.
 
+    TYPES tt_g04h_tax_base TYPE SORTED TABLE OF ty_g04h_tax_base
+      WITH UNIQUE KEY currency.
+
+    TYPES ty_g04h_line_id TYPE n LENGTH 6.
+
+    METHODS calculate_local_tax_total
+      IMPORTING
+        iv_recipient   TYPE bukrs
+        iv_tax_code    TYPE mwskz
+        iv_currentitem TYPE zfi_proposalitem_add
+        it_tax_base    TYPE tt_g04h_tax_base
+      CHANGING
+        ct_taxitems    TYPE gsty_post-%param-_taxitems
+        cv_line_id     TYPE ty_g04h_line_id
+        cv_total_tax   TYPE wrbtr
+      RAISING
+        zcx_calc_exit.
+    " Fin EXT_OSCUGALD 18.11.2026 - G04H
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - G04C: atributos LB
+    TYPES:
+      BEGIN OF ty_lb_ceco_prefix,
+        name TYPE zi_tvarvc-name,
+        low  TYPE zi_tvarvc-low,
+      END OF ty_lb_ceco_prefix.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04H-R1: identifica error fiscal Local para guardar log fuera del ciclo
+    DATA mv_g04h_tax_error TYPE abap_bool.
+    " Fin EXT_OSCUGALD 18.11.2026 - G04H-R1
+    DATA mv_lb_ceco_active TYPE abap_bool.
+    DATA mt_lb_ceco_prefixes
+      TYPE STANDARD TABLE OF ty_lb_ceco_prefix WITH EMPTY KEY.
+    " Fin EXT_OSCUGALD 04.11.2026 - G04C
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: comparte configuración de CeCo Local con los métodos AP
+    DATA mt_g04g_ceco_config TYPE HASHED TABLE OF zint_a_md_lbceco
+      WITH UNIQUE KEY recipient_company_code.
+    " Fin EXT_OSCUGALD 17.11.2026 - G04G
     DATA: v_tolerance TYPE wrbtr VALUE '1.50'.
 
 *Ini EXT_OSCUGALD [AJUSTE-CPIC-ARS] 04.05.2026
@@ -127,18 +167,23 @@ CLASS zcl_proposal_bo_ap DEFINITION
 
     METHODS process_baogl_for_company
       IMPORTING
-        !iv_recipient   TYPE bukrs
-        !iv_totalamount TYPE wrbtr
-        !iv_currentitem LIKE LINE OF gtd_items_add OPTIONAL
-        !iv_account     TYPE hkont
+        !iv_recipient    TYPE bukrs
+        !iv_totalamount  TYPE wrbtr
+        !iv_currentitem  LIKE LINE OF gtd_items_add OPTIONAL
+        !iv_account      TYPE hkont
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 19.11.2026 - G04J: indicador de signos AP CMC/MPC
+        !iv_g04j_cmc_mpc TYPE abap_bool OPTIONAL
+        " Fin EXT_OSCUGALD 19.11.2026 - G04J
 *        !it_exchange_rates TYPE tt_exchange_rates OPTIONAL
       EXPORTING
-        ev_totalimp     TYPE wrbtr
-        et_glitems      TYPE gtty_glitems
-        et_taxitems     TYPE gtty_taxitems
-        et_itemscalc    TYPE tt_items_calc
+        ev_totalimp      TYPE wrbtr
+        et_glitems       TYPE gtty_glitems
+        et_taxitems      TYPE gtty_taxitems
+        et_itemscalc     TYPE tt_items_calc
       CHANGING
-        !ct_baogl       TYPE gtty_baogl.
+        !ct_baogl        TYPE gtty_baogl
+      RAISING
+        zcx_calc_exit.
 
 * Ini EXT_OSCUGALD 01.08.2026 - Bermudas MIC (SDFPSINIC-23362)
     METHODS mapping_bo_sec_mic.
@@ -270,6 +315,79 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
 
 
   METHOD mapping_bo_sec.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04H-R1: limpia estado de error de impuesto Local
+    CLEAR mv_g04h_tax_error.
+    " Fin EXT_OSCUGALD 18.11.2026 - G04H-R1
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - G04C: precarga LB
+    DATA lv_lb_prefix TYPE c LENGTH 4.
+    DATA lv_lb_cebe TYPE c LENGTH 3.
+    DATA lv_lb_ic TYPE c LENGTH 3.
+    DATA lv_lb_name TYPE zi_tvarvc-name.
+    DATA lv_lb_country TYPE zi_intercocompanycode-country.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: variables de configuración para AP
+    DATA ls_g04g_config TYPE zint_a_md_lbceco.
+    DATA lv_g04g_pre_active TYPE abap_bool.
+    " Fin EXT_OSCUGALD 17.11.2026 - G04G
+
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.11.2026 - G04D: limita la excepción AP a CMC/MPC de Chile para ICSRV57 local
+    DATA(lv_g04d_only_cmc_mpc_chile) = abap_true.
+
+    LOOP AT gtd_items_add TRANSPORTING NO FIELDS
+      WHERE providercompanycode <> 'CMC'
+         OR recipientcompanycode <> 'MPC'
+         OR providercountry <> 'CL'
+         OR recipientcountry <> 'CL'.
+      lv_g04d_only_cmc_mpc_chile = abap_false.
+      EXIT.
+    ENDLOOP.
+
+    DATA(lv_g04d_ap_cmc_mpc) = xsdbool(
+         gs_header-paymenttype = 'L'
+     AND gs_header-providercompanycode = 'CMC'
+     AND gs_header-product = 'ICSRV57'
+     AND line_exists( gtd_items_add[ recipientcompanycode = 'MPC' ] )
+     AND lv_g04d_only_cmc_mpc_chile = abap_true ).
+    " Fin EXT_OSCUGALD 13.11.2026 - G04D
+
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: sustituye la precarga TVARV Local por la tabla
+    " SELECT SINGLE low
+    " FROM zi_tvarvc
+    " WHERE name = 'ZINTERCO_LB_PRODUCT'
+    " AND type = 'S'
+    " AND low = @gs_header-product
+    " INTO @DATA(lv_lb_product).
+
+    " mv_lb_ceco_active = xsdbool(
+    " sy-subrc = 0 AND gs_header-paymenttype = 'L' ).
+
+    " CLEAR mt_lb_ceco_prefixes.
+
+    " IF mv_lb_ceco_active = abap_true.
+    " SELECT name, low
+    " FROM zi_tvarvc
+    " WHERE type = 'P'
+    " AND name IN ( 'ZINTERCO_LB_CECO_PREFIX_CL',
+    " 'ZINTERCO_LB_CECO_PREFIX_AR',
+    " 'ZINTERCO_LB_CECO_PREFIX_MX',
+    " 'ZINTERCO_LB_CECO_PREFIX_CL_CMC' )
+    " INTO TABLE @mt_lb_ceco_prefixes.
+    " ENDIF.
+    CLEAR: mt_g04g_ceco_config, mv_lb_ceco_active.
+
+    IF gs_header-paymenttype = 'L'.
+      SELECT recipient_company_code,
+             costcenter_prefix,
+             " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04I: incluye asignación por sociedad
+             " Histórico: cebe
+             cebe,
+             position_text
+             " Fin EXT_OSCUGALD 18.11.2026 - G04I
+        FROM zint_a_md_lbceco
+        WHERE provider_company_code = @gs_header-providercompanycode
+        INTO CORRESPONDING FIELDS OF TABLE @mt_g04g_ceco_config.
+    ENDIF.
+    " Fin EXT_OSCUGALD 17.11.2026 - G04G
+    " Fin EXT_OSCUGALD 04.11.2026 - G04C
     DATA lt_glitems TYPE gsty_post-%param-_glitems.
     DATA lt_taxitems TYPE gsty_post-%param-_taxitems.
     DATA lt_apitems TYPE gsty_post-%param-_apitems.
@@ -364,6 +482,7 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
 *        ELSE.
 *          lv_account = '780010'.
 *        ENDIF.
+
 *Ini --> EXT_OSCUGALD --> COA_MIGRATION Cuenta redondeo TVARVC
         DATA lv_tvarvc_low TYPE zi_tvarvc-low.
         SELECT SINGLE low FROM zi_tvarvc
@@ -381,7 +500,14 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
             itemcalc_id  = ls_item_log-itemcalc_id
             documenttype = mv_posting_doctype
             documentkey  = lv_tvarvc_err_dockey
-            companycode  = ls_item_log-recipientcompanycode
+*           companycode  = ls_item_log-recipientcompanycode " Histórico: sociedad receptora
+
+            " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.11.2026 - G04D: registra el error con la sociedad AP del caso CMC/MPC
+            companycode  = COND #(
+              WHEN lv_g04d_ap_cmc_mpc = abap_true
+              THEN gs_header-providercompanycode
+              ELSE ls_item_log-recipientcompanycode )
+            " Fin EXT_OSCUGALD 13.11.2026 - G04D
             status       = zcl_proposal_bo_abs=>c_document_status-error
           ) TO gt_doc_map.
           add_msg_to_log(
@@ -552,6 +678,14 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
                           companycode = ls_item-recipientcompanycode ) TO lt_keys.
           APPEND VALUE #( supplier    = ls_item-recipientcustomer
                           companycode = ls_item-providercompanycode ) TO lt_keys.
+          " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.11.2026 - G04D: precarga retenciones del proveedor MPC en la sociedad CMC
+          IF lv_g04d_ap_cmc_mpc = abap_true.
+            APPEND VALUE #(
+              supplier    = ls_item-recipientvendor
+              companycode = ls_item-providercompanycode
+            ) TO lt_keys.
+          ENDIF.
+          " Fin EXT_OSCUGALD 13.11.2026 - G04D
         ENDLOOP.
 
         SORT lt_keys BY supplier companycode.
@@ -663,27 +797,100 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
                      OR line_exists( lt_baogl[ companycodecurrency = 'ARS' ] ) ).
           LOOP AT lt_baogl ASSIGNING FIELD-SYMBOL(<ls_baogl_pre>)
                       WHERE companycodecurrency = 'ARS'.
-            DATA(lo_brf_pre) = NEW zcl_interco_brf_wht( ).
-            DATA(lv_cccode_pre) = lo_brf_pre->get_cc_code(
-              iv_product      = <ls_baogl_pre>-product
-              iv_cc_origen    = <ls_baogl_pre>-costcenterd4
-              iv_departamento = <ls_baogl_pre>-department
-              iv_tipo_doc     = zcl_interco_doc_glaccount=>co_doc_type-ap ).
-            IF lv_cccode_pre IS NOT INITIAL.
-              <ls_baogl_pre>-costcenter =
-                |{ lv_cccode_pre }{ <ls_baogl_pre>-internalcode }{ <ls_baogl_pre>-profitcenter ALPHA = OUT }|.
-              READ TABLE items_calc INTO DATA(ls_pc_pre)
-                WITH KEY id      = <ls_baogl_pre>-id
-                         item_id = <ls_baogl_pre>-item_id
-                         product = <ls_baogl_pre>-product.
-              IF ls_pc_pre-profitcentereq IS NOT INITIAL.
-                <ls_baogl_pre>-costcenter =
-                  |{ lv_cccode_pre }{ <ls_baogl_pre>-internalcode }{ ls_pc_pre-profitcentereq ALPHA = OUT }|.
-                <ls_baogl_pre>-costcenter+7(3) = ls_pc_pre-profitcentereq.
+            " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - G04C: CeCo LB precálculo ARS
+            "             DATA(lo_brf_pre) = NEW zcl_interco_brf_wht( ).
+            "             DATA(lv_cccode_pre) = lo_brf_pre->get_cc_code(
+            "               iv_product      = <ls_baogl_pre>-product
+            "               iv_cc_origen    = <ls_baogl_pre>-costcenterd4
+            "               iv_departamento = <ls_baogl_pre>-department
+            "               iv_tipo_doc     = zcl_interco_doc_glaccount=>co_doc_type-ap ).
+            "             IF lv_cccode_pre IS NOT INITIAL.
+            "               <ls_baogl_pre>-costcenter =
+            "                 |{ lv_cccode_pre }{ <ls_baogl_pre>-internalcode }{ <ls_baogl_pre>-profitcenter ALPHA = OUT }|.
+            "               READ TABLE items_calc INTO DATA(ls_pc_pre)
+            "                 WITH KEY id      = <ls_baogl_pre>-id
+            "                          item_id = <ls_baogl_pre>-item_id
+            "                          product = <ls_baogl_pre>-product.
+            "               IF ls_pc_pre-profitcentereq IS NOT INITIAL.
+            "                 <ls_baogl_pre>-costcenter =
+            "                   |{ lv_cccode_pre }{ <ls_baogl_pre>-internalcode }{ ls_pc_pre-profitcentereq ALPHA = OUT }|.
+            "                 <ls_baogl_pre>-costcenter+7(3) = ls_pc_pre-profitcentereq.
+            "               ENDIF.
+            "             ELSE.
+            "               CLEAR <ls_baogl_pre>-costcenter.
+            "             ENDIF.
+
+            " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: consulta el par para la fila ARS
+            CLEAR ls_g04g_config.
+            lv_g04g_pre_active = abap_false.
+            IF gs_header-paymenttype = 'L'.
+              READ TABLE mt_g04g_ceco_config INTO ls_g04g_config
+                WITH TABLE KEY recipient_company_code =
+                  <ls_baogl_pre>-recipientcompanycode.
+              IF sy-subrc = 0
+                 AND ls_g04g_config-costcenter_prefix IS NOT INITIAL
+                 AND ls_g04g_config-cebe IS NOT INITIAL.
+                lv_g04g_pre_active = abap_true.
               ENDIF.
-            ELSE.
-              CLEAR <ls_baogl_pre>-costcenter.
             ENDIF.
+            " Histórico: IF mv_lb_ceco_active = abap_true.
+            " Fin EXT_OSCUGALD 17.11.2026 - G04G
+            IF lv_g04g_pre_active = abap_true.
+              lv_lb_country = <ls_baogl_pre>-recipientcountry.
+              lv_lb_ic = <ls_baogl_pre>-internalcode.
+
+              " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: obtiene prefijo y CEBE de la configuración
+              " Ini Facturación Local CH/ARG EXT_OSCUGALD 15.11.2026 - G04E: usa el prefijo CMC cuando participa CMC en Local Chile
+              " Histórico conservado: lv_lb_name = |ZINTERCO_LB_CECO_PREFIX_{ lv_lb_country }|.
+              " lv_lb_name = COND #(
+              " WHEN gs_header-providercountry = 'CL'
+              " AND lv_lb_country = 'CL'
+              " AND ( gs_header-providercompanycode = 'CMC'
+              " OR <ls_baogl_pre>-recipientcompanycode = 'CMC' )
+              " THEN 'ZINTERCO_LB_CECO_PREFIX_CL_CMC'
+              " ELSE |ZINTERCO_LB_CECO_PREFIX_{ lv_lb_country }| ).
+              " Fin EXT_OSCUGALD 15.11.2026 - G04E
+
+              " lv_lb_prefix = VALUE #(
+              " mt_lb_ceco_prefixes[
+              " name = lv_lb_name ]-low OPTIONAL ).
+
+              " lv_lb_cebe = <ls_baogl_pre>-profitcenter+7(3).
+
+              lv_lb_prefix = ls_g04g_config-costcenter_prefix.
+              lv_lb_cebe   = ls_g04g_config-cebe.
+              " Fin EXT_OSCUGALD 17.11.2026 - G04G
+
+              <ls_baogl_pre>-costcenter =
+                |{ lv_lb_prefix }{ lv_lb_ic }{ lv_lb_cebe }|.
+            ELSE.
+              DATA(lo_brf_pre) = NEW zcl_interco_brf_wht( ).
+              DATA(lv_cccode_pre) = lo_brf_pre->get_cc_code(
+                iv_product      = <ls_baogl_pre>-product
+                iv_cc_origen    = <ls_baogl_pre>-costcenterd4
+                iv_departamento = <ls_baogl_pre>-department
+                iv_tipo_doc     = zcl_interco_doc_glaccount=>co_doc_type-ap ).
+
+              IF lv_cccode_pre IS NOT INITIAL.
+                <ls_baogl_pre>-costcenter =
+                  |{ lv_cccode_pre }{ <ls_baogl_pre>-internalcode }{ <ls_baogl_pre>-profitcenter ALPHA = OUT }|.
+
+                READ TABLE items_calc INTO DATA(ls_pc_pre)
+                  WITH KEY id      = <ls_baogl_pre>-id
+                           item_id = <ls_baogl_pre>-item_id
+                           product = <ls_baogl_pre>-product.
+
+                IF ls_pc_pre-profitcentereq IS NOT INITIAL.
+                  <ls_baogl_pre>-costcenter =
+                    |{ lv_cccode_pre }{ <ls_baogl_pre>-internalcode }{ ls_pc_pre-profitcentereq ALPHA = OUT }|.
+                  <ls_baogl_pre>-costcenter+7(3) =
+                    ls_pc_pre-profitcentereq.
+                ENDIF.
+              ELSE.
+                CLEAR <ls_baogl_pre>-costcenter.
+              ENDIF.
+            ENDIF.
+            " Fin EXT_OSCUGALD 04.11.2026 - G04C
           ENDLOOP.
         ENDIF.
 *Fin EXT_OSCUGALD [AJUSTE-CECO-BAOGL] 04.05.2026
@@ -955,6 +1162,34 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
 
           APPEND INITIAL LINE TO journal_entries REFERENCE INTO DATA(journal_entry).
           journal_entry->%cid = |AP{ sy-tabix }|.
+          " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: determina Local por cada prestataria del documento AP
+          CLEAR ls_g04g_config.
+          mv_lb_ceco_active = abap_false.
+          IF gs_header-paymenttype = 'L'.
+            READ TABLE mt_g04g_ceco_config INTO ls_g04g_config
+              WITH TABLE KEY recipient_company_code = recipient.
+            IF sy-subrc = 0
+               AND ls_g04g_config-costcenter_prefix IS NOT INITIAL
+               AND ls_g04g_config-cebe IS NOT INITIAL.
+              mv_lb_ceco_active = abap_true.
+            ENDIF.
+          ENDIF.
+          " Fin EXT_OSCUGALD 17.11.2026 - G04G
+          " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04I: obtiene asignación de CMC para proveedor AP
+          DATA lv_g04i_assignment TYPE zint_position_text.
+
+          CLEAR lv_g04i_assignment.
+
+          IF gs_header-paymenttype = 'L'
+             AND gs_header-product = 'ICSRV57'
+             AND gs_header-providercountry = 'CL'
+             AND ( gs_header-providercompanycode = 'CMC'
+                   OR recipient = 'CMC' ).
+
+            lv_g04i_assignment = ls_g04g_config-position_text.
+
+          ENDIF.
+          " Fin EXT_OSCUGALD 18.11.2026 - G04I
 
           DATA(lv_baseamount) = REDUCE wrbtr(
                                 INIT acc = VALUE #( )
@@ -1012,12 +1247,26 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
             journal_entry->%param-documentreferenceid = gs_header-product.
           ENDIF.
 *Fin EXT_OSCUGALD 24.06.2026 - CS Fix AP: codigo material en referencia cabecera
+          " Ini Facturación Local CH/ARG EXT_OSCUGALD 06.11.2026 - G04C-AP-REF: referencia LB
+          IF mv_lb_ceco_active = abap_true
+             AND ( gs_header-providercountry = 'CL'
+                OR gs_header-providercountry = 'AR'
+                OR gs_header-providercountry = 'MX' ).
+            journal_entry->%param-documentreferenceid = gs_header-product.
+          ENDIF.
+          " Fin EXT_OSCUGALD 06.11.2026 - G04C-AP-REF
           journal_entry->%param-businesstransactiontype = 'RFBU'.
           journal_entry->%param-documentdate = last_day_of_month.
           journal_entry->%param-postingdate = last_day_of_month.
 
           lv_totalamount = lv_totalamount * -1.
+          " Ini Facturación Local CH/ARG EXT_OSCUGALD 19.11.2026 - G04J: invierte total AP CMC/MPC tras determinar BLART
+          IF lv_g04d_ap_cmc_mpc = abap_true.
 
+            lv_totalamount = lv_totalamount * -1.
+
+          ENDIF.
+          " Fin EXT_OSCUGALD 19.11.2026 - G04J
 *Ini EXT_OSCUGALD [AJUSTE-CPIC-ARS] 04.05.2026
 *   Para MLA/ARS: usar método dedicado con CPIC como fuente de montos ARS
 *   (misma fuente que ZCL_PROPOSAL_BO_AR) → IC0122 = IC0213 exacto.
@@ -1077,18 +1326,21 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
             "Proceso determinación de cuentas y cecos a imputar. Armado estructuras _GLITEMS, _TAXITEMS
             CALL METHOD me->process_baogl_for_company
               EXPORTING
-                iv_currentitem = ls_item
-                iv_recipient   = recipient
-                iv_totalamount = lv_totalamount
-                iv_account     = lv_account
+                " Ini Facturación Local CH/ARG EXT_OSCUGALD 19.11.2026 - G04J: transmite indicador para AP CMC/MPC
+                iv_g04j_cmc_mpc = lv_g04d_ap_cmc_mpc
+                " Fin EXT_OSCUGALD 19.11.2026 - G04J
+                iv_currentitem  = ls_item
+                iv_recipient    = recipient
+                iv_totalamount  = lv_totalamount
+                iv_account      = lv_account
 *               it_exchange_rates = lt_exchange_rates
               IMPORTING
-                ev_totalimp    = lv_totalimp
-                et_glitems     = lt_glitems
-                et_taxitems    = lt_taxitems
-                et_itemscalc   = items_calc
+                ev_totalimp     = lv_totalimp
+                et_glitems      = lt_glitems
+                et_taxitems     = lt_taxitems
+                et_itemscalc    = items_calc
               CHANGING
-                ct_baogl       = lt_baogl.
+                ct_baogl        = lt_baogl.
           ENDIF.
 *Fin EXT_OSCUGALD [AJUSTE-CPIC-ARS] 04.05.2026
 
@@ -1115,6 +1367,14 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
                 lv_companycode = gs_header-providercompanycode.
                 lv_supplier = grouped_item->recipientcustomer.
               ENDIF.
+              " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.11.2026 - G04D: contabiliza el AP en CMC para CMC/MPC local
+              IF lv_g04d_ap_cmc_mpc = abap_true.
+                lv_companycode = gs_header-providercompanycode.
+                lv_supplier    = grouped_item->recipientvendor.
+              ENDIF.
+              " Fin EXT_OSCUGALD 13.11.2026 - G04D
+
+*              journal_entry->%param-companycode = lv_companycode.
               journal_entry->%param-companycode = lv_companycode.
 
               "Llena estructura de Proveedor _APItems
@@ -1122,11 +1382,41 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
               DATA(lv_count_gl) = lines( lt_glitems ).
               DATA(lv_count_tax) = lines( lt_taxitems ).
               ap_item->glaccountlineitem = lv_count_gl + lv_count_tax + 1.
-              ap_item->supplier = grouped_item->providercustomer.
+* ap_item->supplier = grouped_item->providercustomer. " Histórico: asignación estándar anterior
+
+              " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.11.2026 - G04D: usa el proveedor MPC registrado en CMC solo para este caso
+              ap_item->supplier = COND #(
+                WHEN lv_g04d_ap_cmc_mpc = abap_true
+                THEN grouped_item->recipientvendor
+                ELSE grouped_item->providercustomer ).
+              " Fin EXT_OSCUGALD 13.11.2026 - G04D
 *Ini EXT_OSCUGALD 29.05.2026 - Cost Sharing: assignment = 'COST SHARING' (Z00077)
-              ap_item->assignmentreference = COND #( WHEN mv_is_cs = abap_true
-                                                                   THEN 'COST SHARING'
-                                                                   ELSE gs_header-productname ).
+              " Ini Facturación Local CH/ARG EXT_OSCUGALD 15.11.2026 - G04F: asigna REGALIAS solo a ICSRV57 Local Chile y conserva Cost Sharing
+              " Histórico conservado:
+              " ap_item->assignmentreference = COND #( WHEN mv_is_cs = abap_true THEN 'COST SHARING' ELSE gs_header-productname ).
+              " ap_item->assignmentreference = COND #(
+              " WHEN mv_is_cs = abap_true
+              " THEN 'COST SHARING'
+              " WHEN gs_header-paymenttype = 'L'
+              " AND gs_header-product = 'ICSRV57'
+              " AND gs_header-providercountry = 'CL'
+              " AND grouped_item->recipientcountry = 'CL'
+              " THEN 'REGALIAS'
+              " ELSE gs_header-productname ).
+              " Fin EXT_OSCUGALD 15.11.2026 - G04F
+              " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: revierte REGALIAS y restaura la asignación anterior
+              ap_item->assignmentreference = COND #(
+                WHEN mv_is_cs = abap_true THEN 'COST SHARING'
+                ELSE gs_header-productname ).
+              " Fin EXT_OSCUGALD 17.11.2026 - G04G
+              " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04I: asignación configurada en proveedor AP CMC
+              IF lv_g04i_assignment IS NOT INITIAL
+                 AND mv_is_cs = abap_false.
+
+                ap_item->assignmentreference = lv_g04i_assignment.
+
+              ENDIF.
+              " Fin EXT_OSCUGALD 18.11.2026 - G04I
 *Fin EXT_OSCUGALD 29.05.2026 - Cost Sharing
               ap_item->documentitemtext = |{ gs_header-providercompanycode }-{ recipient }-{ gs_header-productname }-{ gs_header-fiscalperiod }/{ gs_header-fiscalyear }|.
 
@@ -1223,11 +1513,38 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
           save_log( ).
           RAISE EXCEPTION TYPE zcx_calc_exit EXPORTING textid = zcx_calc_exit=>error_generating_documents.
         ENDIF.
-      CATCH:
-            cx_sy_conversion_no_date INTO DATA(cx_date),
-            cx_sy_itab_line_not_found INTO DATA(cx_line_not_found).
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04H-R1: guarda el log fiscal fuera de los ciclos y conserva la excepción
+      CATCH zcx_calc_exit INTO DATA(lx_g04h_calc_exit).
+
+        IF mv_g04h_tax_error = abap_true.
+          CLEAR mv_g04h_tax_error.
+          save_log( ).
+        ENDIF.
+
+        RAISE EXCEPTION lx_g04h_calc_exit.
+        " Fin EXT_OSCUGALD 18.11.2026 - G04H-R1
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04H-R2: separa manejadores conservando su comportamiento anterior
+        " Histórico:
+        " CATCH:
+        "       cx_sy_conversion_no_date INTO DATA(cx_date),
+        "       cx_sy_itab_line_not_found INTO DATA(cx_line_not_found).
+        "   save_log( ).
+        "   RAISE EXCEPTION TYPE zcx_calc_exit EXPORTING textid = zcx_calc_exit=>error_generating_documents.
+
+      CATCH cx_sy_conversion_no_date INTO DATA(cx_date).
+
+        " La sentencia encadenada anterior no ejecutaba código para esta excepción.
+        CLEAR cx_date.
+
+      CATCH cx_sy_itab_line_not_found INTO DATA(cx_line_not_found).
+
         save_log( ).
-        RAISE EXCEPTION TYPE zcx_calc_exit EXPORTING textid = zcx_calc_exit=>error_generating_documents.
+
+        RAISE EXCEPTION TYPE zcx_calc_exit
+          EXPORTING
+            textid = zcx_calc_exit=>error_generating_documents.
+
+        " Fin EXT_OSCUGALD 18.11.2026 - G04H-R2
     ENDTRY.
   ENDMETHOD.
 
@@ -1319,6 +1636,42 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
 
 
   METHOD process_baogl_for_company.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: obtiene configuración Local de la prestataria AP
+    DATA ls_g04g_config TYPE zint_a_md_lbceco.
+    DATA lv_g04g_config_ok TYPE abap_bool.
+    IF mv_lb_ceco_active = abap_true.
+      READ TABLE mt_g04g_ceco_config INTO ls_g04g_config
+        WITH TABLE KEY recipient_company_code = iv_recipient.
+      lv_g04g_config_ok = xsdbool(
+        sy-subrc = 0
+        AND ls_g04g_config-costcenter_prefix IS NOT INITIAL
+        AND ls_g04g_config-cebe IS NOT INITIAL ).
+    ENDIF.
+    " Fin EXT_OSCUGALD 17.11.2026 - G04G
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04I: obtiene asignación CMC para posiciones GL
+    DATA lv_g04i_assignment TYPE zint_position_text.
+
+    IF gs_header-paymenttype = 'L'
+       AND gs_header-product = 'ICSRV57'
+       AND gs_header-providercountry = 'CL'
+       AND ( gs_header-providercompanycode = 'CMC'
+             OR iv_recipient = 'CMC' ).
+
+      lv_g04i_assignment = VALUE #(
+        mt_g04g_ceco_config[
+          recipient_company_code = iv_recipient
+        ]-position_text OPTIONAL ).
+
+    ENDIF.
+    " Fin EXT_OSCUGALD 18.11.2026 - G04I
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - G04C: variables LB
+    DATA lv_lb_prefix TYPE c LENGTH 4.
+    DATA lv_lb_cebe TYPE c LENGTH 3.
+    DATA lv_lb_ic TYPE c LENGTH 3.
+    DATA lv_lb_name TYPE zi_tvarvc-name.
+    DATA lv_lb_country TYPE zi_intercocompanycode-country.
+    " Fin EXT_OSCUGALD 04.11.2026 - G04C
+
     TYPES: BEGIN OF ty_cccode,
              id                        TYPE uuid,
              item_id                   TYPE zde_prop_item_id,
@@ -1433,47 +1786,131 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
 
     "1. Consultar BRF+ Ceco a imputar y complementa tabla auxiliar.
     LOOP AT ct_baogl ASSIGNING FIELD-SYMBOL(<ls_baogl>) WHERE recipientcompanycode = iv_recipient.
-*Ini EXT_OSCUGALD 26.05.2026 - Cost Sharing: CeCo fijo via ZI_TVARVC para ICSRV30/ICSRV31
-      IF lv_is_cs = abap_true.
-*Ini EXT_OSCUGALD 29.05.2026 - Cost Sharing: CeCo usa internalcode de soc. RECEPTORA
-        " AP postea en la soc. receptora => CeCo debe ser de ESA sociedad
-        " KI100/KI302 si se usa internalcode del provider (MLB=123 en soc. EBA/IFB/MPB/SOC)
-        READ TABLE mt_cs_companies INTO DATA(ls_cs_company_ap)
-                  WITH KEY companycode = <ls_baogl>-recipientcompanycode.
-        lv_internalcode = COND #(
-          WHEN sy-subrc = 0 AND ls_cs_company_ap-internalcode IS NOT INITIAL
-          THEN ls_cs_company_ap-internalcode
-          ELSE <ls_baogl>-internalcode ).
-        <ls_baogl>-costcenter =
-          |{ lv_cs_ceco_prefix }{ lv_internalcode }{ lv_cs_cebe }|.
-*Fin EXT_OSCUGALD 29.05.2026 - Cost Sharing
-      ELSE.
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - G04C: CeCo LB
+      " *Ini EXT_OSCUGALD 26.05.2026 - Cost Sharing: CeCo fijo via ZI_TVARVC para ICSRV30/ICSRV31
+      "       IF lv_is_cs = abap_true.
+      " *Ini EXT_OSCUGALD 29.05.2026 - Cost Sharing: CeCo usa internalcode de soc. RECEPTORA
+      "         " AP postea en la soc. receptora => CeCo debe ser de ESA sociedad
+      "         " KI100/KI302 si se usa internalcode del provider (MLB=123 en soc. EBA/IFB/MPB/SOC)
+      "         READ TABLE mt_cs_companies INTO DATA(ls_cs_company_ap)
+      "                   WITH KEY companycode = <ls_baogl>-recipientcompanycode.
+      "         lv_internalcode = COND #(
+      "           WHEN sy-subrc = 0 AND ls_cs_company_ap-internalcode IS NOT INITIAL
+      "           THEN ls_cs_company_ap-internalcode
+      "           ELSE <ls_baogl>-internalcode ).
+      "         <ls_baogl>-costcenter =
+      "           |{ lv_cs_ceco_prefix }{ lv_internalcode }{ lv_cs_cebe }|.
+      " *Fin EXT_OSCUGALD 29.05.2026 - Cost Sharing
+      "       ELSE.
+      "
+      "         DATA(lo_brf_helper) = NEW zcl_interco_brf_wht( ).
+      "         DATA(lv_cccode) = lo_brf_helper->get_cc_code(
+      "           iv_product      = <ls_baogl>-product
+      "           iv_cc_origen    = <ls_baogl>-costcenterd4
+      "           iv_departamento = <ls_baogl>-department
+      "           iv_tipo_doc     = zcl_interco_doc_glaccount=>co_doc_type-ap
+      "         ).
+      "         IF lv_cccode IS NOT INITIAL.
+      "           "Se obtiene CeCo Destino
+      " *          DATA(lv_internalcode) = <ls_baogl>-internalcode.
+      "           lv_internalcode = <ls_baogl>-internalcode.
+      "           <ls_baogl>-costcenter = |{ lv_cccode }{ <ls_baogl>-internalcode }{ <ls_baogl>-profitcenter ALPHA = OUT }|.
+      "           READ TABLE et_itemscalc INTO DATA(ls_profit_center) WITH KEY id = <ls_baogl>-id
+      "                                                                        item_id = <ls_baogl>-item_id
+      "                                                                        product = <ls_baogl>-product.
+      "           IF ls_profit_center-profitcentereq IS NOT INITIAL.
+      "             <ls_baogl>-costcenter = |{ lv_cccode }{ <ls_baogl>-internalcode }{ ls_profit_center-profitcentereq ALPHA = OUT }|.
+      "             <ls_baogl>-costcenter+7(3) = ls_profit_center-profitcentereq.
+      "           ENDIF.
+      "         ELSE.
+      "           CLEAR <ls_baogl>-costcenter.
+      "         ENDIF.
+      " *Ini EXT_OSCUGALD 26.05.2026 - Cost Sharing
+      "       ENDIF.
+      " *Fin EXT_OSCUGALD 26.05.2026 - Cost Sharing
 
-        DATA(lo_brf_helper) = NEW zcl_interco_brf_wht( ).
-        DATA(lv_cccode) = lo_brf_helper->get_cc_code(
-          iv_product      = <ls_baogl>-product
-          iv_cc_origen    = <ls_baogl>-costcenterd4
-          iv_departamento = <ls_baogl>-department
-          iv_tipo_doc     = zcl_interco_doc_glaccount=>co_doc_type-ap
-        ).
-        IF lv_cccode IS NOT INITIAL.
-          "Se obtiene CeCo Destino
-*          DATA(lv_internalcode) = <ls_baogl>-internalcode.
-          lv_internalcode = <ls_baogl>-internalcode.
-          <ls_baogl>-costcenter = |{ lv_cccode }{ <ls_baogl>-internalcode }{ <ls_baogl>-profitcenter ALPHA = OUT }|.
-          READ TABLE et_itemscalc INTO DATA(ls_profit_center) WITH KEY id = <ls_baogl>-id
-                                                                       item_id = <ls_baogl>-item_id
-                                                                       product = <ls_baogl>-product.
-          IF ls_profit_center-profitcentereq IS NOT INITIAL.
-            <ls_baogl>-costcenter = |{ lv_cccode }{ <ls_baogl>-internalcode }{ ls_profit_center-profitcentereq ALPHA = OUT }|.
-            <ls_baogl>-costcenter+7(3) = ls_profit_center-profitcentereq.
-          ENDIF.
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: utiliza la configuración del par
+      " Histórico: IF mv_lb_ceco_active = abap_true.
+      " Fin EXT_OSCUGALD 17.11.2026 - G04G
+      IF lv_g04g_config_ok = abap_true.
+        lv_lb_country = <ls_baogl>-recipientcountry.
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.11.2026 - G04D-AP: usa el código interno de CMC cuando el AP se contabiliza en CMC.
+        " Línea original conservada como histórico:
+        " lv_lb_ic = <ls_baogl>-internalcode.
+        lv_lb_ic = COND #(
+          WHEN gs_header-providercompanycode = 'CMC'
+           AND iv_recipient = 'MPC'
+           AND gs_header-product = 'ICSRV57'
+           AND gs_header-paymenttype = 'L'
+          THEN gs_header-internalcode
+          ELSE <ls_baogl>-internalcode ).
+        " Fin EXT_OSCUGALD 13.11.2026 - G04D-AP
+
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: obtiene prefijo y CEBE de la configuración
+        " lv_lb_name = |ZINTERCO_LB_CECO_PREFIX_{ lv_lb_country }|.
+
+        " lv_lb_prefix = VALUE #( mt_lb_ceco_prefixes[ name = lv_lb_name ]-low OPTIONAL ).
+
+        " lv_lb_cebe = <ls_baogl>-profitcenter+7(3).
+        lv_lb_prefix = ls_g04g_config-costcenter_prefix.
+        lv_lb_cebe   = ls_g04g_config-cebe.
+        " Fin EXT_OSCUGALD 17.11.2026 - G04G
+
+        lv_internalcode = lv_lb_ic.
+
+        <ls_baogl>-costcenter = |{ lv_lb_prefix }{ lv_lb_ic }{ lv_lb_cebe }|.
+      ELSE.
+*Ini EXT_OSCUGALD 26.05.2026 - Cost Sharing: CeCo fijo via ZI_TVARVC para ICSRV30/ICSRV31
+        IF lv_is_cs = abap_true.
+*Ini EXT_OSCUGALD 29.05.2026 - Cost Sharing: CeCo usa internalcode de soc. RECEPTORA
+          " AP postea en la soc. receptora => CeCo debe ser de ESA sociedad
+          " KI100/KI302 si se usa internalcode del provider (MLB=123 en soc. EBA/IFB/MPB/SOC)
+          READ TABLE mt_cs_companies INTO DATA(ls_cs_company_ap)
+                    WITH KEY companycode = <ls_baogl>-recipientcompanycode.
+
+          lv_internalcode = COND #(
+            WHEN sy-subrc = 0 AND ls_cs_company_ap-internalcode IS NOT INITIAL
+            THEN ls_cs_company_ap-internalcode
+            ELSE <ls_baogl>-internalcode ).
+
+          <ls_baogl>-costcenter =
+            |{ lv_cs_ceco_prefix }{ lv_internalcode }{ lv_cs_cebe }|.
+*Fin EXT_OSCUGALD 29.05.2026 - Cost Sharing
         ELSE.
-          CLEAR <ls_baogl>-costcenter.
-        ENDIF.
+          DATA(lo_brf_helper) = NEW zcl_interco_brf_wht( ).
+          DATA(lv_cccode) = lo_brf_helper->get_cc_code(
+            iv_product      = <ls_baogl>-product
+            iv_cc_origen    = <ls_baogl>-costcenterd4
+            iv_departamento = <ls_baogl>-department
+            iv_tipo_doc     = zcl_interco_doc_glaccount=>co_doc_type-ap
+          ).
+
+          IF lv_cccode IS NOT INITIAL.
+            "Se obtiene CeCo Destino
+*          DATA(lv_internalcode) = <ls_baogl>-internalcode.
+            lv_internalcode = <ls_baogl>-internalcode.
+            <ls_baogl>-costcenter =
+              |{ lv_cccode }{ <ls_baogl>-internalcode }{ <ls_baogl>-profitcenter ALPHA = OUT }|.
+
+            READ TABLE et_itemscalc INTO DATA(ls_profit_center)
+              WITH KEY id      = <ls_baogl>-id
+                       item_id = <ls_baogl>-item_id
+                       product = <ls_baogl>-product.
+
+            IF ls_profit_center-profitcentereq IS NOT INITIAL.
+              <ls_baogl>-costcenter =
+                |{ lv_cccode }{ <ls_baogl>-internalcode }{ ls_profit_center-profitcentereq ALPHA = OUT }|.
+              <ls_baogl>-costcenter+7(3) =
+                ls_profit_center-profitcentereq.
+            ENDIF.
+          ELSE.
+            CLEAR <ls_baogl>-costcenter.
+          ENDIF.
 *Ini EXT_OSCUGALD 26.05.2026 - Cost Sharing
-      ENDIF.
+        ENDIF.
 *Fin EXT_OSCUGALD 26.05.2026 - Cost Sharing
+      ENDIF.
+      " Fin EXT_OSCUGALD 04.11.2026 - G04C
 
       "Obtiene cuenta GL" Account determination
       IF gs_header-providercountry = <ls_baogl>-recipientcountry.
@@ -1628,7 +2065,13 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
     AS lv_totalbaoamount
     FROM @lt_baogl_summary AS _total_baogl
     INTO @lv_totalbaoamount.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 19.11.2026 - G04J: invierte base total AP para redondeo CMC/MPC
+    IF iv_g04j_cmc_mpc = abap_true.
 
+      lv_totalbaoamount = lv_totalbaoamount * -1.
+
+    ENDIF.
+    " Fin EXT_OSCUGALD 19.11.2026 - G04J
 **********************************************************************
 ***    IF sy-uname = 'EXT_OSCUGALD'.
     "evita valores en ceros
@@ -1656,7 +2099,14 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
 
     DATA lv_line_id TYPE n LENGTH 6 VALUE 1. "Contador global para GLAccountLineItem
     DATA lv_fwbas TYPE fwbas.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 19.11.2026 - G04J: importe temporal AP con precisión de origen
+    DATA lv_g04j_amount TYPE zint_dte_fis_ksl.
+    " Fin EXT_OSCUGALD 19.11.2026 - G04J
     DATA lv_profitcenter TYPE c LENGTH 10.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04H: base para impuesto Local por moneda
+    DATA lt_g04h_tax_base TYPE tt_g04h_tax_base.
+    DATA ls_g04h_tax_base TYPE ty_g04h_tax_base.
+    " Fin EXT_OSCUGALD 18.11.2026 - G04H
 
     "Arma una posición por cada combinación de cuenta base-tarifas-centro de costo
     "Si es el caso agrega impuesto
@@ -1702,16 +2152,67 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
                                                                              ELSE gs_header-productname )
                                                taxcode             = lv_tax_code "Indicador de impuestos BRF+
                                              ).
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04I: asignación configurada en GL AP CMC
+        IF lv_g04i_assignment IS NOT INITIAL
+           AND lv_is_cs = abap_false.
+
+          ls_glitems-assignmentreference = lv_g04i_assignment.
+
+        ENDIF.
+        " Fin EXT_OSCUGALD 18.11.2026 - G04I
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.11.2026 - G04D-AP: omite CeCo en AP local CMC/MPC para cuentas prefijo 4.
+        " El CeCo intermedio de cálculo se conserva; esta regla afecta solo la posición GL del payload.
+        IF mv_lb_ceco_active = abap_true
+           AND gs_header-providercompanycode = 'CMC'
+           AND iv_recipient = 'MPC'
+           AND gs_header-product = 'ICSRV57'
+           AND gs_header-paymenttype = 'L'
+           AND ls_glitems-glaccount(1) = '4'.
+          CLEAR ls_glitems-costcenter.
+        ENDIF.
+        " Fin EXT_OSCUGALD 13.11.2026 - G04D-AP
         IF gl_item_mapping->tariffrate <> 'BASE'.
           ls_glitems-quantity = <tariffrate_field>.
           ls_glitems-baseunit = base_unit.
         ENDIF.
+
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 19.11.2026 - G04J: invierte importe GL de AP CMC/MPC
+        lv_g04j_amount = <amount_field>.
+
+        IF iv_g04j_cmc_mpc = abap_true.
+
+          lv_g04j_amount = lv_g04j_amount * -1.
+
+        ENDIF.
+        " Fin EXT_OSCUGALD 19.11.2026 - G04J
+
         APPEND VALUE #(
-          journalentryitemamount = <amount_field>
+          " Ini Facturación Local CH/ARG EXT_OSCUGALD 19.11.2026 - G04J: importe GL con signo ajustado
+          " Histórico: journalentryitemamount = <amount_field>
+          journalentryitemamount = lv_g04j_amount
+          " Fin EXT_OSCUGALD 19.11.2026 - G04J
           currency               = ls_cccode_sumary-transactioncurrency
           exchangerate           = ls_cccode_sumary-exchangerate
 *            currencyrole           = '00'
         ) TO ls_glitems-_currencyamount.
+
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04H: acumula las posiciones GL Local por moneda
+        IF gs_header-paymenttype = 'L'
+           AND lv_tax_code IS NOT INITIAL.
+
+          ls_g04h_tax_base-currency =
+            ls_cccode_sumary-transactioncurrency.
+
+          " Ini Facturación Local CH/ARG EXT_OSCUGALD 19.11.2026 - G04J: base IVA coherente con la posición GL
+          " Histórico: ls_g04h_tax_base-amount = <amount_field>.
+          ls_g04h_tax_base-amount = lv_g04j_amount.
+          " Fin EXT_OSCUGALD 19.11.2026 - G04J
+
+          COLLECT ls_g04h_tax_base INTO lt_g04h_tax_base.
+          CLEAR ls_g04h_tax_base.
+
+        ENDIF.
+        " Fin EXT_OSCUGALD 18.11.2026 - G04H
 
         lv_line_id += 1. "Incrementa el contador global
 
@@ -1745,7 +2246,12 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
         ENDIF.
 
 
-        IF lv_tax_code IS NOT INITIAL.
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04H: conserva el impuesto por posición para no Local
+        " Condición original: IF lv_tax_code IS NOT INITIAL.
+        IF lv_tax_code IS NOT INITIAL
+           AND gs_header-paymenttype <> 'L'.
+          " Fin EXT_OSCUGALD 18.11.2026 - G04H
+
           "Agrega impuestos si aplica
           tax_items_in = VALUE #(
                                   (
@@ -1803,7 +2309,23 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
       ENDDO.
     ENDLOOP.
 
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04H: calcula el impuesto Local sobre la base total
+    IF gs_header-paymenttype = 'L'
+       AND lv_tax_code IS NOT INITIAL.
 
+      me->calculate_local_tax_total(
+        EXPORTING
+          iv_recipient   = iv_recipient
+          iv_tax_code    = lv_tax_code
+          iv_currentitem = CORRESPONDING #( iv_currentitem )
+          it_tax_base    = lt_g04h_tax_base
+        CHANGING
+          ct_taxitems    = lt_taxitems
+          cv_line_id     = lv_line_id
+          cv_total_tax   = lv_totalimpuesto ).
+
+    ENDIF.
+    " Fin EXT_OSCUGALD 18.11.2026 - G04H
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     "
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1851,6 +2373,23 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
                                                ELSE |{ '9590' }{ lv_internalcode }{ '999' }| )
 *Fin EXT_OSCUGALD 26.05.2026 - Cost Sharing
                                            ).
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04I: asignación configurada en redondeo AP CMC
+      IF lv_g04i_assignment IS NOT INITIAL
+         AND lv_is_cs = abap_false.
+
+        ls_glitems-assignmentreference = lv_g04i_assignment.
+
+      ENDIF.
+      " Fin EXT_OSCUGALD 18.11.2026 - G04I
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - G04C: CeCo redondeo LB
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: aplica redondeo Local solo con configuración de la prestataria
+      " Histórico: IF mv_lb_ceco_active = abap_true.
+      IF lv_g04g_config_ok = abap_true.
+        ls_glitems-costcenter = |{ lv_lb_prefix }{ lv_lb_ic }999|.
+      ENDIF.
+      " Fin EXT_OSCUGALD 17.11.2026 - G04G
+      " Fin EXT_OSCUGALD 04.11.2026 - G04C
+
       APPEND VALUE #(
         journalentryitemamount = lv_diff
         currency               = ls_cccode_sumary-transactioncurrency
@@ -1884,6 +2423,25 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD process_baogl_for_company_ars.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: obtiene configuración Local de la prestataria AP
+    DATA ls_g04g_config TYPE zint_a_md_lbceco.
+    DATA lv_g04g_config_ok TYPE abap_bool.
+    IF mv_lb_ceco_active = abap_true.
+      READ TABLE mt_g04g_ceco_config INTO ls_g04g_config
+        WITH TABLE KEY recipient_company_code = iv_recipient.
+      lv_g04g_config_ok = xsdbool(
+        sy-subrc = 0
+        AND ls_g04g_config-costcenter_prefix IS NOT INITIAL
+        AND ls_g04g_config-cebe IS NOT INITIAL ).
+    ENDIF.
+    " Fin EXT_OSCUGALD 17.11.2026 - G04G
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - G04C: variables LB ARS
+    DATA lv_lb_prefix TYPE c LENGTH 4.
+    DATA lv_lb_cebe TYPE c LENGTH 3.
+    DATA lv_lb_ic TYPE c LENGTH 3.
+    DATA lv_lb_name TYPE zi_tvarvc-name.
+    DATA lv_lb_country TYPE zi_intercocompanycode-country.
+    " Fin EXT_OSCUGALD 04.11.2026 - G04C
 *"*------------------------------------------------------------------*
 *"* EXT_OSCUGALD [AJUSTE-CPIC-ARS] 04.05.2026
 *"* [AJUSTE-MIRROR-ARS-V2] 08.05.2026
@@ -1971,7 +2529,63 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
     LOOP AT it_cpic INTO DATA(ls_cpic_raw).
       DATA(ls_cpic_mapped) = ls_cpic_raw.
 
-      DATA(lv_cc_origen) = ls_cpic_raw-costcenter+3(1).
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - G04C: CeCo LB CPIC ARS
+      "       DATA(lv_cc_origen) = ls_cpic_raw-costcenter+3(1).
+      "
+      " *Ini EXT_OSCUGALD [FIX-DEPTO-CPIC-ARS-CECO] 18.06.2026
+      " *   ANTES: iv_departamento = ls_first_baogl-department → siempre dept=13
+      " *          BRF+ mapeaba el costcenter usando dept del primer BAOGL para
+      " *          todos los ítems CPIC, incluyendo los de dept=15.
+      " *          Resultado: ítems dept=15 obtenían costcenter incorrecto o vacío
+      " *          → CLEAR costcenter → ítem descartado → nunca genera 693141/693142.
+      " *   AHORA: iv_departamento = ls_cpic_raw-department → dept real del ítem
+      " *          BRF+ mapea correctamente el costcenter por dept → ítem dept=15
+      " *          llega al Paso 1 con costcenter correcto → genera 693141/693142.
+      "       DATA(lv_cccode_cpic) = lo_brf_cc->get_cc_code(
+      "         iv_product      = gs_header-product
+      "         iv_cc_origen    = lv_cc_origen
+      "         iv_departamento = ls_cpic_raw-department
+      "         iv_tipo_doc     = zcl_interco_doc_glaccount=>co_doc_type-ap ).
+      " *Fin EXT_OSCUGALD [FIX-DEPTO-CPIC-ARS-CECO] 18.06.2026
+      "
+      "       IF lv_cccode_cpic IS NOT INITIAL.
+      "         ls_cpic_mapped-costcenter =
+      "           |{ lv_cccode_cpic }{ ls_first_baogl-internalcode }{ ls_cpic_raw-profitcenter ALPHA = OUT }|.
+      "         READ TABLE et_itemscalc INTO DATA(ls_pc_cpic)
+      "           WITH KEY id      = ls_cpic_raw-id
+      "                    item_id = ls_cpic_raw-item_id
+      "                    product = gs_header-product.
+      "         IF ls_pc_cpic-profitcentereq IS NOT INITIAL.
+      "           ls_cpic_mapped-costcenter+7(3) = ls_pc_cpic-profitcentereq.
+      "         ENDIF.
+      "       ELSE.
+      "         CLEAR ls_cpic_mapped-costcenter.
+      "       ENDIF.
+
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: utiliza la configuración del par
+      " Histórico: IF mv_lb_ceco_active = abap_true.
+      " Fin EXT_OSCUGALD 17.11.2026 - G04G
+      IF lv_g04g_config_ok = abap_true.
+        lv_lb_country = ls_first_baogl-recipientcountry.
+        lv_lb_ic = ls_first_baogl-internalcode.
+
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: obtiene prefijo y CEBE de la configuración
+        " lv_lb_name =
+        " |ZINTERCO_LB_CECO_PREFIX_{ lv_lb_country }|.
+
+        " lv_lb_prefix = VALUE #(
+        " mt_lb_ceco_prefixes[ name = lv_lb_name ]-low OPTIONAL ).
+
+        " lv_lb_cebe = ls_cpic_raw-profitcenter+7(3).
+
+        lv_lb_prefix = ls_g04g_config-costcenter_prefix.
+        lv_lb_cebe   = ls_g04g_config-cebe.
+        " Fin EXT_OSCUGALD 17.11.2026 - G04G
+
+        ls_cpic_mapped-costcenter =
+          |{ lv_lb_prefix }{ lv_lb_ic }{ lv_lb_cebe }|.
+      ELSE.
+        DATA(lv_cc_origen) = ls_cpic_raw-costcenter+3(1).
 
 *Ini EXT_OSCUGALD [FIX-DEPTO-CPIC-ARS-CECO] 18.06.2026
 *   ANTES: iv_departamento = ls_first_baogl-department → siempre dept=13
@@ -1982,26 +2596,31 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
 *   AHORA: iv_departamento = ls_cpic_raw-department → dept real del ítem
 *          BRF+ mapea correctamente el costcenter por dept → ítem dept=15
 *          llega al Paso 1 con costcenter correcto → genera 693141/693142.
-      DATA(lv_cccode_cpic) = lo_brf_cc->get_cc_code(
-        iv_product      = gs_header-product
-        iv_cc_origen    = lv_cc_origen
-        iv_departamento = ls_cpic_raw-department
-        iv_tipo_doc     = zcl_interco_doc_glaccount=>co_doc_type-ap ).
+        DATA(lv_cccode_cpic) = lo_brf_cc->get_cc_code(
+          iv_product      = gs_header-product
+          iv_cc_origen    = lv_cc_origen
+          iv_departamento = ls_cpic_raw-department
+          iv_tipo_doc     = zcl_interco_doc_glaccount=>co_doc_type-ap ).
 *Fin EXT_OSCUGALD [FIX-DEPTO-CPIC-ARS-CECO] 18.06.2026
 
-      IF lv_cccode_cpic IS NOT INITIAL.
-        ls_cpic_mapped-costcenter =
-          |{ lv_cccode_cpic }{ ls_first_baogl-internalcode }{ ls_cpic_raw-profitcenter ALPHA = OUT }|.
-        READ TABLE et_itemscalc INTO DATA(ls_pc_cpic)
-          WITH KEY id      = ls_cpic_raw-id
-                   item_id = ls_cpic_raw-item_id
-                   product = gs_header-product.
-        IF ls_pc_cpic-profitcentereq IS NOT INITIAL.
-          ls_cpic_mapped-costcenter+7(3) = ls_pc_cpic-profitcentereq.
+        IF lv_cccode_cpic IS NOT INITIAL.
+          ls_cpic_mapped-costcenter =
+            |{ lv_cccode_cpic }{ ls_first_baogl-internalcode }{ ls_cpic_raw-profitcenter ALPHA = OUT }|.
+
+          READ TABLE et_itemscalc INTO DATA(ls_pc_cpic)
+            WITH KEY id      = ls_cpic_raw-id
+                     item_id = ls_cpic_raw-item_id
+                     product = gs_header-product.
+
+          IF ls_pc_cpic-profitcentereq IS NOT INITIAL.
+            ls_cpic_mapped-costcenter+7(3) =
+              ls_pc_cpic-profitcentereq.
+          ENDIF.
+        ELSE.
+          CLEAR ls_cpic_mapped-costcenter.
         ENDIF.
-      ELSE.
-        CLEAR ls_cpic_mapped-costcenter.
       ENDIF.
+      " Fin EXT_OSCUGALD 04.11.2026 - G04C
 
       APPEND ls_cpic_mapped TO lt_cpic_mapped.
     ENDLOOP.
@@ -2372,7 +2991,13 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
           assignmentreference = gs_header-productname
           documentitemtext    = |{ gs_header-providercompanycode }-{ iv_recipient }-{ gs_header-productname }-{ gs_header-fiscalperiod }/{ gs_header-fiscalyear }|
           glaccount           = iv_account
-          costcenter          = |{ '9590' }{ ls_first_baogl-internalcode }{ '999' }|
+          " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G04G: redondeo ARS Local con prefijo configurado
+          " Histórico: costcenter = |{ '9590' }{ ls_first_baogl-internalcode }{ '999' }|
+          costcenter          = COND #(
+            WHEN lv_g04g_config_ok = abap_true
+            THEN |{ lv_lb_prefix }{ lv_lb_ic }999|
+            ELSE |{ '9590' }{ ls_first_baogl-internalcode }{ '999' }| )
+          " Fin EXT_OSCUGALD 17.11.2026 - G04G
           _currencyamount     = VALUE #( (
             journalentryitemamount = lv_diff
             currency               = ls_first_baogl-companycodecurrency
@@ -2706,4 +3331,85 @@ CLASS zcl_proposal_bo_ap IMPLEMENTATION.
     CHECK gtd_list_bo IS NOT INITIAL.
     exe_bo( ).
   ENDMETHOD.
+  METHOD calculate_local_tax_total.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 18.11.2026 - G04H: calcula impuesto Local por total y moneda
+
+    DATA(lo_g04h_calc_taxes) =
+      zcl_calculate_taxes_net_fact=>create_instance( ).
+
+    DATA lt_g04h_tax_in TYPE zif_calculate_taxes_net=>_rtax1u38.
+    DATA lt_g04h_tax_out TYPE zif_calculate_taxes_net=>_rtax1u38.
+    DATA lt_g04h_tax_all TYPE zif_calculate_taxes_net=>_rtax1u38.
+    DATA lt_g04h_error TYPE zif_calculate_taxes_net=>_bapiret2.
+    DATA lv_g04h_error TYPE abap_bool.
+
+    LOOP AT it_tax_base INTO DATA(ls_g04h_tax_base).
+
+      lt_g04h_tax_in = VALUE #(
+        ( bukrs = iv_recipient
+          waers = ls_g04h_tax_base-currency
+          wrbtr = ls_g04h_tax_base-amount
+          mwskz = iv_tax_code ) ).
+
+      CLEAR lv_g04h_error.
+      TRY.
+          lo_g04h_calc_taxes->calculate_taxes_net(
+            CHANGING
+              error_return = lt_g04h_error
+              tax_item_in  = lt_g04h_tax_in
+              tax_item_out = lt_g04h_tax_out ).
+        CATCH cx_aco_application_exception
+              cx_aco_communication_failure
+              cx_aco_system_failure.
+          lv_g04h_error = abap_true.
+      ENDTRY.
+
+      IF lv_g04h_error = abap_true
+         OR lt_g04h_error IS NOT INITIAL.
+        add_msg_to_log(
+          iv_current_item = iv_currentitem
+          iv_dockey       = |DUMMY{ gs_header-providercompanycode }{ gs_header-product }{ iv_recipient }|
+          iv_doctype      = zcl_proposal_bo_abs=>c_document_type-je_purchase
+          iv_message_type = 'E'
+          iv_message_text = |Error al calcular impuesto Local AP para { iv_recipient }| ).
+        mv_g04h_tax_error = abap_true.
+        RAISE EXCEPTION TYPE zcx_calc_exit
+          EXPORTING
+            textid = zcx_calc_exit=>error_generating_documents.
+      ENDIF.
+
+      DELETE lt_g04h_tax_out WHERE waers <> ls_g04h_tax_base-currency.
+      APPEND LINES OF lt_g04h_tax_out TO lt_g04h_tax_all.
+      FREE: lt_g04h_error, lt_g04h_tax_in, lt_g04h_tax_out.
+    ENDLOOP.
+
+    LOOP AT lt_g04h_tax_all REFERENCE INTO DATA(lr_g04h_tax).
+
+      DATA(ls_g04h_taxitem) = VALUE gsty_taxitems(
+        glaccountlineitem          = cv_line_id
+        taxcode                    = lr_g04h_tax->mwskz
+        taxitemclassification      = lr_g04h_tax->ktosl
+        conditiontype              = lr_g04h_tax->kschl
+        taxjurisdiction            = lr_g04h_tax->txjcd
+        taxjurisdictionlevel       = lr_g04h_tax->txjlv
+        lowestleveltaxjurisdiction = lr_g04h_tax->txjcd_deep
+        taxrate                    = lr_g04h_tax->msatz
+        taxdeterminationdate       = lr_g04h_tax->txdat
+        taxcountry                 = lr_g04h_tax->tax_country ).
+
+      APPEND VALUE #(
+        journalentryitemamount = lr_g04h_tax->fwste
+        currency               = lr_g04h_tax->waers
+        currencyrole           = '00'
+        taxbaseamount          = lr_g04h_tax->fwbas
+        taxamount              = lr_g04h_tax->fwste
+      ) TO ls_g04h_taxitem-_currencyamount.
+
+      APPEND ls_g04h_taxitem TO ct_taxitems.
+      cv_total_tax += lr_g04h_tax->fwste.
+      cv_line_id += 1.
+    ENDLOOP.
+    " Fin EXT_OSCUGALD 18.11.2026 - G04H
+  ENDMETHOD.
+
 ENDCLASS.

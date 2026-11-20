@@ -398,6 +398,47 @@ CLASS lhc_zi_intercobasis IMPLEMENTATION.
     ENDLOOP.
     " ════════════════════════════════════════════════════════════════════════════
 
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 25.10.2026 - G01C: relación por tipo de la Base
+    " Código anterior conservado como referencia
+    " SELECT basis_items~id AS basisid,
+    "            relations~product,
+    "            relations~recipientcompanycode,
+    "            relations~profitcenter,
+    "            basis_items~costcenter,
+    "            basis_items~glaccount,
+    "            basis_items~department,
+    "            SUM( basis_items~amountinglobalcurrency )      AS amountinglobalcurrency,
+    "            basis_items~globalcurrency,
+    "            SUM( basis_items~amountincompanycodecurrency ) AS amountincompanycodecurrency, "ext_oscugald 12.11.2025 - se agrega el monto en moneda de la compañía
+    "            basis_items~companycodecurrency
+    "     FROM zi_intercocompanyrelproduct AS relations
+    "     INNER JOIN @basis_items AS basis_items ON relations~providercompanycode = basis_items~providercompanycode
+    "       AND relations~product = basis_items~product
+    "       AND relations~profitcenter = basis_items~profitcenter
+    "   WHERE relations~isdeleted IS INITIAL
+    "       AND relations~isblocked IS INITIAL
+    "       AND @current_period BETWEEN relations~validfrom AND relations~validto
+    "       GROUP BY basis_items~id,
+    "                relations~product,
+    "                recipientcompanycode,
+    "                relations~profitcenter,
+    "                basis_items~costcenter,
+    "                basis_items~glaccount,
+    "                basis_items~department,
+    "                globalcurrency,
+    "                basis_items~companycodecurrency
+    "       INTO TABLE @DATA(proposal_possible_items_det).
+
+    " Tipo de cabecera por Base; vacío se trata como E para buscar relaciones
+    DATA(lt_basis_items_g01c) = basis_items.
+    LOOP AT lt_basis_items_g01c ASSIGNING FIELD-SYMBOL(<ls_basis_item_g01c>).
+      DATA(lv_basis_paymenttype_g01c) =
+        basis_headers[ id = <ls_basis_item_g01c>-id ]-PaymentType.
+      <ls_basis_item_g01c>-PaymentType = COND zint_dte_paymenttype(
+        WHEN lv_basis_paymenttype_g01c IS INITIAL THEN 'E'
+        ELSE lv_basis_paymenttype_g01c ).
+    ENDLOOP.
+
     SELECT basis_items~id AS basisid,
                relations~product,
                relations~recipientcompanycode,
@@ -410,12 +451,14 @@ CLASS lhc_zi_intercobasis IMPLEMENTATION.
                SUM( basis_items~amountincompanycodecurrency ) AS amountincompanycodecurrency, "ext_oscugald 12.11.2025 - se agrega el monto en moneda de la compañía
                basis_items~companycodecurrency
         FROM zi_intercocompanyrelproduct AS relations
-        INNER JOIN @basis_items AS basis_items ON relations~providercompanycode = basis_items~providercompanycode
+        INNER JOIN @lt_basis_items_g01c AS basis_items ON relations~providercompanycode = basis_items~providercompanycode
           AND relations~product = basis_items~product
           AND relations~profitcenter = basis_items~profitcenter
       WHERE relations~isdeleted IS INITIAL
           AND relations~isblocked IS INITIAL
           AND @current_period BETWEEN relations~validfrom AND relations~validto
+          AND ( relations~paymenttype = basis_items~paymenttype
+             OR relations~paymenttype IS INITIAL )
           GROUP BY basis_items~id,
                    relations~product,
                    recipientcompanycode,
@@ -426,6 +469,7 @@ CLASS lhc_zi_intercobasis IMPLEMENTATION.
                    globalcurrency,
                    basis_items~companycodecurrency
           INTO TABLE @DATA(proposal_possible_items_det).
+    " Fin EXT_OSCUGALD 25.10.2026 - G01C
 
     SELECT details~basisid,
          details~product,
@@ -467,17 +511,23 @@ CLASS lhc_zi_intercobasis IMPLEMENTATION.
       ENDIF.
 
       " Verify whether the profit centers in the basis are properly defined in the relations. If any are missing, generate an error message.
-      LOOP AT basis_items REFERENCE INTO DATA(basis_item) GROUP BY ( key1 = basis_item->product key2 = basis_item->profitcenter ).
-        IF NOT line_exists( proposal_possible_items[  profitcenter = basis_item->profitcenter product = basis_item->product ] ).
-          failed-zi_intercobasis = VALUE #( ( %tky = key->%tky ) ).
-          reported-zi_intercobasis = VALUE #( (
-                                              %global = if_abap_behv=>mk-on
-                                              %msg    = zcl_fi_intrc_messages=>new_message(
-                                              textid   = zcl_fi_intrc_messages=>profit_center_not_in_relations
-                                              v1       = basis_item->profitcenter
-                                              v2       = basis_item->providercompanycode
-                                              severity = if_abap_behv_message=>severity-error )
-                                            ) ).
+      " EXT_VINBARRI 20.11.2026: se informan TODOS los PC sin relacion (APPEND; antes VALUE #
+      " sobrescribia y solo llegaba el ultimo) y solo los items/relaciones de esta base.
+      LOOP AT basis_items REFERENCE INTO DATA(basis_item) WHERE id = key->id
+           GROUP BY ( key1 = basis_item->product key2 = basis_item->profitcenter ).
+        IF NOT line_exists( proposal_possible_items[ basisid      = key->id
+                                                     profitcenter = basis_item->profitcenter
+                                                     product      = basis_item->product ] ).
+          IF has_error = abap_false.
+            APPEND VALUE #( %tky = key->%tky ) TO failed-zi_intercobasis.
+          ENDIF.
+          APPEND VALUE #( %global = if_abap_behv=>mk-on
+                          %msg    = zcl_fi_intrc_messages=>new_message(
+                                      textid   = zcl_fi_intrc_messages=>profit_center_not_in_relations
+                                      v1       = basis_item->profitcenter
+                                      v2       = basis_item->providercompanycode
+                                      severity = if_abap_behv_message=>severity-error )
+                        ) TO reported-zi_intercobasis.
           has_error = abap_true.
         ENDIF.
       ENDLOOP.
@@ -691,18 +741,23 @@ CLASS lhc_zi_intercobasis IMPLEMENTATION.
     bgp->ledger = key->%param-ledger.
     bgp->paymenttype = key->%param-paymenttype.
     bgp->allfilters = key->%param-AllFilters.
+    " EXT_VINBARRI 17.11.2026: se guarda la lista EFECTIVA (pedidas por la UI + obligatorias,
+    " solo campos validos) para que la UI compare contra lo que realmente se graba.
+    " Vacio = sin restriccion (se graban todas las columnas).
+    bgp->requestedcolumns = COND #( WHEN key->%param-RequestedColumns IS INITIAL THEN ``
+                                    ELSE zcl_interco_jeitem_bg=>build_field_list( key->%param-RequestedColumns ) ).
     bgp->pending = abap_true.
 
     IF has_entry = abap_true.
       MODIFY ENTITIES OF zr_intercojeitemclassbgtp
       ENTITY header
-         UPDATE FIELDS ( pending allfilters )
+         UPDATE FIELDS ( pending allfilters requestedcolumns )
           WITH CORRESPONDING #( bg_process ).
     ELSE.
       MODIFY ENTITIES OF zr_intercojeitemclassbgtp
           ENTITY header
              CREATE AUTO FILL CID
-             FIELDS ( companycode fiscalyear fiscalperiod ledger paymenttype allfilters pending )
+             FIELDS ( companycode fiscalyear fiscalperiod ledger paymenttype allfilters requestedcolumns pending )
               WITH bg_process
                FAILED DATA(failed_create)
                REPORTED DATA(reported_create).
@@ -712,7 +767,8 @@ CLASS lhc_zi_intercobasis IMPLEMENTATION.
 
   METHOD getbgrun.
     DATA(key) = keys[ 1 ].
-    SELECT SINGLE companycode, ledger, fiscalyear, fiscalperiod, paymenttype, pending, createdat, createdby
+    SELECT SINGLE companycode, ledger, fiscalyear, fiscalperiod, paymenttype, pending, createdat, createdby,
+                  requestedcolumns  " EXT_VINBARRI 17.11.2026: la UI avisa si faltan columnas grabadas
       FROM zi_intercojeitemclassbg
       WHERE companycode = @key-%param-companycode
       AND ledger = @key-%param-ledger

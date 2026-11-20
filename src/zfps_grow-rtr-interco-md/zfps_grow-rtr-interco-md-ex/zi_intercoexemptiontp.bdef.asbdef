@@ -31,6 +31,10 @@ with additional save
   ValidTo,
   ExemptionName;
 
+  // Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - C13F-R2: tipo de facturación obligatorio en exclusiones
+  field ( mandatory ) PaymentType;
+  // Fin EXT_OSCUGALD 17.11.2026 - C13F-R2
+
   field ( readonly ) ExternalID;
 
   association _ExemptionRules { create; with draft; }

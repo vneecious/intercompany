@@ -195,6 +195,23 @@ CLASS lhc_zi_intercoproposal DEFINITION INHERITING FROM cl_abap_behavior_handler
         cs_failed               TYPE lty_failed_proposal
         cs_reported             TYPE lty_reported_proposal.
 
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 03.11.2026 - G04B: método propio
+    METHODS apply_local_billing_metric
+      IMPORTING
+        is_proposal             TYPE REF TO gtty_proposal_read
+        it_proposal_item        TYPE gtty_proposal_item_read
+        iv_product_metric       TYPE matkl
+        iv_param                TYPE zstr_metric_param
+      CHANGING
+        ct_proposal_items_basis TYPE gtty_proposal_items_basis
+        ct_proposal_items_upd   TYPE gtty_proposal_items_upd
+        ct_proposal_upd         TYPE gtty_proposal_upd
+        ct_items_basis_upd      TYPE gtty_items_basis_upd
+        ct_items_bg_upd         TYPE gtty_items_bg_upd
+        cs_failed               TYPE lty_failed_proposal
+        cs_reported             TYPE lty_reported_proposal.
+    " Fin EXT_OSCUGALD 03.11.2026 - G04B
+
 *Ini EXT_OSCUGALD - Bermudas MIC-USA (SDFPSINIC-23362)
     "── Motor de cálculo: Operating Income → ISAC NCP → dirección / regalía ────
     METHODS apply_mic_metric
@@ -523,16 +540,21 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
 ***      lv_is_local = abap_true.
 ***    ENDIF.
 
-    SELECT low
-      FROM zi_tvarvc
-      WHERE name = 'ZINTERCO_LOCAL_METRIC_CODES'
-        AND low IS NOT INITIAL
-      INTO TABLE @DATA(lt_local_metric_codes).
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 25.10.2026 - G04A: ruteo por PaymentType
+    "     SELECT low
+    "       FROM zi_tvarvc
+    "       WHERE name = 'ZINTERCO_LOCAL_METRIC_CODES'
+    "         AND low IS NOT INITIAL
+    "       INTO TABLE @DATA(lt_local_metric_codes).
+    "
+    "     DATA lv_is_local TYPE abap_boolean VALUE abap_false.
+    "     IF line_exists( lt_local_metric_codes[ low = lv_product_metric ] ).
+    "       lv_is_local = abap_true.
+    "     ENDIF.
 
-    DATA lv_is_local TYPE abap_boolean VALUE abap_false.
-    IF line_exists( lt_local_metric_codes[ low = lv_product_metric ] ).
-      lv_is_local = abap_true.
-    ENDIF.
+    DATA(lv_is_local) = xsdbool( ls_proposal->paymenttype = 'L'
+                             AND lv_product_metric <> 'TF' ).
+    " Fin EXT_OSCUGALD 25.10.2026 - G04A
     " Fin EXT_OSCUGALD 13.10.2026 - C19
 
 *Ini EXT_OSCUGALD - Bermudas MIC-USA (SDFPSINIC-23362)
@@ -723,12 +745,28 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
       " La función de cálculo local se encargará de llenar las tablas de actualización correspondientes
       " según la lógica específica de cada métrica local (IS, CS,
 
-      me->apply_local_metric(
+*      me->apply_local_metric(
+*        EXPORTING
+*          is_proposal             = ls_proposal
+*          it_proposal_item        = CORRESPONDING #( lt_proposal_item[] )
+**          it_cebe_items           = lt_cebe_items
+**          it_companies            = lt_companies
+*          iv_product_metric       = lv_product_metric
+*          iv_param                = ls_param
+*        CHANGING
+*          ct_proposal_items_basis = lt_proposal_items_basis
+*          ct_proposal_items_upd   = lt_proposal_items_upd
+*          ct_proposal_upd         = lt_proposal_upd
+*          ct_items_basis_upd      = lt_proposal_items_basis_upd
+*          ct_items_bg_upd         = lt_proposal_items_bg_upd
+*          cs_failed               = failed
+*          cs_reported             = reported ).
+
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 03.11.2026 - G04B: aplicación propia
+      me->apply_local_billing_metric(
         EXPORTING
           is_proposal             = ls_proposal
           it_proposal_item        = CORRESPONDING #( lt_proposal_item[] )
-*          it_cebe_items           = lt_cebe_items
-*          it_companies            = lt_companies
           iv_product_metric       = lv_product_metric
           iv_param                = ls_param
         CHANGING
@@ -739,6 +777,7 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
           ct_items_bg_upd         = lt_proposal_items_bg_upd
           cs_failed               = failed
           cs_reported             = reported ).
+      " Fin EXT_OSCUGALD 03.11.2026 - G04B
 
     ELSE.
 
@@ -1429,6 +1468,26 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
         RETURN.
       ENDIF.
 
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 05.11.2026 - G04B-R3: identificar LB para markup por item
+      DATA lv_lb_calc TYPE abap_bool VALUE abap_false.
+
+      IF ls_proposal->paymenttype = 'L'
+         AND ( ls_proposal->providercountry = 'CL'
+            OR ls_proposal->providercountry = 'AR'
+            OR ls_proposal->providercountry = 'MX' )
+         AND lv_mic_metric_calc <> 'TF'.
+
+        SELECT SINGLE low
+          FROM zi_tvarvc
+          WHERE name = 'ZINTERCO_LB_PRODUCT'
+            AND type = 'S'
+            AND low = @ls_proposal->product
+          INTO @DATA(lv_lb_calc_product).
+
+        lv_lb_calc = xsdbool( sy-subrc = 0 ).
+      ENDIF.
+      " Fin EXT_OSCUGALD 05.11.2026 - G04B-R3
+
 *Ini EXT_OSCUGALD 09.02.2026 - Ajuste decimales redondeo
       DATA: lv_res_mup_global TYPE decfloat34,
             lv_res_gub_global TYPE decfloat34,
@@ -1443,7 +1502,17 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
             lv_soc            TYPE bukrs.
 *Fin EXT_OSCUGALD 09.02.2026 - Ajuste decimales redondeo
       lv_soc = 'MLA'.
+
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 05.11.2026 - G04B-R3: reiniciar markup del padre por item LB
+      " Original conservado; fuera de LB permanece el arrastre historico.
+      " LOOP AT lt_proposal_item_basis INTO DATA(ls_proposal_item_basis).
       LOOP AT lt_proposal_item_basis INTO DATA(ls_proposal_item_basis).
+
+        IF lv_lb_calc = abap_true.
+          CLEAR: lv_res_mup_global,
+                 lv_res_mup_local.
+        ENDIF.
+        " Fin EXT_OSCUGALD 05.11.2026 - G04B-R3
 
 *Ini EXT_OSCUGALD 09.02.2026 - Ajuste decimales redondeo
         " 1. LEER CON FIELD-SYMBOL PARA PODER MODIFICAR LA TABLA ORIGINAL
@@ -2577,13 +2646,17 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
     " Ini Facturación Local CH/ARG EXT_OSCUGALD 13.10.2026 - C19: listar métricas locales
 ***    IF lv_product_metric = 'IC' OR lv_product_metric = 'CS'.
 
-    SELECT low
-      FROM zi_tvarvc
-      WHERE name = 'ZINTERCO_LOCAL_METRIC_CODES'
-        AND low IS NOT INITIAL
-      INTO TABLE @DATA(lt_local_metric_codes).
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 25.10.2026 - G04A: disponibilidad por PaymentType
+    "     SELECT low
+    "       FROM zi_tvarvc
+    "       WHERE name = 'ZINTERCO_LOCAL_METRIC_CODES'
+    "         AND low IS NOT INITIAL
+    "       INTO TABLE @DATA(lt_local_metric_codes).
+    "
+    "     IF line_exists( lt_local_metric_codes[ low = lv_product_metric ] ).
 
-    IF line_exists( lt_local_metric_codes[ low = lv_product_metric ] ).
+    IF ls_proposal->paymenttype = 'L' AND lv_product_metric <> 'TF'.
+      " Fin EXT_OSCUGALD 25.10.2026 - G04A
       " Fin EXT_OSCUGALD 13.10.2026 - C19
       " Métrica local: CS = Generales, IC = Customer Experience
       lt_metric_api = lo_cap_api->get_local_metric(
@@ -3411,6 +3484,834 @@ CLASS lhc_zi_intercoproposal IMPLEMENTATION.
 
     ENDIF.
 
+  ENDMETHOD.
+
+  METHOD apply_local_billing_metric.
+
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - G04B-R1: armado estándar adaptado a IC04
+
+    TYPES: BEGIN OF ty_item_rate,
+             item_id          TYPE zde_prop_item_id,
+             basis_index      TYPE i,
+             bg_index         TYPE i,
+             rate             TYPE decfloat34,
+             " Ini Facturación Local CH/ARG EXT_OSCUGALD 05.11.2026 - G04B-R2: acumulados por item
+             global_exact     TYPE decfloat34,
+             company_exact    TYPE decfloat34,
+             global_assigned  TYPE decfloat34,
+             company_assigned TYPE decfloat34,
+             " Fin EXT_OSCUGALD 05.11.2026 - G04B-R2
+             company_c        TYPE zfi_a_intrc_cpib-amountincompanycodecurrency,
+             company_h        TYPE zfi_a_intrc_cpib-amountincompanycodecurrency,
+             company_l        TYPE zfi_a_intrc_cpib-amountincompanycodecurrency,
+           END OF ty_item_rate.
+
+    TYPES: BEGIN OF ty_original_basis,
+             item_id   TYPE zde_prop_item_id,
+             global_c  TYPE decfloat34,
+             global_h  TYPE decfloat34,
+             global_l  TYPE decfloat34,
+             company_c TYPE decfloat34,
+             company_h TYPE decfloat34,
+             company_l TYPE decfloat34,
+           END OF ty_original_basis.
+    DATA lt_original_basis TYPE HASHED TABLE OF ty_original_basis
+                           WITH UNIQUE KEY item_id.
+    DATA ls_original_basis TYPE ty_original_basis.
+    DATA: lv_global_c  TYPE decfloat34,
+          lv_global_h  TYPE decfloat34,
+          lv_global_l  TYPE decfloat34,
+          lv_company_c TYPE decfloat34,
+          lv_company_h TYPE decfloat34,
+          lv_company_l TYPE decfloat34.
+
+    DATA lt_item_rates TYPE HASHED TABLE OF ty_item_rate
+                       WITH UNIQUE KEY item_id.
+    DATA lt_metric_items_calc
+      TYPE zcl_interco_btp_cap_metric_api=>tt_item_calculated.
+    DATA ls_metric_item_calc
+      TYPE zcl_interco_btp_cap_metric_api=>ty_item_calculated.
+
+    " ── 1. Obtener header de métrica local desde BTP CAP ─────────────────────
+    DATA(lo_cap_api) = zcl_interco_btp_cap_metric_api=>get_instance( ).
+
+    DATA(lt_local_metric) = lo_cap_api->get_local_metric(
+      EXPORTING iv_fiscal_period = is_proposal->fiscalperiod
+                iv_fiscal_year   = is_proposal->fiscalyear
+                iv_metric_code   = CONV #( iv_product_metric ) ).
+
+    IF lt_local_metric IS INITIAL.
+      APPEND VALUE #( %key = is_proposal->%key ) TO cs_failed-zi_intercoproposal.
+      APPEND VALUE #( %key = is_proposal->%key
+        %msg = new_message( id       = 'ZINT_MSG_INTERCO_CP'
+                            number   = '011'
+                            severity = if_abap_behv_message=>severity-warning
+                            v1       = iv_product_metric
+                            v2       = is_proposal->fiscalperiod+1(2)
+                            v3       = is_proposal->fiscalyear ) ) TO cs_reported-zi_intercoproposal.
+      RETURN.
+    ENDIF.
+
+    " ── 2. Selección de versión de métrica ────────────────────────────────────
+    DATA ls_local_metric LIKE LINE OF lt_local_metric.
+
+    DATA(lv_param_version) = iv_param-version.
+    SHIFT lv_param_version LEFT DELETING LEADING '0'.
+
+    IF lines( lt_local_metric ) > 1.
+      DATA(lv_metric)  = CONV string( iv_param-metric ).
+      DATA(lv_version) = CONV string( lv_param_version ).
+      READ TABLE lt_local_metric INTO ls_local_metric
+        WITH KEY metric  = lv_metric
+                 version = lv_version.
+    ELSE.
+      READ TABLE lt_local_metric INTO ls_local_metric INDEX 1.
+    ENDIF.
+
+    IF ls_local_metric-isreleased EQ ''.
+      APPEND VALUE #( %key = is_proposal->%key ) TO cs_failed-zi_intercoproposal.
+      IF sy-sysid EQ 'TS4'.
+        APPEND VALUE #( %key = is_proposal->%key
+          %msg = new_message( id       = 'ZINT_MSG_INTERCO_CP'
+                              number   = '005'
+                              severity = if_abap_behv_message=>severity-warning ) ) TO cs_reported-zi_intercoproposal.
+      ELSE.
+        APPEND VALUE #( %key = is_proposal->%key
+          %msg = new_message( id       = 'ZINT_MSG_INTERCO_CP'
+                              number   = '005'
+                              severity = if_abap_behv_message=>severity-error ) ) TO cs_reported-zi_intercoproposal.
+      ENDIF.
+      RETURN.
+    ENDIF.
+
+    " ── 3. Obtener ítems calculados de la métrica local desde BTP CAP ─────────
+    lt_metric_items_calc = lo_cap_api->get_local_metric_items_calc(
+      EXPORTING iv_fiscal_period = is_proposal->fiscalperiod
+                iv_fiscal_year   = is_proposal->fiscalyear
+                iv_metric_code   = CONV #( iv_product_metric )
+                iv_product       = CONV #( is_proposal->product )
+                iv_provide_code  = CONV #( is_proposal->providercompanycode ) ).
+
+    IF lt_metric_items_calc IS INITIAL.
+      APPEND VALUE #( %key = is_proposal->%key ) TO cs_failed-zi_intercoproposal.
+      APPEND VALUE #( %key = is_proposal->%key
+        %msg = new_message( id       = 'ZINT_MSG_INTERCO_CP'
+                            number   = '006'
+                            severity = if_abap_behv_message=>severity-error ) ) TO cs_reported-zi_intercoproposal.
+      RETURN.
+    ENDIF.
+    " Cuenta/CeCo y base global de CPIG; moneda local desde la Base original.
+    " El GROUP BY consolida aperturas de Base que comparten cuenta/CeCo.
+    SELECT origin~itemid AS item_id,
+           origin~glaccount,
+           origin~costcenter,
+           origin~costcenterd4,
+           origin~globalcurrency,
+           origin~amountinglobalcurrency AS base_global,
+           detail~companycodecurrency,
+           SUM( detail~amountincompanycodecurrency ) AS base_company
+      FROM zi_intercoproposalitemorglacct AS origin
+      INNER JOIN zi_intercoproposalitemdetail AS detail
+        ON  detail~id         = origin~id
+        AND detail~item_id    = origin~itemid
+        AND detail~glaccount  = origin~glaccount
+        AND detail~costcenter = origin~costcenter
+      WHERE origin~id = @is_proposal->id
+      GROUP BY origin~itemid,
+               origin~glaccount,
+               origin~costcenter,
+               origin~costcenterd4,
+               origin~globalcurrency,
+               origin~amountinglobalcurrency,
+               detail~companycodecurrency
+      INTO TABLE @DATA(lt_origin_details).
+
+    " Base por ítem/CeBe real: no usar ByCeBe Local agrupada por sociedad.
+    " D4 1=Corp y 3=Hispano; los demás conservan el tratamiento Local vigente.
+    LOOP AT lt_origin_details INTO DATA(ls_origin_base).
+      CLEAR ls_original_basis.
+      ls_original_basis-item_id = ls_origin_base-item_id.
+      CASE ls_origin_base-costcenterd4.
+        WHEN '1'.
+          ls_original_basis-global_c  = ls_origin_base-base_global.
+          ls_original_basis-company_c = ls_origin_base-base_company.
+        WHEN '3'.
+          ls_original_basis-global_h  = ls_origin_base-base_global.
+          ls_original_basis-company_h = ls_origin_base-base_company.
+        WHEN OTHERS.
+          ls_original_basis-global_l  = ls_origin_base-base_global.
+          ls_original_basis-company_l = ls_origin_base-base_company.
+      ENDCASE.
+      COLLECT ls_original_basis INTO lt_original_basis.
+    ENDLOOP.
+
+    " Se conserva la cotización existente; no se reconvierte el importe local.
+    DATA(ld_lastday) = zcl_interco_utils=>rp_last_day_of_months(
+      day_in = |{ is_proposal->fiscalyear }{ is_proposal->fiscalperiod+1 }01| ).
+    DATA lv_exchangerate TYPE zint_dte_ukurs.
+    SELECT SINGLE exchangerate
+      FROM zi_exchangerate
+      WHERE exchangeratetype          = 'B'
+        AND sourcecurrency            = @is_proposal->companycodecurrency
+        AND targetcurrency            = @is_proposal->globalcurrency
+        AND exchangerateeffectivedate = @ld_lastday
+      INTO @lv_exchangerate.
+    IF sy-subrc = 0.
+      lv_exchangerate = lv_exchangerate * -1.
+    ENDIF.
+
+    GET TIME STAMP FIELD DATA(lv_tsmt).
+
+    " Un porcentaje IC04 por prestataria, aplicado a todos sus ítems de origen.
+    LOOP AT it_proposal_item ASSIGNING FIELD-SYMBOL(<fs_item>).
+      CLEAR ls_metric_item_calc.
+      READ TABLE lt_metric_items_calc INTO ls_metric_item_calc
+        WITH KEY product              = is_proposal->product
+                 providercompanycode  = is_proposal->providercompanycode
+                 recipientcompanycode = <fs_item>-recipientcompanycode
+                 to_header_version    = lv_param_version.
+
+      IF ls_metric_item_calc IS INITIAL.
+        APPEND VALUE #(
+          %tky = is_proposal->%tky
+          %msg = new_message(
+            id       = 'ZINT_MSG_INTERCO_CP'
+            number   = '017'
+            severity = if_abap_behv_message=>severity-warning
+            v1       = iv_product_metric
+            v2       = |{ is_proposal->fiscalperiod+1(2) }/{ is_proposal->fiscalyear }|
+            v3       = <fs_item>-recipientcompanycode
+            v4       = '' )
+        ) TO cs_reported-zi_intercoproposal.
+      ELSE.
+        DATA(lv_rate) = CONV decfloat34( ls_metric_item_calc-sharerate ).
+        CLEAR: lv_global_c, lv_global_h, lv_global_l,
+               lv_company_c, lv_company_h, lv_company_l.
+        READ TABLE lt_original_basis ASSIGNING FIELD-SYMBOL(<fs_original_basis>)
+          WITH TABLE KEY item_id = <fs_item>-item_id.
+        IF sy-subrc = 0.
+          " IC04 aporta un único porcentaje final para toda la base elegible.
+          lv_global_c  = <fs_original_basis>-global_c  * lv_rate / 100.
+          lv_global_h  = <fs_original_basis>-global_h  * lv_rate / 100.
+          lv_global_l  = <fs_original_basis>-global_l  * lv_rate / 100.
+          lv_company_c = <fs_original_basis>-company_c * lv_rate / 100.
+          lv_company_h = <fs_original_basis>-company_h * lv_rate / 100.
+          lv_company_l = <fs_original_basis>-company_l * lv_rate / 100.
+        ENDIF.
+
+        " Como el estándar: primero base del CeBe por categoría x porcentaje.
+        APPEND VALUE #(
+          id                          = is_proposal->id
+          item_id                     = <fs_item>-item_id
+          itembasis_id                = <fs_item>-itembasis_id + 1
+          sharedrate                  = lv_rate
+          sharedrate_h                = lv_rate
+          sharedrate_l                = lv_rate
+          exchangerate                = lv_exchangerate
+          globalcurrency              = is_proposal->globalcurrency
+          amountinglobalcurrency_c    = lv_global_c
+          amountinglobalcurrency_h    = lv_global_h
+          amountinglobalcurrency_l    = lv_global_l
+          amountinglobalcurrency      = lv_global_c + lv_global_h + lv_global_l
+          companycodecurrency         = is_proposal->companycodecurrency
+          amountincompanycodecurrency = lv_company_c + lv_company_h + lv_company_l
+          createdat                   = lv_tsmt
+          createdby                   = cl_abap_context_info=>get_user_technical_name( )
+        ) TO ct_proposal_items_basis.
+
+        DATA(lv_basis_index) = lines( ct_proposal_items_basis ).
+        APPEND VALUE #(
+          %cid_ref     = |G04B_B{ lv_basis_index }|
+          id           = is_proposal->id
+          item_id      = <fs_item>-item_id
+          itembasis_id = <fs_item>-itembasis_id + 1
+        ) TO ct_items_bg_upd.
+
+        INSERT VALUE #(
+          item_id     = <fs_item>-item_id
+          basis_index = lv_basis_index
+          bg_index    = lines( ct_items_bg_upd )
+          rate        = lv_rate
+          company_c   = lv_company_c
+          company_h   = lv_company_h
+          company_l   = lv_company_l
+        ) INTO TABLE lt_item_rates.
+      ENDIF.
+    ENDLOOP.
+
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 05.11.2026 - G04B-R2: preparar controles del detalle
+    LOOP AT lt_item_rates ASSIGNING FIELD-SYMBOL(<fs_r2_rate>).
+      READ TABLE ct_proposal_items_basis
+        ASSIGNING FIELD-SYMBOL(<fs_r2_basis>)
+        INDEX <fs_r2_rate>-basis_index.
+
+      CLEAR <fs_r2_basis>-amountinglobalcurrency_c.
+      CLEAR <fs_r2_basis>-amountinglobalcurrency_h.
+      CLEAR <fs_r2_basis>-amountinglobalcurrency_l.
+      CLEAR <fs_r2_rate>-company_c.
+      CLEAR <fs_r2_rate>-company_h.
+      CLEAR <fs_r2_rate>-company_l.
+    ENDLOOP.
+
+    SORT lt_origin_details BY item_id costcenterd4 glaccount costcenter.
+    " Fin EXT_OSCUGALD 05.11.2026 - G04B-R2
+
+    " Armado por cuenta/CeCo original y categorías adaptadas del estándar.
+    " El porcentaje IC04 se adapta a C/H/L, sin tres tasas de negocio distintas.
+    DATA: lv_detail_global  TYPE decfloat34,
+          lv_detail_company TYPE decfloat34.
+    DATA lv_bg_index TYPE i.
+    LOOP AT lt_origin_details INTO DATA(ls_origin).
+      READ TABLE lt_item_rates ASSIGNING FIELD-SYMBOL(<fs_rate>)
+        WITH TABLE KEY item_id = ls_origin-item_id.
+      IF sy-subrc <> 0.
+        CONTINUE.
+      ENDIF.
+      READ TABLE ct_proposal_items_basis
+        ASSIGNING FIELD-SYMBOL(<fs_basis>) INDEX <fs_rate>-basis_index.
+      READ TABLE ct_items_bg_upd
+        ASSIGNING FIELD-SYMBOL(<fs_bg_parent>) INDEX <fs_rate>-bg_index.
+
+      lv_bg_index += 1.
+      APPEND INITIAL LINE TO <fs_bg_parent>-%target
+        ASSIGNING FIELD-SYMBOL(<fs_bg>).
+      <fs_bg>-%cid                         = |G04B_BG{ lv_bg_index }|.
+      <fs_bg>-id                           = is_proposal->id.
+      <fs_bg>-item_id                      = ls_origin-item_id.
+      <fs_bg>-itembasis_id                 = <fs_basis>-itembasis_id.
+      <fs_bg>-glaccount                    = |{ ls_origin-glaccount ALPHA = IN }|.
+      <fs_bg>-costcenter                   = |{ ls_origin-costcenter ALPHA = IN }|.
+      <fs_bg>-sharedrateh                  = <fs_basis>-sharedrate_h.
+      <fs_bg>-sharedratel                  = <fs_basis>-sharedrate_l.
+      <fs_bg>-globalcurrency               = ls_origin-globalcurrency.
+      <fs_bg>-companycodecurrency          = ls_origin-companycodecurrency.
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 05.11.2026 - G04B-R2: reparto con acumulado redondeado
+      " Original conservado: redondeaba cada detalle de forma independiente.
+      " lv_detail_global  = CONV decfloat34( ls_origin-base_global )
+      "                     * <fs_rate>-rate / 100.
+      " lv_detail_company = CONV decfloat34( ls_origin-base_company )
+      "                     * <fs_rate>-rate / 100.
+
+      <fs_rate>-global_exact +=
+        CONV decfloat34( ls_origin-base_global ) * <fs_rate>-rate / 100.
+      <fs_rate>-company_exact +=
+        CONV decfloat34( ls_origin-base_company ) * <fs_rate>-rate / 100.
+
+      lv_detail_global =
+        round( val = <fs_rate>-global_exact dec = 2
+               mode = cl_abap_math=>round_half_up )
+        - <fs_rate>-global_assigned.
+
+      lv_detail_company =
+        round( val = <fs_rate>-company_exact dec = 2
+               mode = cl_abap_math=>round_half_up )
+        - <fs_rate>-company_assigned.
+
+      <fs_rate>-global_assigned += lv_detail_global.
+      <fs_rate>-company_assigned += lv_detail_company.
+      " Fin EXT_OSCUGALD 05.11.2026 - G04B-R2
+
+      CASE ls_origin-costcenterd4.
+        WHEN '1'.
+          <fs_bg>-amountinglobalcurrencyc      = lv_detail_global.
+          <fs_bg>-amountincompanycodecurrencyc = lv_detail_company.
+        WHEN '3'.
+          <fs_bg>-amountinglobalcurrencyh      = lv_detail_global.
+          <fs_bg>-amountincompanycodecurrencyh = lv_detail_company.
+        WHEN OTHERS.
+          <fs_bg>-amountinglobalcurrencyl      = lv_detail_global.
+          <fs_bg>-amountincompanycodecurrencyl = lv_detail_company.
+      ENDCASE.
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 05.11.2026 - G04B-R2: controles C H L del importe asignado
+      CASE ls_origin-costcenterd4.
+        WHEN '1'.
+          <fs_basis>-amountinglobalcurrency_c += <fs_bg>-amountinglobalcurrencyc.
+          <fs_rate>-company_c += <fs_bg>-amountincompanycodecurrencyc.
+        WHEN '3'.
+          <fs_basis>-amountinglobalcurrency_h += <fs_bg>-amountinglobalcurrencyh.
+          <fs_rate>-company_h += <fs_bg>-amountincompanycodecurrencyh.
+        WHEN OTHERS.
+          <fs_basis>-amountinglobalcurrency_l += <fs_bg>-amountinglobalcurrencyl.
+          <fs_rate>-company_l += <fs_bg>-amountincompanycodecurrencyl.
+      ENDCASE.
+      " Fin EXT_OSCUGALD 05.11.2026 - G04B-R2
+      <fs_bg>-amountinglobalcurrency =
+        <fs_bg>-amountinglobalcurrencyc
+        + <fs_bg>-amountinglobalcurrencyh
+        + <fs_bg>-amountinglobalcurrencyl.
+      <fs_bg>-amountincompanycodecurrency =
+        <fs_bg>-amountincompanycodecurrencyc
+        + <fs_bg>-amountincompanycodecurrencyh
+        + <fs_bg>-amountincompanycodecurrencyl.
+      <fs_bg>-createdat = lv_tsmt.
+      <fs_bg>-createdby = cl_abap_context_info=>get_user_technical_name( ).
+    ENDLOOP.
+
+    IF cs_failed-zi_intercoproposal IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+    IF ct_proposal_items_basis IS INITIAL.
+      APPEND VALUE #( %key = is_proposal->%key ) TO cs_failed-zi_intercoproposal.
+      APPEND VALUE #(
+        %key = is_proposal->%key
+        %msg = new_message(
+          id       = 'ZINT_MSG_INTERCO_CP'
+          number   = '015'
+          severity = if_abap_behv_message=>severity-error )
+      ) TO cs_reported-zi_intercoproposal.
+      RETURN.
+    ENDIF.
+
+    DATA lt_upd_clean TYPE gtty_proposal_items_upd.
+    lt_upd_clean = CORRESPONDING #( it_proposal_item[] ).
+    me->cleanproposalitembasis(
+      EXPORTING iv_proposalid     = is_proposal->id
+                it_proposal_items = lt_upd_clean ).
+
+    " Excepción Local para C23: CPI conserva los importes ya aplicados.
+    " La base original por CeBe se mantiene separada en lt_original_basis.
+    ct_proposal_items_upd = CORRESPONDING #( it_proposal_item[] ).
+    LOOP AT ct_proposal_items_upd ASSIGNING FIELD-SYMBOL(<fs_upd>).
+      <fs_upd>-%control-interdivisional              = if_abap_behv=>mk-on.
+      <fs_upd>-%control-baseamountprofitcenter       = if_abap_behv=>mk-on.
+      <fs_upd>-%control-baseamountprofitcenterc      = if_abap_behv=>mk-on.
+      <fs_upd>-%control-baseamountprofitcenterh      = if_abap_behv=>mk-on.
+      <fs_upd>-%control-baseamountprofitcenterl      = if_abap_behv=>mk-on.
+      <fs_upd>-%control-CpiCompanyCodeCurrency       = if_abap_behv=>mk-on.
+      <fs_upd>-%control-AmountInCompanyCodeCurrency  = if_abap_behv=>mk-on.
+      <fs_upd>-%control-AmountInCompanyCodeCurrencyC = if_abap_behv=>mk-on.
+      <fs_upd>-%control-AmountInCompanyCodeCurrencyH = if_abap_behv=>mk-on.
+      <fs_upd>-%control-AmountInCompanyCodeCurrencyL = if_abap_behv=>mk-on.
+      <fs_upd>-%control-exchangerate                 = if_abap_behv=>mk-on.
+
+      READ TABLE lt_item_rates ASSIGNING <fs_rate>
+        WITH TABLE KEY item_id = <fs_upd>-item_id.
+      IF sy-subrc = 0.
+        READ TABLE ct_proposal_items_basis ASSIGNING <fs_basis>
+          INDEX <fs_rate>-basis_index.
+        <fs_upd>-baseamountprofitcenterc      = <fs_basis>-amountinglobalcurrency_c.
+        <fs_upd>-baseamountprofitcenterh      = <fs_basis>-amountinglobalcurrency_h.
+        <fs_upd>-baseamountprofitcenterl      = <fs_basis>-amountinglobalcurrency_l.
+        <fs_upd>-baseamountprofitcenter       = <fs_basis>-amountinglobalcurrency.
+        <fs_upd>-CpiCompanyCodeCurrency       = <fs_basis>-companycodecurrency.
+        <fs_upd>-AmountInCompanyCodeCurrency  = <fs_basis>-amountincompanycodecurrency.
+        <fs_upd>-AmountInCompanyCodeCurrencyC = <fs_rate>-company_c.
+        <fs_upd>-AmountInCompanyCodeCurrencyH = <fs_rate>-company_h.
+        <fs_upd>-AmountInCompanyCodeCurrencyL = <fs_rate>-company_l.
+        <fs_upd>-exchangerate                 = <fs_basis>-exchangerate.
+      ENDIF.
+    ENDLOOP.
+
+    DATA lt_proposal_aux TYPE gtty_proposal.
+    APPEND CORRESPONDING #( is_proposal->* ) TO lt_proposal_aux.
+    IF cs_reported-zi_intercoproposal IS INITIAL.
+      ct_proposal_upd = me->prepareproposaltoupd(
+        it_proposal        = lt_proposal_aux
+        iv_proposal_status = zcl_proposal_bo_abs=>c_proposal_status-verified ).
+    ELSE.
+      ct_proposal_upd = me->prepareproposaltoupd(
+        it_proposal        = lt_proposal_aux
+        iv_proposal_status = zcl_proposal_bo_abs=>c_proposal_status-pending ).
+    ENDIF.
+
+    LOOP AT ct_proposal_items_basis INTO DATA(ls_basis).
+      lv_basis_index = sy-tabix.
+      APPEND VALUE #(
+        id      = is_proposal->id
+        item_id = ls_basis-item_id
+        %target = VALUE #(
+          ( %cid                        = |G04B_B{ lv_basis_index }|
+            id                          = ls_basis-id
+            item_id                     = ls_basis-item_id
+            itembasis_id                = ls_basis-itembasis_id
+            metric_id                   = ls_basis-metric_id
+            sharedrate                  = ls_basis-sharedrate
+            sharedrate_h                = ls_basis-sharedrate_h
+            sharedrate_l                = ls_basis-sharedrate_l
+            exchangerate                = ls_basis-exchangerate
+            globalcurrency              = ls_basis-globalcurrency
+            amountinglobalcurrency      = ls_basis-amountinglobalcurrency
+            amountinglobalcurrency_c    = ls_basis-amountinglobalcurrency_c
+            amountinglobalcurrency_h    = ls_basis-amountinglobalcurrency_h
+            amountinglobalcurrency_l    = ls_basis-amountinglobalcurrency_l
+            companycodecurrency         = ls_basis-companycodecurrency
+            amountincompanycodecurrency = ls_basis-amountincompanycodecurrency
+            createdat                   = ls_basis-createdat
+            createdby                   = ls_basis-createdby )
+        )
+      ) TO ct_items_basis_upd.
+    ENDLOOP.
+
+    MODIFY ENTITIES OF zi_intercoproposal IN LOCAL MODE
+      ENTITY zi_intercoproposal
+        UPDATE FROM ct_proposal_upd
+      ENTITY zi_intercoproposalitem
+        UPDATE FROM ct_proposal_items_upd
+        CREATE BY \_proposalitemsbasis AUTO FILL CID
+          FIELDS ( id item_id itembasis_id metric_id
+                   sharedrate sharedrate_h sharedrate_l exchangerate
+                   globalcurrency amountinglobalcurrency
+                   amountinglobalcurrency_c amountinglobalcurrency_h
+                   amountinglobalcurrency_l companycodecurrency
+                   amountincompanycodecurrency createdat createdby )
+          WITH ct_items_basis_upd
+      ENTITY zi_intercoproposalitembasis
+        CREATE BY \_proposalitemsbaoglac AUTO FILL CID
+          FIELDS ( id item_id itembasis_id glaccount costcenter
+                   sharedrateh sharedratel globalcurrency
+                   amountinglobalcurrency amountinglobalcurrencyc
+                   amountinglobalcurrencyh amountinglobalcurrencyl
+                   companycodecurrency amountincompanycodecurrency
+                   amountincompanycodecurrencyc amountincompanycodecurrencyh
+                   amountincompanycodecurrencyl createdat createdby )
+          WITH ct_items_bg_upd
+      MAPPED DATA(lt_mapped)
+      REPORTED DATA(lt_reported)
+      FAILED DATA(lt_failed).
+
+    " Fin EXT_OSCUGALD 04.11.2026 - G04B-R1
+
+
+*    " Ini Facturación Local CH/ARG EXT_OSCUGALD 03.11.2026 - G04B: métrica IC04 y detalle de origen
+*
+*    TYPES: BEGIN OF ty_item_rate,
+*             item_id     TYPE zde_prop_item_id,
+*             basis_index TYPE i,
+*             bg_index    TYPE i,
+*             rate        TYPE decfloat34,
+*           END OF ty_item_rate.
+*
+*    DATA lt_item_rates TYPE HASHED TABLE OF ty_item_rate
+*                       WITH UNIQUE KEY item_id.
+*    DATA lt_metric_items_calc
+*      TYPE zcl_interco_btp_cap_metric_api=>tt_item_calculated.
+*    DATA ls_metric_item_calc
+*      TYPE zcl_interco_btp_cap_metric_api=>ty_item_calculated.
+*
+*    " ── 1. Obtener header de métrica local desde BTP CAP ─────────────────────
+*    DATA(lo_cap_api) = zcl_interco_btp_cap_metric_api=>get_instance( ).
+*
+*    DATA(lt_local_metric) = lo_cap_api->get_local_metric(
+*      EXPORTING iv_fiscal_period = is_proposal->fiscalperiod
+*                iv_fiscal_year   = is_proposal->fiscalyear
+*                iv_metric_code   = CONV #( iv_product_metric ) ).
+*
+*    IF lt_local_metric IS INITIAL.
+*      APPEND VALUE #( %key = is_proposal->%key ) TO cs_failed-zi_intercoproposal.
+*      APPEND VALUE #( %key = is_proposal->%key
+*        %msg = new_message( id       = 'ZINT_MSG_INTERCO_CP'
+*                            number   = '011'
+*                            severity = if_abap_behv_message=>severity-warning
+*                            v1       = iv_product_metric
+*                            v2       = is_proposal->fiscalperiod+1(2)
+*                            v3       = is_proposal->fiscalyear ) ) TO cs_reported-zi_intercoproposal.
+*      RETURN.
+*    ENDIF.
+*
+*    " ── 2. Selección de versión de métrica ────────────────────────────────────
+*    DATA ls_local_metric LIKE LINE OF lt_local_metric.
+*
+*    DATA(lv_param_version) = iv_param-version.
+*    SHIFT lv_param_version LEFT DELETING LEADING '0'.
+*
+*    IF lines( lt_local_metric ) > 1.
+*      DATA(lv_metric)  = CONV string( iv_param-metric ).
+*      DATA(lv_version) = CONV string( lv_param_version ).
+*      READ TABLE lt_local_metric INTO ls_local_metric
+*        WITH KEY metric  = lv_metric
+*                 version = lv_version.
+*    ELSE.
+*      READ TABLE lt_local_metric INTO ls_local_metric INDEX 1.
+*    ENDIF.
+*
+*    IF ls_local_metric-isreleased EQ ''.
+*      APPEND VALUE #( %key = is_proposal->%key ) TO cs_failed-zi_intercoproposal.
+*      IF sy-sysid EQ 'TS4'.
+*        APPEND VALUE #( %key = is_proposal->%key
+*          %msg = new_message( id       = 'ZINT_MSG_INTERCO_CP'
+*                              number   = '005'
+*                              severity = if_abap_behv_message=>severity-warning ) ) TO cs_reported-zi_intercoproposal.
+*      ELSE.
+*        APPEND VALUE #( %key = is_proposal->%key
+*          %msg = new_message( id       = 'ZINT_MSG_INTERCO_CP'
+*                              number   = '005'
+*                              severity = if_abap_behv_message=>severity-error ) ) TO cs_reported-zi_intercoproposal.
+*      ENDIF.
+*      RETURN.
+*    ENDIF.
+*
+*    " ── 3. Obtener ítems calculados de la métrica local desde BTP CAP ─────────
+*    lt_metric_items_calc = lo_cap_api->get_local_metric_items_calc(
+*      EXPORTING iv_fiscal_period = is_proposal->fiscalperiod
+*                iv_fiscal_year   = is_proposal->fiscalyear
+*                iv_metric_code   = CONV #( iv_product_metric )
+*                iv_product       = CONV #( is_proposal->product )
+*                iv_provide_code  = CONV #( is_proposal->providercompanycode ) ).
+*
+*    IF lt_metric_items_calc IS INITIAL.
+*      APPEND VALUE #( %key = is_proposal->%key ) TO cs_failed-zi_intercoproposal.
+*      APPEND VALUE #( %key = is_proposal->%key
+*        %msg = new_message( id       = 'ZINT_MSG_INTERCO_CP'
+*                            number   = '006'
+*                            severity = if_abap_behv_message=>severity-error ) ) TO cs_reported-zi_intercoproposal.
+*      RETURN.
+*    ENDIF.
+*    " Cuenta/CeCo y base global de CPIG; moneda local desde la Base original.
+*    " El GROUP BY consolida aperturas de Base que comparten cuenta/CeCo.
+*    SELECT origin~itemid AS item_id,
+*           origin~glaccount,
+*           origin~costcenter,
+*           origin~globalcurrency,
+*           origin~amountinglobalcurrency AS base_global,
+*           detail~companycodecurrency,
+*           SUM( detail~amountincompanycodecurrency ) AS base_company
+*      FROM zi_intercoproposalitemorglacct AS origin
+*      INNER JOIN zi_intercoproposalitemdetail AS detail
+*        ON  detail~id         = origin~id
+*        AND detail~item_id    = origin~itemid
+*        AND detail~glaccount  = origin~glaccount
+*        AND detail~costcenter = origin~costcenter
+*      WHERE origin~id = @is_proposal->id
+*      GROUP BY origin~itemid,
+*               origin~glaccount,
+*               origin~costcenter,
+*               origin~globalcurrency,
+*               origin~amountinglobalcurrency,
+*               detail~companycodecurrency
+*      INTO TABLE @DATA(lt_origin_details).
+*
+*    " Se conserva la cotización existente; no se reconvierte el importe local.
+*    DATA(ld_lastday) = zcl_interco_utils=>rp_last_day_of_months(
+*      day_in = |{ is_proposal->fiscalyear }{ is_proposal->fiscalperiod+1 }01| ).
+*    DATA lv_exchangerate TYPE zint_dte_ukurs.
+*    SELECT SINGLE exchangerate
+*      FROM zi_exchangerate
+*      WHERE exchangeratetype          = 'B'
+*        AND sourcecurrency            = @is_proposal->companycodecurrency
+*        AND targetcurrency            = @is_proposal->globalcurrency
+*        AND exchangerateeffectivedate = @ld_lastday
+*      INTO @lv_exchangerate.
+*    IF sy-subrc = 0.
+*      lv_exchangerate = lv_exchangerate * -1.
+*    ENDIF.
+*
+*    GET TIME STAMP FIELD DATA(lv_tsmt).
+*
+*    " Un porcentaje IC04 por prestataria, aplicado a todos sus ítems de origen.
+*    LOOP AT it_proposal_item ASSIGNING FIELD-SYMBOL(<fs_item>).
+*      CLEAR ls_metric_item_calc.
+*      READ TABLE lt_metric_items_calc INTO ls_metric_item_calc
+*        WITH KEY product              = is_proposal->product
+*                 providercompanycode  = is_proposal->providercompanycode
+*                 recipientcompanycode = <fs_item>-recipientcompanycode
+*                 to_header_version    = lv_param_version.
+*
+*      IF ls_metric_item_calc IS INITIAL.
+*        APPEND VALUE #(
+*          %tky = is_proposal->%tky
+*          %msg = new_message(
+*            id       = 'ZINT_MSG_INTERCO_CP'
+*            number   = '017'
+*            severity = if_abap_behv_message=>severity-warning
+*            v1       = iv_product_metric
+*            v2       = |{ is_proposal->fiscalperiod+1(2) }/{ is_proposal->fiscalyear }|
+*            v3       = <fs_item>-recipientcompanycode
+*            v4       = '' )
+*        ) TO cs_reported-zi_intercoproposal.
+*      ELSE.
+*        DATA(lv_rate) = CONV decfloat34( ls_metric_item_calc-sharerate ).
+*        APPEND VALUE #(
+*          id                   = is_proposal->id
+*          item_id              = <fs_item>-item_id
+*          itembasis_id         = <fs_item>-itembasis_id + 1
+*          sharedrate           = lv_rate
+*          sharedrate_h         = 0
+*          sharedrate_l         = 0
+*          exchangerate         = lv_exchangerate
+*          globalcurrency       = is_proposal->globalcurrency
+*          companycodecurrency  = is_proposal->companycodecurrency
+*          createdat            = lv_tsmt
+*          createdby            = cl_abap_context_info=>get_user_technical_name( )
+*        ) TO ct_proposal_items_basis.
+*
+*        DATA(lv_basis_index) = lines( ct_proposal_items_basis ).
+*        APPEND VALUE #(
+*          %cid_ref     = |G04B_B{ lv_basis_index }|
+*          id           = is_proposal->id
+*          item_id      = <fs_item>-item_id
+*          itembasis_id = <fs_item>-itembasis_id + 1
+*        ) TO ct_items_bg_upd.
+*
+*        INSERT VALUE #(
+*          item_id     = <fs_item>-item_id
+*          basis_index = lv_basis_index
+*          bg_index    = lines( ct_items_bg_upd )
+*          rate        = lv_rate
+*        ) INTO TABLE lt_item_rates.
+*      ENDIF.
+*    ENDLOOP.
+*
+*    " Un detalle por cuenta/CeCo real; ambos importes usan el mismo porcentaje.
+*    DATA lv_bg_index TYPE i.
+*    LOOP AT lt_origin_details INTO DATA(ls_origin).
+*      READ TABLE lt_item_rates ASSIGNING FIELD-SYMBOL(<fs_rate>)
+*        WITH TABLE KEY item_id = ls_origin-item_id.
+*      IF sy-subrc <> 0.
+*        CONTINUE.
+*      ENDIF.
+*      READ TABLE ct_proposal_items_basis
+*        ASSIGNING FIELD-SYMBOL(<fs_basis>) INDEX <fs_rate>-basis_index.
+*      READ TABLE ct_items_bg_upd
+*        ASSIGNING FIELD-SYMBOL(<fs_bg_parent>) INDEX <fs_rate>-bg_index.
+*
+*      lv_bg_index += 1.
+*      APPEND INITIAL LINE TO <fs_bg_parent>-%target
+*        ASSIGNING FIELD-SYMBOL(<fs_bg>).
+*      <fs_bg>-%cid                         = |G04B_BG{ lv_bg_index }|.
+*      <fs_bg>-id                           = is_proposal->id.
+*      <fs_bg>-item_id                      = ls_origin-item_id.
+*      <fs_bg>-itembasis_id                 = <fs_basis>-itembasis_id.
+*      <fs_bg>-glaccount                    = |{ ls_origin-glaccount ALPHA = IN }|.
+*      <fs_bg>-costcenter                   = |{ ls_origin-costcenter ALPHA = IN }|.
+*      <fs_bg>-globalcurrency               = ls_origin-globalcurrency.
+*      <fs_bg>-amountinglobalcurrency       =
+*        CONV decfloat34( ls_origin-base_global ) * <fs_rate>-rate / 100.
+*      <fs_bg>-amountinglobalcurrencyl      = <fs_bg>-amountinglobalcurrency.
+*      <fs_bg>-companycodecurrency          = ls_origin-companycodecurrency.
+*      <fs_bg>-amountincompanycodecurrency  =
+*        CONV decfloat34( ls_origin-base_company ) * <fs_rate>-rate / 100.
+*      <fs_bg>-amountincompanycodecurrencyl = <fs_bg>-amountincompanycodecurrency.
+*      <fs_bg>-createdat                    = lv_tsmt.
+*      <fs_bg>-createdby                    = cl_abap_context_info=>get_user_technical_name( ).
+*
+*      " Acumular los importes ya asignados al tipo persistente del detalle.
+*      <fs_basis>-amountinglobalcurrency       += <fs_bg>-amountinglobalcurrency.
+*      <fs_basis>-amountinglobalcurrency_l     += <fs_bg>-amountinglobalcurrency.
+*      <fs_basis>-amountincompanycodecurrency  += <fs_bg>-amountincompanycodecurrency.
+*    ENDLOOP.
+*
+*    IF cs_failed-zi_intercoproposal IS NOT INITIAL.
+*      RETURN.
+*    ENDIF.
+*    IF ct_proposal_items_basis IS INITIAL.
+*      APPEND VALUE #( %key = is_proposal->%key ) TO cs_failed-zi_intercoproposal.
+*      APPEND VALUE #(
+*        %key = is_proposal->%key
+*        %msg = new_message(
+*          id       = 'ZINT_MSG_INTERCO_CP'
+*          number   = '015'
+*          severity = if_abap_behv_message=>severity-error )
+*      ) TO cs_reported-zi_intercoproposal.
+*      RETURN.
+*    ENDIF.
+*
+*    DATA lt_upd_clean TYPE gtty_proposal_items_upd.
+*    lt_upd_clean = CORRESPONDING #( it_proposal_item[] ).
+*    me->cleanproposalitembasis(
+*      EXPORTING iv_proposalid     = is_proposal->id
+*                it_proposal_items = lt_upd_clean ).
+*
+*    " Mantener la representación Local consumida por la rama C23 de la UI.
+*    ct_proposal_items_upd = CORRESPONDING #( it_proposal_item[] ).
+*    LOOP AT ct_proposal_items_upd ASSIGNING FIELD-SYMBOL(<fs_upd>).
+*      <fs_upd>-%control-interdivisional              = if_abap_behv=>mk-on.
+*      <fs_upd>-%control-baseamountprofitcenter       = if_abap_behv=>mk-on.
+*      <fs_upd>-%control-baseamountprofitcenterc      = if_abap_behv=>mk-on.
+*      <fs_upd>-%control-baseamountprofitcenterh      = if_abap_behv=>mk-on.
+*      <fs_upd>-%control-baseamountprofitcenterl      = if_abap_behv=>mk-on.
+*      <fs_upd>-%control-CpiCompanyCodeCurrency       = if_abap_behv=>mk-on.
+*      <fs_upd>-%control-AmountInCompanyCodeCurrency  = if_abap_behv=>mk-on.
+*      <fs_upd>-%control-AmountInCompanyCodeCurrencyC = if_abap_behv=>mk-on.
+*      <fs_upd>-%control-AmountInCompanyCodeCurrencyH = if_abap_behv=>mk-on.
+*      <fs_upd>-%control-AmountInCompanyCodeCurrencyL = if_abap_behv=>mk-on.
+*      <fs_upd>-%control-exchangerate                 = if_abap_behv=>mk-on.
+*
+*      READ TABLE lt_item_rates ASSIGNING <fs_rate>
+*        WITH TABLE KEY item_id = <fs_upd>-item_id.
+*      IF sy-subrc = 0.
+*        READ TABLE ct_proposal_items_basis ASSIGNING <fs_basis>
+*          INDEX <fs_rate>-basis_index.
+*        <fs_upd>-baseamountprofitcenterc      = 0.
+*        <fs_upd>-baseamountprofitcenterh      = 0.
+*        <fs_upd>-baseamountprofitcenterl      = <fs_basis>-amountinglobalcurrency_l.
+*        <fs_upd>-baseamountprofitcenter       = <fs_basis>-amountinglobalcurrency.
+*        <fs_upd>-CpiCompanyCodeCurrency       = <fs_basis>-companycodecurrency.
+*        <fs_upd>-AmountInCompanyCodeCurrency  = <fs_basis>-amountincompanycodecurrency.
+*        <fs_upd>-AmountInCompanyCodeCurrencyC = 0.
+*        <fs_upd>-AmountInCompanyCodeCurrencyH = 0.
+*        <fs_upd>-AmountInCompanyCodeCurrencyL = <fs_basis>-amountincompanycodecurrency.
+*        <fs_upd>-exchangerate                 = <fs_basis>-exchangerate.
+*      ENDIF.
+*    ENDLOOP.
+*
+*    DATA lt_proposal_aux TYPE gtty_proposal.
+*    APPEND CORRESPONDING #( is_proposal->* ) TO lt_proposal_aux.
+*    IF cs_reported-zi_intercoproposal IS INITIAL.
+*      ct_proposal_upd = me->prepareproposaltoupd(
+*        it_proposal        = lt_proposal_aux
+*        iv_proposal_status = zcl_proposal_bo_abs=>c_proposal_status-verified ).
+*    ELSE.
+*      ct_proposal_upd = me->prepareproposaltoupd(
+*        it_proposal        = lt_proposal_aux
+*        iv_proposal_status = zcl_proposal_bo_abs=>c_proposal_status-pending ).
+*    ENDIF.
+*
+*    LOOP AT ct_proposal_items_basis INTO DATA(ls_basis).
+*      lv_basis_index = sy-tabix.
+*      APPEND VALUE #(
+*        id      = is_proposal->id
+*        item_id = ls_basis-item_id
+*        %target = VALUE #(
+*          ( %cid                        = |G04B_B{ lv_basis_index }|
+*            id                          = ls_basis-id
+*            item_id                     = ls_basis-item_id
+*            itembasis_id                = ls_basis-itembasis_id
+*            metric_id                   = ls_basis-metric_id
+*            sharedrate                  = ls_basis-sharedrate
+*            sharedrate_h                = ls_basis-sharedrate_h
+*            sharedrate_l                = ls_basis-sharedrate_l
+*            exchangerate                = ls_basis-exchangerate
+*            globalcurrency              = ls_basis-globalcurrency
+*            amountinglobalcurrency      = ls_basis-amountinglobalcurrency
+*            amountinglobalcurrency_c    = ls_basis-amountinglobalcurrency_c
+*            amountinglobalcurrency_h    = ls_basis-amountinglobalcurrency_h
+*            amountinglobalcurrency_l    = ls_basis-amountinglobalcurrency_l
+*            companycodecurrency         = ls_basis-companycodecurrency
+*            amountincompanycodecurrency = ls_basis-amountincompanycodecurrency
+*            createdat                   = ls_basis-createdat
+*            createdby                   = ls_basis-createdby )
+*        )
+*      ) TO ct_items_basis_upd.
+*    ENDLOOP.
+*
+*    MODIFY ENTITIES OF zi_intercoproposal IN LOCAL MODE
+*      ENTITY zi_intercoproposal
+*        UPDATE FROM ct_proposal_upd
+*      ENTITY zi_intercoproposalitem
+*        UPDATE FROM ct_proposal_items_upd
+*        CREATE BY \_proposalitemsbasis AUTO FILL CID
+*          FIELDS ( id item_id itembasis_id metric_id
+*                   sharedrate sharedrate_h sharedrate_l exchangerate
+*                   globalcurrency amountinglobalcurrency
+*                   amountinglobalcurrency_c amountinglobalcurrency_h
+*                   amountinglobalcurrency_l companycodecurrency
+*                   amountincompanycodecurrency createdat createdby )
+*          WITH ct_items_basis_upd
+*      ENTITY zi_intercoproposalitembasis
+*        CREATE BY \_proposalitemsbaoglac AUTO FILL CID
+*          FIELDS ( id item_id itembasis_id glaccount costcenter
+*                   sharedrateh sharedratel globalcurrency
+*                   amountinglobalcurrency amountinglobalcurrencyc
+*                   amountinglobalcurrencyh amountinglobalcurrencyl
+*                   companycodecurrency amountincompanycodecurrency
+*                   amountincompanycodecurrencyc amountincompanycodecurrencyh
+*                   amountincompanycodecurrencyl createdat createdby )
+*          WITH ct_items_bg_upd
+*      MAPPED DATA(lt_mapped)
+*      REPORTED DATA(lt_reported)
+*      FAILED DATA(lt_failed).
+*
+*    " Fin EXT_OSCUGALD 03.11.2026 - G04B
   ENDMETHOD.
 
   METHOD apply_mic_metric.

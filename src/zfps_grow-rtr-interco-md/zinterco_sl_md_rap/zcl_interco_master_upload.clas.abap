@@ -30,6 +30,9 @@ CLASS zcl_interco_master_upload DEFINITION
         validFrom        TYPE string,
         validTo          TYPE string,
         rate             TYPE string,
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01B: recibe PaymentType en la carga
+        paymentType      TYPE string,
+        " Fin EXT_OSCUGALD 24.10.2026 - G01B
         flow             TYPE string,
         isPromo          TYPE string,
         zindex           TYPE string,
@@ -96,7 +99,10 @@ CLASS zcl_interco_master_upload IMPLEMENTATION.
                            AND validFrom        IS INITIAL
                            AND validTo          IS INITIAL
                            AND rate             IS INITIAL
-                           AND flow             IS INITIAL.
+                           AND flow             IS INITIAL
+" Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01B
+                           AND paymentType      IS INITIAL.
+    " Fin EXT_OSCUGALD 24.10.2026 - G01B
 *                           AND isPromo          IS INITIAL.
     DATA(lv_flag) = abap_false.
     DATA lv_rate_original TYPE string.

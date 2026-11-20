@@ -378,7 +378,7 @@ annotate view ZC_INTERCOCLASSIFICATIONRULE with
         position: 15
     }]
   }
-  @EndUserText.label: 'Payment Type'
+  @EndUserText.label: 'Tipo Fac. Interco'
   @Consumption.valueHelpDefinition: [{
     entity.name: 'ZI_IntercoPaymentTypeVH',
     entity.element: 'PaymentType',

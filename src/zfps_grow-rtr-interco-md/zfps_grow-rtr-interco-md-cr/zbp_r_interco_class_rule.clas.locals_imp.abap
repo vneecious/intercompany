@@ -1,20 +1,20 @@
-class lsc_classificationrule definition inheriting from cl_abap_behavior_saver.
+CLASS lsc_classificationrule DEFINITION INHERITING FROM cl_abap_behavior_saver.
 
-  protected section.
+  PROTECTED SECTION.
 
-    methods save_modified redefinition.
+    METHODS save_modified REDEFINITION.
 
-endclass.
+ENDCLASS.
 
-class lsc_classificationrule implementation.
+CLASS lsc_classificationrule IMPLEMENTATION.
 
-  method save_modified.
+  METHOD save_modified.
 
-    if create-classificationrule is initial and
-       update-classificationrule is initial and
-       delete-classificationrule is initial.
-      return.
-    endif.
+    IF create-classificationrule IS INITIAL AND
+       update-classificationrule IS INITIAL AND
+       delete-classificationrule IS INITIAL.
+      RETURN.
+    ENDIF.
 
     zcl_interco=>log->save(
       iv_tablename = 'ZINT_A_MD_CR'
@@ -105,133 +105,133 @@ class lsc_classificationrule implementation.
 *
 *    endloop.
 
-  endmethod.
+  ENDMETHOD.
 
-endclass.
+ENDCLASS.
 
-class lcl_numberrange_rule_id definition.
-  public section.
+CLASS lcl_numberrange_rule_id DEFINITION.
+  PUBLIC SECTION.
 
-    data ty_keys type table for determination zr_intercoclassificationrule\\classificationrule~setruleid.
-    types ty_key like line of ty_keys.
-    interfaces if_abap_parallel.
+    DATA ty_keys TYPE TABLE FOR DETERMINATION zr_intercoclassificationrule\\classificationrule~setruleid.
+    TYPES ty_key LIKE LINE OF ty_keys.
+    INTERFACES if_abap_parallel.
 
-    methods:
+    METHODS:
       constructor
-        importing key type ty_key.
+        IMPORTING key TYPE ty_key.
 
-    data rule_id type zint_rule_id.
-    data key type ty_key.
-endclass.
+    DATA rule_id TYPE zint_rule_id.
+    DATA key TYPE ty_key.
+ENDCLASS.
 
-class lcl_numberrange_rule_id implementation.
+CLASS lcl_numberrange_rule_id IMPLEMENTATION.
 
-  method constructor.
+  METHOD constructor.
     me->key = key.
-  endmethod.
+  ENDMETHOD.
 
-  method if_abap_parallel~do.
-    try.
-        data(number_range) = cast if_numberrange_buffer( cl_numberrange_buffer=>get_instance( ) ).
+  METHOD if_abap_parallel~do.
+    TRY.
+        DATA(number_range) = CAST if_numberrange_buffer( cl_numberrange_buffer=>get_instance( ) ).
         number_range->number_get_no_buffer(
-          exporting
+          EXPORTING
             iv_object   = zif_co_interco_class_rule=>range_number
             iv_interval = '01'
             iv_quantity = 1
-          importing
-            ev_number   = data(rule_id)
+          IMPORTING
+            ev_number   = DATA(rule_id)
         ).
 
-        me->rule_id = conv #( rule_id ).
-      catch cx_number_ranges.
-    endtry.
-  endmethod.
-endclass.
+        me->rule_id = CONV #( rule_id ).
+      CATCH cx_number_ranges.
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
 
 
 
-class lhc_classificationrule definition inheriting from cl_abap_behavior_handler.
-  private section.
-    methods:
-      get_global_authorizations for global authorization
-        importing
-        request requested_authorizations for ClassificationRule
-        result result,
+CLASS lhc_classificationrule DEFINITION INHERITING FROM cl_abap_behavior_handler.
+  PRIVATE SECTION.
+    METHODS:
+      get_global_authorizations FOR GLOBAL AUTHORIZATION
+        IMPORTING
+        REQUEST requested_authorizations FOR ClassificationRule
+        RESULT result,
 
-      SetRuleId for determine on save
-        importing keys for ClassificationRule~SetRuleId,
+      SetRuleId FOR DETERMINE ON SAVE
+        IMPORTING keys FOR ClassificationRule~SetRuleId,
 
-      get_instance_features for instance features
-        importing keys request requested_features for ClassificationRule result result.
+      get_instance_features FOR INSTANCE FEATURES
+        IMPORTING keys REQUEST requested_features FOR ClassificationRule RESULT result.
 
-    methods DefaultForCreate for read
-      importing keys for function ClassificationRule~DefaultForCreate result result.
+    METHODS DefaultForCreate FOR READ
+      IMPORTING keys FOR FUNCTION ClassificationRule~DefaultForCreate RESULT result.
 
-    methods CopyClassificationRule for modify
-      importing keys for action ClassificationRule~CopyClassificationRule.
+    METHODS CopyClassificationRule FOR MODIFY
+      IMPORTING keys FOR ACTION ClassificationRule~CopyClassificationRule.
 
-    methods Delimit for modify
-      importing keys for action ClassificationRule~Delimit result result.
+    METHODS Delimit FOR MODIFY
+      IMPORTING keys FOR ACTION ClassificationRule~Delimit RESULT result.
 
     " This methods is relevant only for the Copy action.
-    methods ValidateDateOverlap for validate on save
-      importing keys for ClassificationRule~ValidateDateOverlap.
+    METHODS ValidateDateOverlap FOR VALIDATE ON SAVE
+      IMPORTING keys FOR ClassificationRule~ValidateDateOverlap.
 
-    methods ValidateValidTo for validate on save
-      importing keys for ClassificationRule~ValidateValidTo.
+    METHODS ValidateValidTo FOR VALIDATE ON SAVE
+      IMPORTING keys FOR ClassificationRule~ValidateValidTo.
 
-    methods ValidateRequired for validate on save
-      importing keys for ClassificationRule~ValidateRequired.
+    METHODS ValidateRequired FOR VALIDATE ON SAVE
+      IMPORTING keys FOR ClassificationRule~ValidateRequired.
 
-    methods ClearProduct for determine on modify
-      importing keys for ClassificationRule~ClearProduct.
-    methods ValidateBillRelation for validate on save
-      importing keys for ClassificationRule~ValidateBillRelation.
-    methods ValidateDuplicated for validate on save
-      importing keys for ClassificationRule~ValidateDuplicated.
-    methods Delete for modify
-      importing keys for action ClassificationRule~Delete result result.
+    METHODS ClearProduct FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR ClassificationRule~ClearProduct.
+    METHODS ValidateBillRelation FOR VALIDATE ON SAVE
+      IMPORTING keys FOR ClassificationRule~ValidateBillRelation.
+    METHODS ValidateDuplicated FOR VALIDATE ON SAVE
+      IMPORTING keys FOR ClassificationRule~ValidateDuplicated.
+    METHODS Delete FOR MODIFY
+      IMPORTING keys FOR ACTION ClassificationRule~Delete RESULT result.
 
-    methods Restore for modify
-      importing keys for action ClassificationRule~Restore result result.
-    methods SetPandLevel for determine on save
-      importing keys for ClassificationRule~SetPandLevel.
+    METHODS Restore FOR MODIFY
+      IMPORTING keys FOR ACTION ClassificationRule~Restore RESULT result.
+    METHODS SetPandLevel FOR DETERMINE ON SAVE
+      IMPORTING keys FOR ClassificationRule~SetPandLevel.
 
     "! Validate fields that are linked to search helps
-    methods ValidateAllFields for validate on save
-      importing keys for ClassificationRule~ValidateAllFields.
+    METHODS ValidateAllFields FOR VALIDATE ON SAVE
+      IMPORTING keys FOR ClassificationRule~ValidateAllFields.
 
-endclass.
+ENDCLASS.
 
-class lhc_classificationrule implementation.
+CLASS lhc_classificationrule IMPLEMENTATION.
 
-  method get_global_authorizations.
-    data display_error type abap_boolean.
+  METHOD get_global_authorizations.
+    DATA display_error TYPE abap_boolean.
 
-    data(can_delete) = zcl_interco=>authority->for( zcl_interco_authority=>c_delete ).
-    data(can_create) = zcl_interco=>authority->for( zcl_interco_authority=>c_create ).
-    data(can_update) = zcl_interco=>authority->for( zcl_interco_authority=>c_update ).
+    DATA(can_delete) = zcl_interco=>authority->for( zcl_interco_authority=>c_delete ).
+    DATA(can_create) = zcl_interco=>authority->for( zcl_interco_authority=>c_create ).
+    DATA(can_update) = zcl_interco=>authority->for( zcl_interco_authority=>c_update ).
 
     " Check DELETE
     result-%delete = can_delete.
     result-%action-Restore = can_delete.
-    if can_delete = if_abap_behv=>auth-unauthorized and (
-          requested_authorizations-%delete = if_abap_behv=>mk-on or
+    IF can_delete = if_abap_behv=>auth-unauthorized AND (
+          requested_authorizations-%delete = if_abap_behv=>mk-on OR
           requested_authorizations-%action-Restore = if_abap_behv=>mk-on ).
       display_error = abap_true.
-    endif.
+    ENDIF.
 
     " Check CREATE
     result-%create = can_create.
     result-%action-CopyClassificationRule = can_create.
     result-%action-Edit = can_create.
 
-    if can_create = if_abap_behv=>auth-unauthorized and (
-       requested_authorizations-%create = if_abap_behv=>mk-on or
-       requested_authorizations-%action-CopyClassificationRule = if_abap_behv=>mk-on or
+    IF can_create = if_abap_behv=>auth-unauthorized AND (
+       requested_authorizations-%create = if_abap_behv=>mk-on OR
+       requested_authorizations-%action-CopyClassificationRule = if_abap_behv=>mk-on OR
        requested_authorizations-%action-Edit = if_abap_behv=>mk-on ).
       display_error = abap_true.
-    endif.
+    ENDIF.
 
     " Check UPDATE
     result-%action-Delete = can_update.
@@ -239,24 +239,24 @@ class lhc_classificationrule implementation.
     result-%action-Edit = can_update.
     result-%update = can_update.
 
-    if can_update =  if_abap_behv=>auth-unauthorized and (
-       requested_authorizations-%update = if_abap_behv=>mk-on or
-       requested_authorizations-%action-Edit = if_abap_behv=>mk-on or
-       requested_authorizations-%action-Delimit = if_abap_behv=>mk-on or
+    IF can_update =  if_abap_behv=>auth-unauthorized AND (
+       requested_authorizations-%update = if_abap_behv=>mk-on OR
+       requested_authorizations-%action-Edit = if_abap_behv=>mk-on OR
+       requested_authorizations-%action-Delimit = if_abap_behv=>mk-on OR
        requested_authorizations-%action-Delete = if_abap_behv=>mk-on ).
       display_error = abap_true.
-    endif.
+    ENDIF.
 
-    if display_error = abap_true.
-      append value #( %msg    = zcl_fi_intrc_messages=>new_message(
+    IF display_error = abap_true.
+      APPEND VALUE #( %msg    = zcl_fi_intrc_messages=>new_message(
                       textid   = zcl_fi_intrc_messages=>no_authority
                       severity = if_abap_behv_message=>severity-error )
-                      %global = if_abap_behv=>mk-on ) to reported-classificationrule.
-    endif.
+                      %global = if_abap_behv=>mk-on ) TO reported-classificationrule.
+    ENDIF.
 
-  endmethod.
+  ENDMETHOD.
 
-  method SetRuleId.
+  METHOD SetRuleId.
 
     " RuleID is used as an 'external ID' and not the primary key in this context.
     " However, we do not want users to manually assign this value. Instead, it is generated using a number range (ZINTRULEID).
@@ -268,148 +268,155 @@ class lhc_classificationrule implementation.
     "
     " The parallel processing triggers the number range generation outside the restricted behavior handler context,
     " allowing us to retrieve the new RuleIDs and update them accordingly.
-    data(parallel_processing) = new cl_abap_parallel(  ).
+    DATA(parallel_processing) = NEW cl_abap_parallel(  ).
 
-    read entities of zr_intercoclassificationrule in local mode
-        entity ClassificationRule
-            fields ( RuleId )
-            with corresponding #( keys )
-            result data(rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+        ENTITY ClassificationRule
+            FIELDS ( RuleId )
+            WITH CORRESPONDING #( keys )
+            RESULT DATA(rules).
 
-    delete rules where ruleid is not initial.
+    DELETE rules WHERE ruleid IS NOT INITIAL.
 
     parallel_processing->run_inst(
-      exporting
-        p_in_tab  = value #( for r in rules ( new lcl_numberrange_rule_id( key = corresponding #( r ) ) ) )
-      importing
-        p_out_tab = data(parallel_results)
+      EXPORTING
+        p_in_tab  = VALUE #( FOR r IN rules ( NEW lcl_numberrange_rule_id( key = CORRESPONDING #( r ) ) ) )
+      IMPORTING
+        p_out_tab = DATA(parallel_results)
     ).
 
-    loop at parallel_results into data(parallel_result).
-      data(numberrange_rule_id) =  cast lcl_numberrange_rule_id( parallel_result-inst ).
-      data(rule) = ref #( rules[ key entity %key = numberrange_rule_id->key-%key ] ).
+    LOOP AT parallel_results INTO DATA(parallel_result).
+      DATA(numberrange_rule_id) =  CAST lcl_numberrange_rule_id( parallel_result-inst ).
+      DATA(rule) = REF #( rules[ KEY entity %key = numberrange_rule_id->key-%key ] ).
       rule->RuleID = numberrange_rule_id->rule_id.
-    endloop.
+    ENDLOOP.
 
-    modify entities of zr_intercoclassificationrule in local mode
-        entity ClassificationRule
-            update fields ( RuleID ) with corresponding #( rules )
-                reported data(reported_modify)
-                failed data(failed_modify)
-                mapped data(mapped_modify).
+    MODIFY ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+        ENTITY ClassificationRule
+            UPDATE FIELDS ( RuleID ) WITH CORRESPONDING #( rules )
+                REPORTED DATA(reported_modify)
+                FAILED DATA(failed_modify)
+                MAPPED DATA(mapped_modify).
 
-    reported = corresponding #( deep reported_modify ).
+    reported = CORRESPONDING #( DEEP reported_modify ).
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method SetPandLevel.
+  METHOD SetPandLevel.
 
-    read entities of zr_intercoclassificationrule in local mode
-        entity classificationrule
-            fields ( pandlid )
-            with corresponding #( keys )
-            result data(rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+        ENTITY classificationrule
+            FIELDS ( pandlid )
+            WITH CORRESPONDING #( keys )
+            RESULT DATA(rules).
 
-    if rules is not initial.
-      select id, customerlevel from ZI_IntercoPandLHierFlattenedSH
-      with privileged access
-          for all entries in @rules
-          where id = @rules-PAndLID
-          into table @data(pandl_levels).
-    endif.
+    IF rules IS NOT INITIAL.
+      SELECT id, customerlevel FROM ZI_IntercoPandLHierFlattenedSH
+      WITH PRIVILEGED ACCESS
+          FOR ALL ENTRIES IN @rules
+          WHERE id = @rules-PAndLID
+          INTO TABLE @DATA(pandl_levels).
+    ENDIF.
 
-    loop at rules reference into data(rule).
+    LOOP AT rules REFERENCE INTO DATA(rule).
 
-      try.
+      TRY.
           rule->PAndLLevel = pandl_levels[ id = rule->PAndLID ]-CustomerLevel.
-        catch cx_sy_itab_line_not_found.
-          continue.
-      endtry.
+        CATCH cx_sy_itab_line_not_found.
+          CONTINUE.
+      ENDTRY.
 
-    endloop.
+    ENDLOOP.
 
-    modify entities of ZR_IntercoClassificationRule in local mode
-        entity classificationrule
-            update fields ( PAndLLevel ) with corresponding #( rules )
-            reported data(reported_modify)
-            failed data(failed_modify)
-            mapped data(mapped_modify).
+    MODIFY ENTITIES OF ZR_IntercoClassificationRule IN LOCAL MODE
+        ENTITY classificationrule
+            UPDATE FIELDS ( PAndLLevel ) WITH CORRESPONDING #( rules )
+            REPORTED DATA(reported_modify)
+            FAILED DATA(failed_modify)
+            MAPPED DATA(mapped_modify).
 
-    reported = corresponding #( deep reported_modify ).
-
-
-  endmethod.
-
-  method get_instance_features.
-    constants: begin of c_product_flow,
-                 outflow type zi_intercocompanyrelproduct-Flow value 'O',
-                 inflow  type zi_intercocompanyrelproduct-Flow value 'I',
-               end of c_product_flow.
+    reported = CORRESPONDING #( DEEP reported_modify ).
 
 
-    read entities of zr_intercoclassificationrule in local mode
-      entity ClassificationRule
-          fields ( ValidFrom ValidTo CompanyCode IsNotBillable Product IsDeleted IsNotDeleted )
-              with corresponding #( keys )
-              result data(current_rules).
+  ENDMETHOD.
 
-    if current_rules is not initial.
-      select providercompanycode as companycode, product, flow from ZI_IntercoCompanyRelProduct
-      with privileged access
-      for all entries in @current_rules
-          where Product = @current_rules-Product
-            and ValidFrom <= @current_rules-validto
-            and ValidTo >= @current_rules-validfrom
-            and IsDeleted is initial
-            into table @data(products_flows).
-    endif.
+  METHOD get_instance_features.
+    CONSTANTS: BEGIN OF c_product_flow,
+                 outflow TYPE zi_intercocompanyrelproduct-Flow VALUE 'O',
+                 inflow  TYPE zi_intercocompanyrelproduct-Flow VALUE 'I',
+               END OF c_product_flow.
 
-    loop at current_rules reference into data(current_rule).
 
-      try.
-          data(product_flow) = products_flows[ companycode = current_rule->CompanyCode product = current_rule->product ].
-        catch cx_sy_itab_line_not_found.
-          try.
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+      ENTITY ClassificationRule
+          " Ini Facturación Local EXT_VINBARRI 20.11.2026 - CcStdHierArea opcional para PaymentType L
+          " FIELDS ( ValidFrom ValidTo CompanyCode IsNotBillable Product IsDeleted IsNotDeleted )
+          FIELDS ( ValidFrom ValidTo CompanyCode IsNotBillable Product IsDeleted IsNotDeleted PaymentType )
+          " Fin EXT_VINBARRI 20.11.2026
+              WITH CORRESPONDING #( keys )
+              RESULT DATA(current_rules).
+
+    IF current_rules IS NOT INITIAL.
+      SELECT providercompanycode AS companycode, product, flow FROM ZI_IntercoCompanyRelProduct
+      WITH PRIVILEGED ACCESS
+      FOR ALL ENTRIES IN @current_rules
+          WHERE Product = @current_rules-Product
+            AND ValidFrom <= @current_rules-validto
+            AND ValidTo >= @current_rules-validfrom
+            AND IsDeleted IS INITIAL
+            INTO TABLE @DATA(products_flows).
+    ENDIF.
+
+    LOOP AT current_rules REFERENCE INTO DATA(current_rule).
+
+      TRY.
+          DATA(product_flow) = products_flows[ companycode = current_rule->CompanyCode product = current_rule->product ].
+        CATCH cx_sy_itab_line_not_found.
+          TRY.
               product_flow = products_flows[ product = current_rule->product ].
-            catch cx_sy_itab_line_not_found.
-          endtry.
-      endtry.
+            CATCH cx_sy_itab_line_not_found.
+          ENDTRY.
+      ENDTRY.
 
       "  Fields:
-      data(required_when_outflow) = cond #( when product_flow-Flow = c_product_flow-outflow then if_abap_behv=>fc-f-mandatory else if_abap_behv=>fc-f-unrestricted ).
-      data(required_when_inflow) = cond #( when product_flow-Flow = c_product_flow-inflow then if_abap_behv=>fc-f-mandatory else if_abap_behv=>fc-f-unrestricted ).
-      data(required_when_billable) = cond #( when current_rule->IsNotBillable = abap_false then if_abap_behv=>fc-f-mandatory else if_abap_behv=>fc-f-unrestricted ).
+      DATA(required_when_outflow) = COND #( WHEN product_flow-Flow = c_product_flow-outflow THEN if_abap_behv=>fc-f-mandatory ELSE if_abap_behv=>fc-f-unrestricted ).
+      DATA(required_when_inflow) = COND #( WHEN product_flow-Flow = c_product_flow-inflow THEN if_abap_behv=>fc-f-mandatory ELSE if_abap_behv=>fc-f-unrestricted ).
+      " Ini Facturación Local EXT_VINBARRI 20.11.2026 - CcStdHierArea opcional para PaymentType L
+      DATA(required_area_when_outflow) = COND #( WHEN current_rule->PaymentType = 'L' THEN if_abap_behv=>fc-f-unrestricted
+                                                 ELSE required_when_outflow ).
+      " Fin EXT_VINBARRI 20.11.2026
+      DATA(required_when_billable) = COND #( WHEN current_rule->IsNotBillable = abap_false THEN if_abap_behv=>fc-f-mandatory ELSE if_abap_behv=>fc-f-unrestricted ).
 
-      data(enable_when_billable) = cond #(
-              when current_rule->IsNotBillable = abap_true
-                then if_abap_behv=>fc-f-read_only
-                else if_abap_behv=>fc-f-mandatory ).
+      DATA(enable_when_billable) = COND #(
+              WHEN current_rule->IsNotBillable = abap_true
+                THEN if_abap_behv=>fc-f-read_only
+                ELSE if_abap_behv=>fc-f-mandatory ).
 
       "  Actions:
-      data(can_delimit) = cond #(
-              when current_rule->%is_draft = if_abap_behv=>mk-on
-                  then if_abap_behv=>fc-o-disabled
-                  else if_abap_behv=>fc-o-enabled ).
+      DATA(can_delimit) = COND #(
+              WHEN current_rule->%is_draft = if_abap_behv=>mk-on
+                  THEN if_abap_behv=>fc-o-disabled
+                  ELSE if_abap_behv=>fc-o-enabled ).
 
-      data(can_restore) = cond #(
-        when current_rule->%is_draft = if_abap_behv=>mk-on then if_abap_behv=>fc-o-disabled
-        when current_rule->IsDeleted = abap_true then if_abap_behv=>fc-o-enabled
-        else if_abap_behv=>fc-o-disabled ).
+      DATA(can_restore) = COND #(
+        WHEN current_rule->%is_draft = if_abap_behv=>mk-on THEN if_abap_behv=>fc-o-disabled
+        WHEN current_rule->IsDeleted = abap_true THEN if_abap_behv=>fc-o-enabled
+        ELSE if_abap_behv=>fc-o-disabled ).
 
-      data(can_mark_as_deleted) = cond #(
-        when current_rule->%is_draft = if_abap_behv=>mk-on then if_abap_behv=>fc-o-disabled
-        when current_rule->IsDeleted = abap_true then if_abap_behv=>fc-o-disabled
-        else if_abap_behv=>fc-o-enabled ).
+      DATA(can_mark_as_deleted) = COND #(
+        WHEN current_rule->%is_draft = if_abap_behv=>mk-on THEN if_abap_behv=>fc-o-disabled
+        WHEN current_rule->IsDeleted = abap_true THEN if_abap_behv=>fc-o-disabled
+        ELSE if_abap_behv=>fc-o-enabled ).
 
       " Operations:
-      data(can_edit) = cond #(
-          when current_rule->IsDeleted = abap_true
-              then if_abap_behv=>fc-o-disabled
-              else if_abap_behv=>fc-o-enabled
+      DATA(can_edit) = COND #(
+          WHEN current_rule->IsDeleted = abap_true
+              THEN if_abap_behv=>fc-o-disabled
+              ELSE if_abap_behv=>fc-o-enabled
       ).
 
-      append value #(
+      APPEND VALUE #(
                         %tky                 = current_rule->%tky
                         %key                 = current_rule->%key
                         %pky                 = current_rule->%pky
@@ -421,39 +428,42 @@ class lhc_classificationrule implementation.
                         %field-PAndLID       = required_when_billable
                         %field-Product       = enable_when_billable
                         %field-ProfitCenter  = required_when_inflow
-                        %field-CcStdHierArea = required_when_outflow
-                        %field-CcAllocation  = required_when_outflow ) to result.
-    endloop.
-  endmethod.
+                        " Ini Facturación Local EXT_VINBARRI 20.11.2026 - CcStdHierArea opcional para PaymentType L
+                        " %field-CcStdHierArea = required_when_outflow
+                        %field-CcStdHierArea = required_area_when_outflow
+                        " Fin EXT_VINBARRI 20.11.2026
+                        %field-CcAllocation  = required_when_outflow ) TO result.
+    ENDLOOP.
+  ENDMETHOD.
 
-  method DefaultForCreate.
+  METHOD DefaultForCreate.
 
-    data(today) = cl_abap_context_info=>get_system_date( ).
-    result = value #( for key in keys (
+    DATA(today) = cl_abap_context_info=>get_system_date( ).
+    result = VALUE #( FOR key IN keys (
                       %cid                       = key-%cid
                       %param-%is_draft           = if_abap_Behv=>mk-on
                       %param-%data-ValidFrom     = |{ today(6) }01|
                       %param-%data-ValidTo       = |{ today(4) }1231|
                       %param-%data-IsNotBillable = abap_false ) ).
-  endmethod.
+  ENDMETHOD.
 
-  method CopyClassificationRule.
+  METHOD CopyClassificationRule.
 
-    data:
-      new_rules      type table for create zr_intercoclassificationrule\\ClassificationRule,
-      delimited_keys type table for action import zr_intercoclassificationrule\\ClassificationRule~Delimit.
+    DATA:
+      new_rules      TYPE TABLE FOR CREATE zr_intercoclassificationrule\\ClassificationRule,
+      delimited_keys TYPE TABLE FOR ACTION IMPORT zr_intercoclassificationrule\\ClassificationRule~Delimit.
 
-    read table keys with key %cid = '' into data(key_with_inital_cid).
-    assert key_with_inital_cid is initial.
+    READ TABLE keys WITH KEY %cid = '' INTO DATA(key_with_inital_cid).
+    ASSERT key_with_inital_cid IS INITIAL.
 
-    read entities of zr_intercoclassificationrule in local mode
-      entity ClassificationRule
-       all fields with corresponding #( keys )
-    result data(current_rules)
-    failed failed.
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+      ENTITY ClassificationRule
+       ALL FIELDS WITH CORRESPONDING #( keys )
+    RESULT DATA(current_rules)
+    FAILED failed.
 
-    loop at current_rules assigning field-symbol(<current_rule>).
-      data(key) = keys[ %tky = <current_rule>-%tky ].
+    LOOP AT current_rules ASSIGNING FIELD-SYMBOL(<current_rule>).
+      DATA(key) = keys[ %tky = <current_rule>-%tky ].
 
       " A copy operation can result in either:
       " 1. A New Rule based on an existing one (RuleID filled), or
@@ -461,215 +471,219 @@ class lhc_classificationrule implementation.
       "
       " For the second scenario, we need to delimit the copied record to ensure the new version
       " becomes the valid one.
-      if key-%param-RuleID is not initial and
+      IF key-%param-RuleID IS NOT INITIAL AND
          <current_rule>-validto >= key-%param-validfrom.
-        append initial line to delimited_keys  assigning field-symbol(<delimited_key>).
-        <delimited_key> = corresponding #( key ).
+        APPEND INITIAL LINE TO delimited_keys  ASSIGNING FIELD-SYMBOL(<delimited_key>).
+        <delimited_key> = CORRESPONDING #( key ).
         <delimited_key>-%param-ValidTo = key-%param-ValidFrom - 1.
-      endif.
+      ENDIF.
 
-      append value #( %cid      = key-%cid
-                      %is_draft = cond #( when key-%param-RuleId is not initial then if_abap_behv=>mk-off else if_abap_behv=>mk-on )
-                      %data     = corresponding #( <current_rule> except id ) )
-                        to new_rules assigning field-symbol(<new_rule>).
+      APPEND VALUE #( %cid      = key-%cid
+                      %is_draft = COND #( WHEN key-%param-RuleId IS NOT INITIAL THEN if_abap_behv=>mk-off ELSE if_abap_behv=>mk-on )
+                      %data     = CORRESPONDING #( <current_rule> EXCEPT id ) )
+                        TO new_rules ASSIGNING FIELD-SYMBOL(<new_rule>).
 
-      data(today) = cl_abap_context_info=>get_system_date( ).
+      DATA(today) = cl_abap_context_info=>get_system_date( ).
 
       <new_rule>-RuleId = key-%param-RuleID.
       <new_rule>-validfrom   = key-%param-validfrom.
       <new_rule>-validto     = |{ today(4) }1231|.
 
-    endloop.
+    ENDLOOP.
 
-    modify entities of zr_intercoclassificationrule in local mode
-       entity ClassificationRule
-         execute delimit from delimited_keys
-            mapped data(mapped_delimit)
-            failed data(failed_delimit)
-            reported data(reporte_delimit).
+    MODIFY ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+       ENTITY ClassificationRule
+         EXECUTE delimit FROM delimited_keys
+            MAPPED DATA(mapped_delimit)
+            FAILED DATA(failed_delimit)
+            REPORTED DATA(reporte_delimit).
 
-    if failed-classificationrule is not initial.
-      mapped = corresponding #( mapped_delimit ).
-      failed = corresponding #( failed_delimit ).
-      reported = corresponding #( reporte_delimit ).
-      return.
-    endif.
+    IF failed-classificationrule IS NOT INITIAL.
+      mapped = CORRESPONDING #( mapped_delimit ).
+      failed = CORRESPONDING #( failed_delimit ).
+      reported = CORRESPONDING #( reporte_delimit ).
+      RETURN.
+    ENDIF.
 
-    modify entities of zr_intercoclassificationrule in local mode
-    entity ClassificationRule
-    create fields ( RuleID RuleName CompanyCode Ledger ProfitCenter CcStdHierArea CcAllocation CcConsolidation PAndLID Product IsNotBillable ValidFrom ValidTo )
-           with new_rules
-  mapped mapped
-  failed failed
-  reported reported.
+    MODIFY ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+    ENTITY ClassificationRule
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - C13F-R1: conserva PaymentType al copiar la regla
+    " Original conservado:
+    " CREATE FIELDS ( RuleID RuleName CompanyCode Ledger ProfitCenter CcStdHierArea CcAllocation CcConsolidation PAndLID Product IsNotBillable ValidFrom ValidTo )
+    CREATE FIELDS ( RuleID RuleName CompanyCode Ledger ProfitCenter CcStdHierArea CcAllocation CcConsolidation PAndLID Product IsNotBillable ValidFrom ValidTo PaymentType )
+    " Fin EXT_OSCUGALD 17.11.2026 - C13F-R1
+           WITH new_rules
+  MAPPED mapped
+  FAILED failed
+  REPORTED reported.
 
-  endmethod.
+  ENDMETHOD.
 
-  method Delimit.
-    read entities of zr_intercoclassificationrule in local mode
-        entity ClassificationRule
-        all fields with corresponding #( keys )
-            result data(current_rules).
+  METHOD Delimit.
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+        ENTITY ClassificationRule
+        ALL FIELDS WITH CORRESPONDING #( keys )
+            RESULT DATA(current_rules).
 
-    modify entities of zr_intercoclassificationrule in local mode
-           entity ClassificationRule
-              update fields ( validfrom validto ) " The necessity of providing valid from is due to the date validations that required both fields.
-                 with value #( for key in keys ( %is_draft = 00
+    MODIFY ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+           ENTITY ClassificationRule
+              UPDATE FIELDS ( validfrom validto ) " The necessity of providing valid from is due to the date validations that required both fields.
+                 WITH VALUE #( FOR key IN keys ( %is_draft = 00
                                                  %tky      = key-%tky
-                                                 validfrom = current_rules[ key entity id = key-id ]-validfrom
+                                                 validfrom = current_rules[ KEY entity id = key-id ]-validfrom
                                                  validto   = key-%param-validto ) ).
 
     " Read changed data for action result
-    read entities of zr_intercoclassificationrule in local mode
-      entity ClassificationRule
-         all fields with
-         corresponding #( keys )
-       result data(rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+      ENTITY ClassificationRule
+         ALL FIELDS WITH
+         CORRESPONDING #( keys )
+       RESULT DATA(rules).
 
-    result = value #( for rule in rules ( %tky   = rule-%tky
+    result = VALUE #( FOR rule IN rules ( %tky   = rule-%tky
                                           %param = rule ) ).
-  endmethod.
+  ENDMETHOD.
 
-  method ValidateDateOverlap.
-    read entities of zr_intercoclassificationrule in local mode
-       entity ClassificationRule
-        all fields with corresponding #( keys )
-     result data(current_rules).
+  METHOD ValidateDateOverlap.
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+       ENTITY ClassificationRule
+        ALL FIELDS WITH CORRESPONDING #( keys )
+     RESULT DATA(current_rules).
 
-    if current_rules is not initial.
-      select Id, RuleId, ValidTo, ValidFrom
-      from zr_intercoclassificationrule
-      with privileged access
-      for all entries in @current_rules
-      where RuleID = @current_rules-RuleID
-        and IsDeleted = @abap_false
-          into table @data(db_rules).
-    endif.
+    IF current_rules IS NOT INITIAL.
+      SELECT Id, RuleId, ValidTo, ValidFrom
+      FROM zr_intercoclassificationrule
+      WITH PRIVILEGED ACCESS
+      FOR ALL ENTRIES IN @current_rules
+      WHERE RuleID = @current_rules-RuleID
+        AND IsDeleted = @abap_false
+          INTO TABLE @DATA(db_rules).
+    ENDIF.
 
     " Update db_exemptions with the coming changes to ensure validation considers updated dates.
-    data(combined_rules) = db_rules.
-    loop at current_rules into data(current_rule).
-      modify combined_rules from corresponding #( current_rule )
-        transporting ValidFrom ValidTo where RuleId = current_rule-RuleId.
-    endloop.
+    DATA(combined_rules) = db_rules.
+    LOOP AT current_rules INTO DATA(current_rule).
+      MODIFY combined_rules FROM CORRESPONDING #( current_rule )
+        TRANSPORTING ValidFrom ValidTo WHERE RuleId = current_rule-RuleId.
+    ENDLOOP.
 
-    loop at current_rules into data(exemption).
-      append value #( %tky        = exemption-%tky
+    LOOP AT current_rules INTO DATA(exemption).
+      APPEND VALUE #( %tky        = exemption-%tky
                       %state_area = 'VALIDATE_DATE_OVERLAP'
-      ) to reported-classificationrule.
+      ) TO reported-classificationrule.
 
-      data invalid_rules like combined_rules.
-      invalid_rules = value #( for existing_exemption in combined_rules
-                               where ( ruleid = exemption-ruleid and
-                               id <> exemption-id and
-                               validto >= exemption-validfrom and
+      DATA invalid_rules LIKE combined_rules.
+      invalid_rules = VALUE #( FOR existing_exemption IN combined_rules
+                               WHERE ( ruleid = exemption-ruleid AND
+                               id <> exemption-id AND
+                               validto >= exemption-validfrom AND
                                validfrom <= exemption-validto )
                                (              existing_exemption ) ).
 
-      if invalid_rules is not initial.
-        failed-classificationrule = value #( for failed_exemption in invalid_rules ( %tky = exemption-%tky ) ).
-        append value #( %tky               = exemption-%tky
+      IF invalid_rules IS NOT INITIAL.
+        failed-classificationrule = VALUE #( FOR failed_exemption IN invalid_rules ( %tky = exemption-%tky ) ).
+        APPEND VALUE #( %tky               = exemption-%tky
                         %state_area        = 'VALIDATE_DATE_OVERLAP'
                         %msg               = zcl_fi_intrc_messages=>new_message(
                         textid   = zcl_fi_intrc_messages=>date_overlaps
                         severity = if_abap_behv_message=>severity-error )
                         %element-validfrom = if_abap_behv=>mk-on
                         %element-validto   = if_abap_behv=>mk-on
-        ) to reported-classificationrule.
+        ) TO reported-classificationrule.
 
-      endif.
-    endloop.
+      ENDIF.
+    ENDLOOP.
 
 
-  endmethod.
+  ENDMETHOD.
 
-  method ValidateValidTo.
+  METHOD ValidateValidTo.
 
-    read entities of zr_intercoclassificationrule in local mode
-        entity ClassificationRule
-         all fields with corresponding #( keys )
-      result data(current_rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+        ENTITY ClassificationRule
+         ALL FIELDS WITH CORRESPONDING #( keys )
+      RESULT DATA(current_rules).
 
-    loop at current_rules reference into data(rule).
+    LOOP AT current_rules REFERENCE INTO DATA(rule).
 
-      data(key) = keys[ %tky = rule->%tky ].
+      DATA(key) = keys[ %tky = rule->%tky ].
 
-      append value #( %tky        = key-%tky
+      APPEND VALUE #( %tky        = key-%tky
                       %state_area = 'VALIDATE_DATE_INTERVAL'
-      ) to reported-classificationrule.
+      ) TO reported-classificationrule.
 
-      if rule->ExcelLineNumber > 0.
-        data(line_number) = |({ 'Row'(001) } { rule->ExcelLinenumber })|.
-      endif.
+      IF rule->ExcelLineNumber > 0.
+        DATA(line_number) = |({ 'Row'(001) } { rule->ExcelLinenumber })|.
+      ENDIF.
 
 
-      if rule->validfrom > rule->validto.
-        append value #( %tky = key-%tky ) to failed-classificationrule.
-        append value #( %tky               = key-%tky
+      IF rule->validfrom > rule->validto.
+        APPEND VALUE #( %tky = key-%tky ) TO failed-classificationrule.
+        APPEND VALUE #( %tky               = key-%tky
                         %state_area        = 'VALIDATE_DATE_INTERVAL'
                         %msg               = zcl_fi_intrc_messages=>new_message(
                         v1       = line_number
                         textid   = zcl_fi_intrc_messages=>date_interval
                         severity = if_abap_behv_message=>severity-error )
                         %element-validfrom = if_abap_behv=>mk-on
-        ) to reported-classificationrule.
-      endif.
+        ) TO reported-classificationrule.
+      ENDIF.
 
-    endloop.
+    ENDLOOP.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method ValidateRequired.
+  METHOD ValidateRequired.
 
-    data permission_request type structure for permissions request zr_intercoclassificationrule.
+    DATA permission_request TYPE STRUCTURE FOR PERMISSIONS REQUEST zr_intercoclassificationrule.
 
     " Implementation of a generic method for validating mandatory fields,
     " covering both those statically defined in the behavior definition
     " and those dynamically defined via `features: instance` in the `get_instance_features` method.
-    data(components) = cast cl_abap_structdescr( cl_abap_structdescr=>describe_by_name( 'ZR_IntercoClassificationRule' ) )->get_components( ).
+    DATA(components) = CAST cl_abap_structdescr( cl_abap_structdescr=>describe_by_name( 'ZR_IntercoClassificationRule' ) )->get_components( ).
 
-    loop at components reference into data(component).
+    LOOP AT components REFERENCE INTO DATA(component).
       permission_request-%field-(component->name) = if_abap_behv=>mk-on.
-    endloop.
+    ENDLOOP.
 
-    data instance_permissions type table for instance features result zr_intercoclassificationrule\\classificationrule .
-    get permissions of zr_intercoclassificationrule
-      entity ClassificationRule
-      from corresponding #( keys )
-    request permission_request
-    result data(permissions).
+    DATA instance_permissions TYPE TABLE FOR INSTANCE FEATURES RESULT zr_intercoclassificationrule\\classificationrule .
+    GET PERMISSIONS OF zr_intercoclassificationrule
+      ENTITY ClassificationRule
+      FROM CORRESPONDING #( keys )
+    REQUEST permission_request
+    RESULT DATA(permissions).
 
-    read entities of zr_intercoclassificationrule in local mode
-      entity ClassificationRule
-      all fields
-      with corresponding #( keys )
-      result data(current_rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+      ENTITY ClassificationRule
+      ALL FIELDS
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(current_rules).
 
-    loop at current_rules reference into data(rule).
+    LOOP AT current_rules REFERENCE INTO DATA(rule).
 
-      append value #( %tky        = rule->%tky
+      APPEND VALUE #( %tky        = rule->%tky
                       %state_area = 'VALIDATE_REQUIRED'
-      ) to reported-classificationrule.
+      ) TO reported-classificationrule.
 
-      if rule->ExcelLineNumber > 0.
-        data(line_number) = |({ 'Row'(001) } { rule->ExcelLinenumber })|.
-      endif.
+      IF rule->ExcelLineNumber > 0.
+        DATA(line_number) = |({ 'Row'(001) } { rule->ExcelLinenumber })|.
+      ENDIF.
 
 
       "  Validate mandatory fields
-      do lines( components ) times.
-        component = ref #( components[ sy-index ] ).
-        if ( permissions-global-%field-(component->name) = if_abap_behv=>mk-on or
-             permissions-instances[ key entity %key = rule->%key ]-%field-(component->name) = if_abap_behv=>mk-on )
-           and rule->(component->name) is initial.
+      DO lines( components ) TIMES.
+        component = REF #( components[ sy-index ] ).
+        IF ( permissions-global-%field-(component->name) = if_abap_behv=>mk-on OR
+             permissions-instances[ KEY entity %key = rule->%key ]-%field-(component->name) = if_abap_behv=>mk-on )
+           AND rule->(component->name) IS INITIAL.
 
           "  Mark validation failure
-          append value #( %tky = rule->%tky ) to failed-classificationrule.
+          APPEND VALUE #( %tky = rule->%tky ) TO failed-classificationrule.
 
           "  Register validation error message
-          append initial line to reported-classificationrule assigning field-symbol(<reported_entity>).
-          <reported_entity> = value #( %tky        = rule->%tky
+          APPEND INITIAL LINE TO reported-classificationrule ASSIGNING FIELD-SYMBOL(<reported_entity>).
+          <reported_entity> = VALUE #( %tky        = rule->%tky
                                        %state_area = 'VALIDATE_REQUIRED'
                                        %msg        = zcl_fi_intrc_messages=>new_message(
                                        v1       = line_number
@@ -679,110 +693,110 @@ class lhc_classificationrule implementation.
 
           "  Indicate the specific field that failed validation
           <reported_entity>-%element-(component->name) = if_abap_behv=>mk-on.
-        endif.
-      enddo.
+        ENDIF.
+      ENDDO.
 
       "  Ensure that at least one of the Input fields is filled
-      append value #( %tky        = rule->%tky
+      APPEND VALUE #( %tky        = rule->%tky
                       %state_area = 'VALIDATE_INPUT'
-      ) to reported-classificationrule.
+      ) TO reported-classificationrule.
 
-      if rule->CcAllocation is initial and
-        rule->CcConsolidation is initial and
-        rule->CcStdHierArea is initial and
-        rule->CompanyCode is initial and
-        rule->PAndLID is initial and
-        rule->ProfitCenter is initial.
-        append value #( %tky = rule->%tky ) to failed-classificationrule.
-        append value #( %tky        = rule->%tky
+      IF rule->CcAllocation IS INITIAL AND
+        rule->CcConsolidation IS INITIAL AND
+        rule->CcStdHierArea IS INITIAL AND
+        rule->CompanyCode IS INITIAL AND
+        rule->PAndLID IS INITIAL AND
+        rule->ProfitCenter IS INITIAL.
+        APPEND VALUE #( %tky = rule->%tky ) TO failed-classificationrule.
+        APPEND VALUE #( %tky        = rule->%tky
                         %state_area = 'VALIDATE_INPUT'
                         %msg        = zcl_fi_intrc_messages=>new_message(
                         v1       = line_number
                         textid   = zcl_fi_intrc_messages=>at_least_one_required
                         severity = if_abap_behv_message=>severity-error )
-        ) to reported-classificationrule assigning field-symbol(<reported>).
+        ) TO reported-classificationrule ASSIGNING FIELD-SYMBOL(<reported>).
 
         <reported>-%element-CCAllocation    = if_abap_behv=>mk-on.
-        append <reported> to reported-classificationrule assigning <reported>.
+        APPEND <reported> TO reported-classificationrule ASSIGNING <reported>.
         <reported>-%element-CcConsolidation = if_abap_behv=>mk-on.
-        append <reported> to reported-classificationrule assigning <reported>.
+        APPEND <reported> TO reported-classificationrule ASSIGNING <reported>.
         <reported>-%element-CcStdHierArea   = if_abap_behv=>mk-on.
-        append <reported> to reported-classificationrule assigning <reported>.
+        APPEND <reported> TO reported-classificationrule ASSIGNING <reported>.
         <reported>-%element-CompanyCode     = if_abap_behv=>mk-on.
-        append <reported> to reported-classificationrule assigning <reported>.
+        APPEND <reported> TO reported-classificationrule ASSIGNING <reported>.
         <reported>-%element-PAndLId         = if_abap_behv=>mk-on.
-        append <reported> to reported-classificationrule assigning <reported>.
+        APPEND <reported> TO reported-classificationrule ASSIGNING <reported>.
         <reported>-%element-ProfitCenter    = if_abap_behv=>mk-on.
 
-      endif.
-    endloop.
+      ENDIF.
+    ENDLOOP.
 
-  endmethod.
+  ENDMETHOD.
 
-  method ClearProduct.
-    read entities of zr_intercoclassificationrule in local mode
-    entity ClassificationRule
-    fields ( Product IsNotBillable )
-        with corresponding #( keys )
-        result data(current_rules).
+  METHOD ClearProduct.
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+    ENTITY ClassificationRule
+    FIELDS ( Product IsNotBillable )
+        WITH CORRESPONDING #( keys )
+        RESULT DATA(current_rules).
 
-    delete current_rules where IsNotBillable = abap_false.
+    DELETE current_rules WHERE IsNotBillable = abap_false.
 
-    modify entities of zr_intercoclassificationrule in local mode
-        entity ClassificationRule
-        update fields ( Product )
-        with corresponding #( current_rules except Product )
-        reported data(modifiy_reported).
+    MODIFY ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+        ENTITY ClassificationRule
+        UPDATE FIELDS ( Product )
+        WITH CORRESPONDING #( current_rules EXCEPT Product )
+        REPORTED DATA(modifiy_reported).
 
-    reported = corresponding #( deep modifiy_reported ).
+    reported = CORRESPONDING #( DEEP modifiy_reported ).
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method ValidateBillRelation.
+  METHOD ValidateBillRelation.
 
-    read entities of zr_intercoclassificationrule in local mode
-      entity ClassificationRule
-       all fields with corresponding #( keys )
-    result data(current_rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+      ENTITY ClassificationRule
+       ALL FIELDS WITH CORRESPONDING #( keys )
+    RESULT DATA(current_rules).
 
-    if current_rules is not initial.
-      select distinct providercompanycode as companycode, product from ZI_IntercoCompanyRelProduct
-      with privileged access
-    for all entries in @current_rules
-        where Product = @current_rules-Product
-          and ValidFrom <= @current_rules-validto
-          and ValidTo >= @current_rules-validfrom
-          and IsDeleted is initial
-          into table @data(products_flows).
-    endif.
+    IF current_rules IS NOT INITIAL.
+      SELECT DISTINCT providercompanycode AS companycode, product FROM ZI_IntercoCompanyRelProduct
+      WITH PRIVILEGED ACCESS
+    FOR ALL ENTRIES IN @current_rules
+        WHERE Product = @current_rules-Product
+          AND ValidFrom <= @current_rules-validto
+          AND ValidTo >= @current_rules-validfrom
+          AND IsDeleted IS INITIAL
+          INTO TABLE @DATA(products_flows).
+    ENDIF.
 
-    loop at current_rules reference into data(rule).
+    LOOP AT current_rules REFERENCE INTO DATA(rule).
 
-      data(key) = keys[ %tky = rule->%tky ].
+      DATA(key) = keys[ %tky = rule->%tky ].
 
-      append value #( %tky        = key-%tky
+      APPEND VALUE #( %tky        = key-%tky
                       %state_area = 'VALIDATE_BILLABLE_RELATION'
-      ) to reported-classificationrule.
+      ) TO reported-classificationrule.
 
       " Validate only Billable rules
-      if rule->IsNotBillable = abap_true.
-        continue.
-      endif.
+      IF rule->IsNotBillable = abap_true.
+        CONTINUE.
+      ENDIF.
 
-      if rule->ExcelLineNumber > 0.
-        data(line_number) = |({ 'Row'(001) } { rule->ExcelLinenumber })|.
-      endif.
+      IF rule->ExcelLineNumber > 0.
+        DATA(line_number) = |({ 'Row'(001) } { rule->ExcelLinenumber })|.
+      ENDIF.
 
-      if ( rule->CompanyCode is initial and not line_exists( products_flows[ Product = rule->Product ] ) ) or
-         ( rule->CompanyCode is not initial and not line_exists( products_flows[ CompanyCode = rule->CompanyCode Product = rule->Product ] ) ).
+      IF ( rule->CompanyCode IS INITIAL AND NOT line_exists( products_flows[ Product = rule->Product ] ) ) OR
+         ( rule->CompanyCode IS NOT INITIAL AND NOT line_exists( products_flows[ CompanyCode = rule->CompanyCode Product = rule->Product ] ) ).
 
-        append value #( %tky = key-%tky ) to failed-classificationrule.
+        APPEND VALUE #( %tky = key-%tky ) TO failed-classificationrule.
 
-        data(out_product) = |{ rule->Product alpha = out }|.
-        data(out_companycode) = cond #( when rule->CompanyCode is initial then `*` else |{ rule->CompanyCode alpha = out }| ).
+        DATA(out_product) = |{ rule->Product ALPHA = OUT }|.
+        DATA(out_companycode) = COND #( WHEN rule->CompanyCode IS INITIAL THEN `*` ELSE |{ rule->CompanyCode ALPHA = OUT }| ).
 
-        append value #( %tky             = rule->%tky
+        APPEND VALUE #( %tky             = rule->%tky
                         %state_area      = 'VALIDATE_BILLABLE_RELATION'
                         %msg             = zcl_fi_intrc_messages=>new_message(
                         v1       = line_number
@@ -791,30 +805,30 @@ class lhc_classificationrule implementation.
                         textid   = zcl_fi_intrc_messages=>relation_not_exists
                         severity = if_abap_behv_message=>severity-error )
                         %element-product = if_abap_behv=>mk-on
-        ) to reported-classificationrule assigning field-symbol(<reported>).
+        ) TO reported-classificationrule ASSIGNING FIELD-SYMBOL(<reported>).
 
-      endif.
+      ENDIF.
 
-    endloop.
+    ENDLOOP.
 
-  endmethod.
+  ENDMETHOD.
 
-  method ValidateDuplicated.
+  METHOD ValidateDuplicated.
 
-    read entities of zr_intercoclassificationrule in local mode
-     entity ClassificationRule
-      all fields with corresponding #( keys )
-   result data(current_rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+     ENTITY ClassificationRule
+      ALL FIELDS WITH CORRESPONDING #( keys )
+   RESULT DATA(current_rules).
 
-    data all_rules like current_rules.
-    data duplicate_rules like current_rules.
+    DATA all_rules LIKE current_rules.
+    DATA duplicate_rules LIKE current_rules.
 
-    if current_rules is initial.
-      return.
-    endif.
+    IF current_rules IS INITIAL.
+      RETURN.
+    ENDIF.
 
-    select from zr_intercoclassificationrule with privileged access
-    fields
+    SELECT FROM zr_intercoclassificationrule WITH PRIVILEGED ACCESS
+    FIELDS
       id,
       RuleID,
       RuleName,
@@ -830,19 +844,19 @@ class lhc_classificationrule implementation.
       CcConsolidation,
       Product,
       IsNotBillable
-    for all entries in @current_rules
-      where ValidFrom <= @current_rules-validto
-        and ValidTo >= @current_rules-validfrom
-        and CompanyCode = @current_rules-CompanyCode
-        and Ledger = @current_rules-Ledger
-        and PAndLID = @current_rules-PAndLID
-        and CcAllocation = @current_rules-CcAllocation
-        and CcConsolidation = @current_rules-CcConsolidation
-        and ProfitCenter = @current_rules-ProfitCenter
-        and IsDeleted is initial
-        into corresponding fields of table @all_rules.
+    FOR ALL ENTRIES IN @current_rules
+      WHERE ValidFrom <= @current_rules-validto
+        AND ValidTo >= @current_rules-validfrom
+        AND CompanyCode = @current_rules-CompanyCode
+        AND Ledger = @current_rules-Ledger
+        AND PAndLID = @current_rules-PAndLID
+        AND CcAllocation = @current_rules-CcAllocation
+        AND CcConsolidation = @current_rules-CcConsolidation
+        AND ProfitCenter = @current_rules-ProfitCenter
+        AND IsDeleted IS INITIAL
+        INTO CORRESPONDING FIELDS OF TABLE @all_rules.
 
-    append lines of current_rules to all_rules.
+    APPEND LINES OF current_rules TO all_rules.
 
 *    select distinct idl5, idl4, idl3, idl2, idl1, idl0
 *    from z_pnl_mt005
@@ -869,252 +883,252 @@ class lhc_classificationrule implementation.
 *      catch cx_sy_itab_line_not_found.
 *    endtry.
 
-    data range_all_pandl type range of ZI_IntercoPandLHierFlattenedSH-id.
-    select distinct 'I' as sign, 'EQ' as option, id as low, @space as high
-        from ZI_IntercoPandLHierFlattenedSH
-        with privileged access
-        where 1 = 1
-            into table @range_all_pandl.
+    DATA range_all_pandl TYPE RANGE OF ZI_IntercoPandLHierFlattenedSH-id.
+    SELECT DISTINCT 'I' AS sign, 'EQ' AS option, id AS low, @space AS high
+        FROM ZI_IntercoPandLHierFlattenedSH
+        WITH PRIVILEGED ACCESS
+        WHERE 1 = 1
+            INTO TABLE @range_all_pandl.
 
-    data range_all_companycodes type range of zr_intercoclassificationrule-companycode.
-    select distinct 'I' as sign, 'EQ' as option, providercompanycode as low, @space as high
-        from ZI_IntercoCompanyRelProduct
-        with privileged access
-        where 1 = 1
-            into table @range_all_companycodes.
+    DATA range_all_companycodes TYPE RANGE OF zr_intercoclassificationrule-companycode.
+    SELECT DISTINCT 'I' AS sign, 'EQ' AS option, providercompanycode AS low, @space AS high
+        FROM ZI_IntercoCompanyRelProduct
+        WITH PRIVILEGED ACCESS
+        WHERE 1 = 1
+            INTO TABLE @range_all_companycodes.
 
-    data range_all_profitcenters type range of  zr_intercoclassificationrule-profitcenter.
-    select distinct 'I' as sign, 'EQ' as option, profitcenter as low, @space as high
-        from I_ProfitCenter
-        with privileged access
-            where ControllingArea = 'ML00'
-                into table @range_all_profitcenters.
+    DATA range_all_profitcenters TYPE RANGE OF  zr_intercoclassificationrule-profitcenter.
+    SELECT DISTINCT 'I' AS sign, 'EQ' AS option, profitcenter AS low, @space AS high
+        FROM I_ProfitCenter
+        WITH PRIVILEGED ACCESS
+            WHERE ControllingArea = 'ML00'
+                INTO TABLE @range_all_profitcenters.
 
-    data range_all_cc_allocations type range of  zr_intercoclassificationrule-ccallocation.
-    select distinct 'I' as sign, 'EQ' as option, HierarchyNodeVal as low, @space as high
-        from I_CostCenterHierarchyNode
-        with privileged access
-            where ControllingArea = 'ML00'
-              and CostCenterHierarchy = 'H101/ML00/ALLOC_CC'
-              and NodeType = 'N'
-                into table @range_all_cc_allocations.
+    DATA range_all_cc_allocations TYPE RANGE OF  zr_intercoclassificationrule-ccallocation.
+    SELECT DISTINCT 'I' AS sign, 'EQ' AS option, HierarchyNodeVal AS low, @space AS high
+        FROM I_CostCenterHierarchyNode
+        WITH PRIVILEGED ACCESS
+            WHERE ControllingArea = 'ML00'
+              AND CostCenterHierarchy = 'H101/ML00/ALLOC_CC'
+              AND NodeType = 'N'
+                INTO TABLE @range_all_cc_allocations.
 
-    data range_all_cc_consolidations type range of  zr_intercoclassificationrule-CcConsolidation.
-    select distinct 'I' as sign, 'EQ' as option, HierarchyNodeVal as low, @space as high
-        from I_CostCenterHierarchyNode
-        with privileged access
-            where ControllingArea = 'ML00'
-              and CostCenterHierarchy = 'H101/ML00/CONS_CC'
-              and NodeType = 'N'
-                into table @range_all_cc_consolidations.
+    DATA range_all_cc_consolidations TYPE RANGE OF  zr_intercoclassificationrule-CcConsolidation.
+    SELECT DISTINCT 'I' AS sign, 'EQ' AS option, HierarchyNodeVal AS low, @space AS high
+        FROM I_CostCenterHierarchyNode
+        WITH PRIVILEGED ACCESS
+            WHERE ControllingArea = 'ML00'
+              AND CostCenterHierarchy = 'H101/ML00/CONS_CC'
+              AND NodeType = 'N'
+                INTO TABLE @range_all_cc_consolidations.
 
-    data range_companycodes like range_all_companycodes.
-    data range_profitcenters like range_all_profitcenters.
-    data range_cc_allocations like  range_all_cc_allocations.
-    data range_cc_consolidations like range_all_cc_consolidations.
-    data range_pandl like range_all_pandl.
+    DATA range_companycodes LIKE range_all_companycodes.
+    DATA range_profitcenters LIKE range_all_profitcenters.
+    DATA range_cc_allocations LIKE  range_all_cc_allocations.
+    DATA range_cc_consolidations LIKE range_all_cc_consolidations.
+    DATA range_pandl LIKE range_all_pandl.
 
-    loop at current_rules reference into data(rule).
+    LOOP AT current_rules REFERENCE INTO DATA(rule).
 
       range_companycodes = range_all_companycodes.
-      delete range_companycodes where low <> rule->companycode.
+      DELETE range_companycodes WHERE low <> rule->companycode.
 
       range_profitcenters = range_all_profitcenters.
-      delete range_profitcenters where low <> rule->profitcenter.
+      DELETE range_profitcenters WHERE low <> rule->profitcenter.
 
       range_cc_allocations = range_all_cc_allocations.
-      delete range_cc_allocations where low <> rule->CcAllocation.
+      DELETE range_cc_allocations WHERE low <> rule->CcAllocation.
 
       range_cc_consolidations = range_all_cc_consolidations.
-      delete range_cc_consolidations where low <> rule->ccconsolidation.
+      DELETE range_cc_consolidations WHERE low <> rule->ccconsolidation.
 
       range_pandl = range_all_pandl.
-      delete range_pandl where low <> rule->PAndLID.
+      DELETE range_pandl WHERE low <> rule->PAndLID.
 
 *Ini mod - ext_jugesto - DS4K9B4I10 - 09.09.2025
-      duplicate_rules = value #( for duplicate_rule in all_rules
-                                 where ( CompanyCode = rule->companycode
-                                         and Ledger = rule->Ledger
-                                         and CcAllocation = rule->CcAllocation
-                                         and CcConsolidation = rule->ccconsolidation
-                                         and CcStdHierArea = rule->CcStdHierArea
-                                         and PAndLID = rule->PAndLID
-                                         and ProfitCenter = rule->profitcenter
-                                         and IsNotBillable = rule->IsNotBillable
-                                         and id <> rule->id )
+      duplicate_rules = VALUE #( FOR duplicate_rule IN all_rules
+                                 WHERE ( CompanyCode = rule->companycode
+                                         AND Ledger = rule->Ledger
+                                         AND CcAllocation = rule->CcAllocation
+                                         AND CcConsolidation = rule->ccconsolidation
+                                         AND CcStdHierArea = rule->CcStdHierArea
+                                         AND PAndLID = rule->PAndLID
+                                         AND ProfitCenter = rule->profitcenter
+                                         AND IsNotBillable = rule->IsNotBillable
+                                         AND id <> rule->id )
                                (                           duplicate_rule ) ).
 *Fin mod - ext_jugesto - DS4K9B4I10 - 09.09.2025
 
-      data(key) = keys[ %tky = rule->%tky ].
+      DATA(key) = keys[ %tky = rule->%tky ].
 
-      append value #( %tky        = key-%tky
+      APPEND VALUE #( %tky        = key-%tky
                       %state_area = 'VALIDATE_DUPLICATED'
-      ) to reported-classificationrule.
-      if lines( duplicate_rules ) > 0.
-        if rule->ExcelLineNumber > 0.
-          data(line_number) = |({ 'Row'(001) } { rule->ExcelLinenumber })|.
-        endif.
+      ) TO reported-classificationrule.
+      IF lines( duplicate_rules ) > 0.
+        IF rule->ExcelLineNumber > 0.
+          DATA(line_number) = |({ 'Row'(001) } { rule->ExcelLinenumber })|.
+        ENDIF.
 
-        append value #( %tky = key-%tky ) to failed-classificationrule.
-        append value #( %tky        = rule->%tky
+        APPEND VALUE #( %tky = key-%tky ) TO failed-classificationrule.
+        APPEND VALUE #( %tky        = rule->%tky
                         %state_area = 'VALIDATE_DUPLICATED'
                         %msg        = zcl_fi_intrc_messages=>new_message(
                         v1       = line_number
                         textid   = zcl_fi_intrc_messages=>duplicated_rule
                         severity = if_abap_behv_message=>severity-error )
-        ) to reported-classificationrule.
+        ) TO reported-classificationrule.
 
-      endif.
+      ENDIF.
 
-    endloop.
+    ENDLOOP.
 
-  endmethod.
+  ENDMETHOD.
 
-  method Delete.
+  METHOD Delete.
 
-    read entities of zr_intercoclassificationrule in local mode
-        entity ClassificationRule
-        all fields with corresponding #( keys )
-            result data(current_rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+        ENTITY ClassificationRule
+        ALL FIELDS WITH CORRESPONDING #( keys )
+            RESULT DATA(current_rules).
 
-    modify entities of zr_intercoclassificationrule in local mode
-           entity ClassificationRule
-              update fields ( IsDeleted )
-                 with value #( for key in keys ( %is_draft = 00
+    MODIFY ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+           ENTITY ClassificationRule
+              UPDATE FIELDS ( IsDeleted )
+                 WITH VALUE #( FOR key IN keys ( %is_draft = 00
                                                  %tky      = key-%tky
                                                  IsDeleted = abap_true ) ).
 
     " Read changed data for action result
-    read entities of zr_intercoclassificationrule in local mode
-      entity ClassificationRule
-         all fields with
-         corresponding #( keys )
-       result data(rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+      ENTITY ClassificationRule
+         ALL FIELDS WITH
+         CORRESPONDING #( keys )
+       RESULT DATA(rules).
 
-    loop at rules reference into data(rule).
-      rule->RuleCriticality = cond #( when rule->IsDeleted = abap_true then '1' else '0' ).
-    endloop.
+    LOOP AT rules REFERENCE INTO DATA(rule).
+      rule->RuleCriticality = COND #( WHEN rule->IsDeleted = abap_true THEN '1' ELSE '0' ).
+    ENDLOOP.
 
-    result = value #( for r in rules ( %tky   = r-%tky
+    result = VALUE #( FOR r IN rules ( %tky   = r-%tky
                                        %param = r ) ).
 
-  endmethod.
+  ENDMETHOD.
 
-  method Restore.
+  METHOD Restore.
 
-    read entities of zr_intercoclassificationrule in local mode
-        entity ClassificationRule
-        all fields with corresponding #( keys )
-            result data(current_rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+        ENTITY ClassificationRule
+        ALL FIELDS WITH CORRESPONDING #( keys )
+            RESULT DATA(current_rules).
 
-    modify entities of zr_intercoclassificationrule in local mode
-           entity ClassificationRule
-              update fields ( IsDeleted )
-                 with value #( for key in keys ( %is_draft = 00
+    MODIFY ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+           ENTITY ClassificationRule
+              UPDATE FIELDS ( IsDeleted )
+                 WITH VALUE #( FOR key IN keys ( %is_draft = 00
                                                  %tky      = key-%tky
                                                  IsDeleted = abap_false ) ).
 
     " Read changed data for action result
-    read entities of zr_intercoclassificationrule in local mode
-      entity ClassificationRule
-         all fields with
-         corresponding #( keys )
-       result data(rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+      ENTITY ClassificationRule
+         ALL FIELDS WITH
+         CORRESPONDING #( keys )
+       RESULT DATA(rules).
 
-    result = value #( for rule in rules ( %tky   = rule-%tky
+    result = VALUE #( FOR rule IN rules ( %tky   = rule-%tky
                                           %param = rule ) ).
 
 
-  endmethod.
+  ENDMETHOD.
 
-  method ValidateAllFields.
+  METHOD ValidateAllFields.
 
-    read entities of zr_intercoclassificationrule in local mode
-        entity ClassificationRule
-            all fields with
-                corresponding #( keys )
-                result data(rules).
+    READ ENTITIES OF zr_intercoclassificationrule IN LOCAL MODE
+        ENTITY ClassificationRule
+            ALL FIELDS WITH
+                CORRESPONDING #( keys )
+                RESULT DATA(rules).
 
-    if rules is initial.
-      return.
-    endif.
+    IF rules IS INITIAL.
+      RETURN.
+    ENDIF.
 
     "$. Region get_data - Search for the given values in their corresponding VH tables.
-    select distinct companycode from ZI_IntercoCompanyCodeVH
-        with privileged access
-        for all entries in @rules
-        where companycode = @rules-CompanyCode
-            into table @data(company_codes).
+    SELECT DISTINCT companycode FROM ZI_IntercoCompanyCodeVH
+        WITH PRIVILEGED ACCESS
+        FOR ALL ENTRIES IN @rules
+        WHERE companycode = @rules-CompanyCode
+            INTO TABLE @DATA(company_codes).
 
-    select distinct id as PAndLID from ZI_IntercoPandLHierFlattenedSH
-        with privileged access
-        for all entries in @rules
-          where id = @rules-PAndLID
-            into table @data(pandl_ids).
+    SELECT DISTINCT id AS PAndLID FROM ZI_IntercoPandLHierFlattenedSH
+        WITH PRIVILEGED ACCESS
+        FOR ALL ENTRIES IN @rules
+          WHERE id = @rules-PAndLID
+            INTO TABLE @DATA(pandl_ids).
 
-    select distinct profitcenter from i_profitcenter
-        with privileged access
-        for all entries in @rules
-            where controllingarea = 'ML00'
-              and profitcenter = @rules-ProfitCenter
-              and ValidityEndDate >= @rules-validfrom
-              and ValidityStartDate <= @rules-ValidTo
-                into table @data(profit_centers).
+    SELECT DISTINCT profitcenter FROM i_profitcenter
+        WITH PRIVILEGED ACCESS
+        FOR ALL ENTRIES IN @rules
+            WHERE controllingarea = 'ML00'
+              AND profitcenter = @rules-ProfitCenter
+              AND ValidityEndDate >= @rules-validfrom
+              AND ValidityStartDate <= @rules-ValidTo
+                INTO TABLE @DATA(profit_centers).
 
-    select distinct Product from ZI_IntercoProduct_SH
-        with privileged access
-        for all entries in @rules
-            where Product = @rules-Product
-                into table @data(products).
+    SELECT DISTINCT Product FROM ZI_IntercoProduct_SH
+        WITH PRIVILEGED ACCESS
+        FOR ALL ENTRIES IN @rules
+            WHERE Product = @rules-Product
+                INTO TABLE @DATA(products).
 
-    types: begin of ty_converted_columns,
-             CcStdHierArea   type i_costcenterhierarchynode-hierarchynodeval,
-             CcAllocation    type i_costcenterhierarchynode-hierarchynodeval,
-             CcConsolidation type i_costcenterhierarchynode-hierarchynodeval,
-           end of ty_converted_columns,
-           tt_converted_columns type table of ty_converted_columns with default key.
+    TYPES: BEGIN OF ty_converted_columns,
+             CcStdHierArea   TYPE i_costcenterhierarchynode-hierarchynodeval,
+             CcAllocation    TYPE i_costcenterhierarchynode-hierarchynodeval,
+             CcConsolidation TYPE i_costcenterhierarchynode-hierarchynodeval,
+           END OF ty_converted_columns,
+           tt_converted_columns TYPE TABLE OF ty_converted_columns WITH DEFAULT KEY.
 
-    data(converted_columns) = value tt_converted_columns(
-                                        for r in rules ( ccstdhierarea   = r-CcStdHierArea
+    DATA(converted_columns) = VALUE tt_converted_columns(
+                                        FOR r IN rules ( ccstdhierarea   = r-CcStdHierArea
                                                          ccallocation    = r-CcAllocation
                                                          ccconsolidation = r-CcConsolidation ) ).
 
-    select distinct CostCenterSubArea as CcStdHierArea from ZI_IntercoCostCenterSubArea_SH
-      with privileged access
-      for all entries in @converted_columns
-          where CostCenterSubArea =  @converted_columns-ccstdhierarea
-          into table @data(cc_stdhierareas).
+    SELECT DISTINCT CostCenterSubArea AS CcStdHierArea FROM ZI_IntercoCostCenterSubArea_SH
+      WITH PRIVILEGED ACCESS
+      FOR ALL ENTRIES IN @converted_columns
+          WHERE CostCenterSubArea =  @converted_columns-ccstdhierarea
+          INTO TABLE @DATA(cc_stdhierareas).
 
-    select distinct Allocation as CcAllocation from ZI_IntercoCostCenterAlloc_SH
-        with privileged access
-        for all entries in @converted_columns
-            where Allocation = @converted_columns-CcAllocation
-              into table @data(cc_allocations).
+    SELECT DISTINCT Allocation AS CcAllocation FROM ZI_IntercoCostCenterAlloc_SH
+        WITH PRIVILEGED ACCESS
+        FOR ALL ENTRIES IN @converted_columns
+            WHERE Allocation = @converted_columns-CcAllocation
+              INTO TABLE @DATA(cc_allocations).
 
-    select distinct Consolidation as CcConsolidation from ZI_IntercoCostCenterConsVH
-        with privileged access
-        for all entries in @converted_columns
-            where Consolidation = @converted_columns-CcConsolidation
-                into table @data(cc_consolidations).
+    SELECT DISTINCT Consolidation AS CcConsolidation FROM ZI_IntercoCostCenterConsVH
+        WITH PRIVILEGED ACCESS
+        FOR ALL ENTRIES IN @converted_columns
+            WHERE Consolidation = @converted_columns-CcConsolidation
+                INTO TABLE @DATA(cc_consolidations).
     "$. EndRegion get_data.
 
 
     " Perform Validations
-    loop at rules reference into data(rule).
+    LOOP AT rules REFERENCE INTO DATA(rule).
 
-      append value #( %tky        = rule->%tky
+      APPEND VALUE #( %tky        = rule->%tky
                       %state_area = 'VALIDATE_ALL'
-      ) to reported-classificationrule.
+      ) TO reported-classificationrule.
 
-      if rule->ExcelLineNumber > 0.
-        data(line_number) = |({ 'Row'(001) } { rule->ExcelLinenumber })|.
-      endif.
+      IF rule->ExcelLineNumber > 0.
+        DATA(line_number) = |({ 'Row'(001) } { rule->ExcelLinenumber })|.
+      ENDIF.
 
 
       " Company Code
-      if rule->companycode is not initial and not line_exists( company_codes[ CompanyCode = rule->CompanyCode ] ).
-        failed-classificationrule = value #( ( %tky = rule->%tky ) ).
-        append value #( %tky                 = rule->%tky
+      IF rule->companycode IS NOT INITIAL AND NOT line_exists( company_codes[ CompanyCode = rule->CompanyCode ] ).
+        failed-classificationrule = VALUE #( ( %tky = rule->%tky ) ).
+        APPEND VALUE #( %tky                 = rule->%tky
                         %state_area          = 'VALIDATE_ALL'
                         %msg                 = zcl_fi_intrc_messages=>new_message(
                         textid   = zcl_fi_intrc_messages=>invalid_field_value
@@ -1124,13 +1138,13 @@ class lhc_classificationrule implementation.
                         v3       = 'Company Code'(002)
                         )
                         %element-companycode = if_abap_behv=>mk-on
-        ) to reported-classificationrule.
-      endif.
+        ) TO reported-classificationrule.
+      ENDIF.
 
       " P&L ID
-      if rule->pandlid is not initial and not line_exists( pandl_ids[ pandlid = rule->PAndLID ] ).
-        failed-classificationrule = value #( ( %tky = rule->%tky ) ).
-        append value #( %tky             = rule->%tky
+      IF rule->pandlid IS NOT INITIAL AND NOT line_exists( pandl_ids[ pandlid = rule->PAndLID ] ).
+        failed-classificationrule = VALUE #( ( %tky = rule->%tky ) ).
+        APPEND VALUE #( %tky             = rule->%tky
                         %state_area      = 'VALIDATE_ALL'
                         %msg             = zcl_fi_intrc_messages=>new_message(
                         textid   = zcl_fi_intrc_messages=>invalid_field_value
@@ -1140,13 +1154,13 @@ class lhc_classificationrule implementation.
                         v3       = 'P&L ID'(003)
                         )
                         %element-pandlid = if_abap_behv=>mk-on
-        ) to reported-classificationrule.
-      endif.
+        ) TO reported-classificationrule.
+      ENDIF.
 
       " Profit Center
-      if rule->profitcenter is not initial and not line_exists( profit_centers[ profitcenter = rule->profitcenter ] ).
-        failed-classificationrule = value #( ( %tky = rule->%tky ) ).
-        append value #( %tky                  = rule->%tky
+      IF rule->profitcenter IS NOT INITIAL AND NOT line_exists( profit_centers[ profitcenter = rule->profitcenter ] ).
+        failed-classificationrule = VALUE #( ( %tky = rule->%tky ) ).
+        APPEND VALUE #( %tky                  = rule->%tky
                         %state_area           = 'VALIDATE_ALL'
                         %msg                  = zcl_fi_intrc_messages=>new_message(
                         textid   = zcl_fi_intrc_messages=>invalid_field_value
@@ -1156,13 +1170,13 @@ class lhc_classificationrule implementation.
                         v3       = 'Profit Center'(004)
                         )
                         %element-profitcenter = if_abap_behv=>mk-on
-        ) to reported-classificationrule.
-      endif.
+        ) TO reported-classificationrule.
+      ENDIF.
 
       " Product
-      if rule->product is not initial and not line_exists( products[ product = rule->product ] ).
-        failed-classificationrule = value #( ( %tky = rule->%tky ) ).
-        append value #( %tky             = rule->%tky
+      IF rule->product IS NOT INITIAL AND NOT line_exists( products[ product = rule->product ] ).
+        failed-classificationrule = VALUE #( ( %tky = rule->%tky ) ).
+        APPEND VALUE #( %tky             = rule->%tky
                         %state_area      = 'VALIDATE_ALL'
                         %msg             = zcl_fi_intrc_messages=>new_message(
                         textid   = zcl_fi_intrc_messages=>invalid_field_value
@@ -1172,13 +1186,13 @@ class lhc_classificationrule implementation.
                         v3       = 'Product'(005)
                         )
                         %element-product = if_abap_behv=>mk-on
-        ) to reported-classificationrule.
-      endif.
+        ) TO reported-classificationrule.
+      ENDIF.
 
       " CcStdHierArea
-      if rule->CcStdHierArea is not initial and not line_exists( cc_stdhierareas[ ccstdhierarea = rule->CcStdHierArea ] ).
-        failed-classificationrule = value #( ( %tky = rule->%tky ) ).
-        append value #( %tky                   = rule->%tky
+      IF rule->CcStdHierArea IS NOT INITIAL AND NOT line_exists( cc_stdhierareas[ ccstdhierarea = rule->CcStdHierArea ] ).
+        failed-classificationrule = VALUE #( ( %tky = rule->%tky ) ).
+        APPEND VALUE #( %tky                   = rule->%tky
                         %state_area            = 'VALIDATE_ALL'
                         %msg                   = zcl_fi_intrc_messages=>new_message(
                         textid   = zcl_fi_intrc_messages=>invalid_field_value
@@ -1188,13 +1202,13 @@ class lhc_classificationrule implementation.
                         v3       = 'CC. Std. Hierarchy Area'(006)
                         )
                         %element-ccstdhierarea = if_abap_behv=>mk-on
-        ) to reported-classificationrule.
-      endif.
+        ) TO reported-classificationrule.
+      ENDIF.
 
       " CcAllocation
-      if rule->CcAllocation is not initial and not line_exists( cc_allocations[ CcAllocation = rule->CcAllocation ] ).
-        failed-classificationrule = value #( ( %tky = rule->%tky ) ).
-        append value #( %tky                  = rule->%tky
+      IF rule->CcAllocation IS NOT INITIAL AND NOT line_exists( cc_allocations[ CcAllocation = rule->CcAllocation ] ).
+        failed-classificationrule = VALUE #( ( %tky = rule->%tky ) ).
+        APPEND VALUE #( %tky                  = rule->%tky
                         %state_area           = 'VALIDATE_ALL'
                         %msg                  = zcl_fi_intrc_messages=>new_message(
                         textid   = zcl_fi_intrc_messages=>invalid_field_value
@@ -1204,13 +1218,13 @@ class lhc_classificationrule implementation.
                         v3       = 'CC. Allocation'(007)
                         )
                         %element-ccallocation = if_abap_behv=>mk-on
-        ) to reported-classificationrule.
-      endif.
+        ) TO reported-classificationrule.
+      ENDIF.
 
       " CcConsolidation
-      if rule->ccconsolidation is not initial and not line_exists( cc_consolidations[ ccconsolidation = rule->ccconsolidation ] ).
-        failed-classificationrule = value #( ( %tky = rule->%tky ) ).
-        append value #( %tky                     = rule->%tky
+      IF rule->ccconsolidation IS NOT INITIAL AND NOT line_exists( cc_consolidations[ ccconsolidation = rule->ccconsolidation ] ).
+        failed-classificationrule = VALUE #( ( %tky = rule->%tky ) ).
+        APPEND VALUE #( %tky                     = rule->%tky
                         %state_area              = 'VALIDATE_ALL'
                         %msg                     = zcl_fi_intrc_messages=>new_message(
                         textid   = zcl_fi_intrc_messages=>invalid_field_value
@@ -1220,13 +1234,34 @@ class lhc_classificationrule implementation.
                         v3       = 'CC. Consolidation'(008)
                         )
                         %element-ccconsolidation = if_abap_behv=>mk-on
-        ) to reported-classificationrule.
-      endif.
+        ) TO reported-classificationrule.
+      ENDIF.
 
-    endloop.
+      " PaymentType: vacío, E o L
+      IF rule->PaymentType IS NOT INITIAL
+         AND rule->PaymentType <> 'E'
+         AND rule->PaymentType <> 'L'.
+
+        failed-classificationrule = VALUE #( ( %tky = rule->%tky ) ).
+
+        APPEND VALUE #( %tky                 = rule->%tky
+                        %state_area          = 'VALIDATE_ALL'
+                        %msg                 = zcl_fi_intrc_messages=>new_message(
+                        textid   = zcl_fi_intrc_messages=>invalid_field_value
+                        severity = if_abap_behv_message=>severity-error
+                        v1       = line_number
+                        v2       = rule->PaymentType
+                        v3       = 'Payment Type'
+                        )
+                        %element-PaymentType = if_abap_behv=>mk-on
+        ) TO reported-classificationrule.
+
+      ENDIF.
+
+    ENDLOOP.
 
 
 
-  endmethod.
+  ENDMETHOD.
 
-endclass.
+ENDCLASS.

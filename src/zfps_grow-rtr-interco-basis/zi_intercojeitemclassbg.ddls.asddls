@@ -22,6 +22,8 @@ define view entity ZI_IntercoJEItemClassBG
       ledger       as Ledger,
       paymenttype  as PaymentType,
       allfilters   as AllFilters,
+      // EXT_VINBARRI 17.11.2026: columnas pedidas por la UI al lanzar el background (lista separada por coma)
+      requestedcolumns as RequestedColumns,
       pending      as Pending,
       createdby    as Createdby,
       createdat    as Createdat,

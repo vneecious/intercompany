@@ -25,7 +25,10 @@ define root view entity ZR_IntercoJEItemClassV3
                                                                           and _ag.accountingdocument = I_JournalEntryItem.AccountingDocument
                                                                           and _ag.ledgergllineitem   = I_JournalEntryItem.LedgerGLLineItem
     inner join      ZI_IntercoCompanyCode          as _intercocompanycode on _intercocompanycode.CompanyCode = I_JournalEntryItem.CompanyCode
-    inner join      I_CostCenter                   as _currentcostcenter  on  I_JournalEntryItem.ControllingArea   = _currentcostcenter.ControllingArea
+  -- Ini EXT_VINBARRI 12.11.2026 - CMC ingresos: left outer para conservar lineas sin CeCo (origen 01/45)
+  --  inner join      I_CostCenter                   as _currentcostcenter  on  I_JournalEntryItem.ControllingArea   = _currentcostcenter.ControllingArea
+    left outer join I_CostCenter                   as _currentcostcenter  on  I_JournalEntryItem.ControllingArea   = _currentcostcenter.ControllingArea
+  -- Fin EXT_VINBARRI 12.11.2026
                                                                           and I_JournalEntryItem.CostCenter        = _currentcostcenter.CostCenter
                                                                           and _currentcostcenter.ValidityStartDate <= $session.system_date
                                                                           and _currentcostcenter.ValidityEndDate   >= $session.system_date
@@ -248,6 +251,15 @@ define root view entity ZR_IntercoJEItemClassV3
       // TEMP INDEX <-
 }
 where
-     I_JournalEntryItem.GLAccountType = 'P'
-  or I_JournalEntryItem.GLAccountType = 'N'
-  or I_JournalEntryItem.GLAccountType = 'S'
+  (
+       I_JournalEntryItem.GLAccountType = 'P'
+    or I_JournalEntryItem.GLAccountType = 'N'
+    or I_JournalEntryItem.GLAccountType = 'S'
+  )
+  -- Ini EXT_VINBARRI 12.11.2026 - CMC ingresos: mismo filtro que el inner join anterior para lineas con CeCo
+  -- (CeCo vigente obligatorio); las lineas sin CeCo (ingresos origen 01/45) se conservan.
+  and(
+       _currentcostcenter.CostCenter    is not null
+    or I_JournalEntryItem.CostCenter    =  ''
+  )
+  -- Fin EXT_VINBARRI 12.11.2026

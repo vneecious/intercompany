@@ -33,45 +33,23 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
     DATA(p_paymenttype) = CONV zint_dte_paymenttype( parameters[ parameter_name = 'P_PAYMENTTYPE' ]-value ).
     DATA(p_bgprocessing) = CONV zint_bgprocessing( parameters[ parameter_name = 'P_BGPROCESSING' ]-value  ).
 
-    " AGREGADO DS4K9B5URA: ruteo automatico V2/V3 para el path online (no-BG).
-    " Se requieren AMBAS condiciones para usar V3:
-    " parametro ZINTERCO_IC05_MATAG_ACTIVA = 'X' Y datos presentes en ZINT_A_JEITEM_AG.
-    " Si el parametro esta desactivado (rollback), se usa V2 aunque haya datos en la tabla ag.
-    DATA(use_v3) = abap_false.
-    IF p_bgprocessing <> c_bgprocessing-on.
-      SELECT SINGLE low FROM zi_tvarvc
-        WHERE name = 'ZINTERCO_IC05_MATAG_ACTIVA'
-        INTO @DATA(lv_matag_activa_online).
-      IF lv_matag_activa_online = 'X'.
-        " Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 - C12o (7c.1): ruteo E/L por AG técnico
-        " L utiliza los mismos AG técnicos E; el tipo comercial solicitado se conserva.
-        DATA(lv_ag_paymenttype_online) = COND zint_dte_paymenttype(
-          WHEN p_paymenttype = 'L' THEN 'E'
-          ELSE p_paymenttype ).
+    " EXT_VINBARRI 17.11.2026: dos caminos unicos.
+    "   - BG (P_BGPROCESSING = 'Y'): resultado ya procesado, zc_intercojeitemclassbg.
+    "   - Online: ZC_INTERCOJEITEMCLASSV4.
+    " Se eliminan el flujo V2 (zc_intercojeitemclass) y el ruteo por ZINTERCO_IC05_MATAG_ACTIVA + AG.
+    DATA(is_bg) = xsdbool( p_bgprocessing = c_bgprocessing-on ).
 
-        " Comprobación anterior conservada como histórico.
-        " SELECT COUNT(*) FROM zint_a_jeitem_ag
-        "   WHERE companycode  = @p_companycode
-        "     AND fiscalyear   = @p_fiscalyear
-        "     AND fiscalperiod = @p_fiscalperiod
-        "     AND ledger       = @p_ledger
-        "     AND paymenttype  = @p_paymenttype
-        "   INTO @DATA(ag_count_online).
-
-        SELECT COUNT(*) FROM zint_a_jeitem_ag
-          WHERE companycode  = @p_companycode
-            AND fiscalyear   = @p_fiscalyear
-            AND fiscalperiod = @p_fiscalperiod
-            AND ledger       = @p_ledger
-            AND paymenttype  = @lv_ag_paymenttype_online
-          INTO @DATA(ag_count_online).
-        " Fin EXT_OSCUGALD 07.10.2026 - C12o (7c.1)
-        IF ag_count_online > 0.
-          use_v3 = abap_true.
-        ENDIF.
-      ENDIF.
+    " P_WithRevenue va como LITERAL en el FROM dinamico (no host variable) para que HANA
+    " elimine la rama de ingresos cuando la sociedad no tiene la feature REVENUE_LINES.
+    DATA lv_source TYPE string.
+    IF is_bg = abap_false.
+      DATA(lv_with_revenue) = zcl_interco_jeitem_bg=>get_with_revenue( iv_companycode  = p_companycode
+                                                                       iv_fiscalyear   = p_fiscalyear
+                                                                       iv_fiscalperiod = p_fiscalperiod ).
+      lv_source = |zc_intercojeitemclassv4( p_companycode = @p_companycode, p_ledger = @p_ledger, | &&
+                  |p_fiscalyear = @p_fiscalyear, p_fiscalperiod = @p_fiscalperiod, | &&
+                  |p_paymenttype = @p_paymenttype, p_withrevenue = '{ lv_with_revenue }' )|.
     ENDIF.
-
 
     "  build results
     DATA(sort_elements) = io_request->get_sort_elements( ).
@@ -92,10 +70,6 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
                    sort_element-element_name &&
                    COND string( WHEN sort_element-descending = abap_true THEN ` descending` ELSE space ).
     ENDLOOP.
-*   ELIMINADO DS4K9B5URA (mantenido para rollback): IF sy-subrc <> 0 no detecta CONTINUE dentro del LOOP;
-*   si todos los sort_elements hacen CONTINUE, sy-subrc queda en 0 pero orderby queda vacio,
-*   causando ORDER BY ('') no-determinístico y paginas inconsistentes entre requests.
-*   IF sy-subrc <> 0.
     " AGREGADO DS4K9B5URA: usar IS INITIAL para detectar orderby vacio
     " independientemente de si el LOOP itero o no
     IF orderby IS INITIAL.
@@ -135,17 +109,7 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
 
     IF io_request->is_total_numb_of_rec_requested( ).
 
-      IF p_bgprocessing = c_bgprocessing-on.
-
-*        SELECT COUNT(*) FROM zc_intercojeitemclassbg(
-*            p_companycode = @p_companycode,
-*            p_ledger = @p_ledger,
-*            p_fiscalyear = @p_fiscalyear,
-*            p_fiscalperiod = @p_fiscalperiod,
-*            p_paymenttype = @p_paymenttype )
-*                    WHERE (where)
-*                         INTO @DATA(total_number_of_records).
-
+      IF is_bg = abap_true.
         WITH
         +grouped AS (
           SELECT (columns) FROM zc_intercojeitemclassbg(
@@ -159,59 +123,15 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
         )
         SELECT COUNT(*) FROM (lv_cte_name)
           INTO @DATA(total_number_of_records).
-
-      ELSEIF use_v3 = abap_true.
-        " AGREGADO DS4K9B5URA: COUNT desde V3 (tabla materializada)
-*        SELECT COUNT(*) FROM zc_intercojeitemclassv3(
-*            p_companycode  = @p_companycode,
-*            p_ledger       = @p_ledger,
-*            p_fiscalyear   = @p_fiscalyear,
-*            p_fiscalperiod = @p_fiscalperiod,
-*            p_paymenttype  = @p_paymenttype )
-*                    WHERE (where) AND pandll0id IN @lt_range_pandll0id_q
-*                         INTO @total_number_of_records.
-
+      ELSE.
         WITH
         +grouped AS (
-          SELECT (columns) FROM zc_intercojeitemclassv3(
-            p_companycode = @p_companycode,
-            p_ledger = @p_ledger,
-            p_fiscalyear = @p_fiscalyear,
-            p_fiscalperiod = @p_fiscalperiod,
-            p_paymenttype = @p_paymenttype )
+          SELECT (columns) FROM (lv_source)
           WHERE (where) AND pandll0id IN @lt_range_pandll0id_q
           GROUP BY (groupby)
         )
         SELECT COUNT(*) FROM (lv_cte_name)
           INTO @total_number_of_records.
-
-      ELSE.
-*       ELIMINADO DS4K9B5URA (mantenido para rollback): COUNT desde V2 (~20 JOINs de jerarquias)
-*        SELECT COUNT(*) FROM zc_intercojeitemclass(
-*            p_companycode = @p_companycode,
-*            p_ledger = @p_ledger,
-*            p_fiscalyear = @p_fiscalyear,
-*            p_fiscalperiod = @p_fiscalperiod,
-*            p_paymenttype = @p_paymenttype,
-*            p_bgprocessing = @p_bgprocessing )
-*                    WHERE (where) AND pandll0id IN @lt_range_pandll0id_q
-*                         INTO @total_number_of_records.
-
-        WITH
-        +grouped AS (
-          SELECT (columns) FROM zc_intercojeitemclass(
-            p_companycode = @p_companycode,
-            p_ledger = @p_ledger,
-            p_fiscalyear = @p_fiscalyear,
-            p_fiscalperiod = @p_fiscalperiod,
-            p_paymenttype = @p_paymenttype,
-            p_bgprocessing = @p_bgprocessing )
-          WHERE (where) AND  pandll0id IN @lt_range_pandll0id_q
-          GROUP BY (groupby)
-        )
-        SELECT COUNT(*) FROM (lv_cte_name)
-          INTO @total_number_of_records.
-
       ENDIF.
       io_response->set_total_number_of_records( total_number_of_records ).
 
@@ -228,7 +148,7 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
     ENDIF.
 
     IF pagesize <> if_rap_query_paging=>page_size_unlimited.
-      IF p_bgprocessing = c_bgprocessing-on.
+      IF is_bg = abap_true.
         SELECT (columns) FROM zc_intercojeitemclassbg(
             p_companycode = @p_companycode,
             p_ledger = @p_ledger,
@@ -241,52 +161,18 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
             INTO CORRESPONDING FIELDS OF TABLE @results
               OFFSET @offset
               UP TO @pagesize ROWS.
-      ELSEIF use_v3 = abap_true.
-        " AGREGADO DS4K9B5URA: SELECT desde V3 con pagina (tabla materializada)
-        SELECT (columns) FROM zc_intercojeitemclassv3(
-            p_companycode  = @p_companycode,
-            p_ledger       = @p_ledger,
-            p_fiscalyear   = @p_fiscalyear,
-            p_fiscalperiod = @p_fiscalperiod,
-            p_paymenttype  = @p_paymenttype )
+      ELSE.
+        SELECT (columns) FROM (lv_source)
             WHERE (where) AND pandll0id IN @lt_range_pandll0id_q
                  GROUP BY (groupby)
                  ORDER BY (orderby)
             INTO CORRESPONDING FIELDS OF TABLE @results
               OFFSET @offset
               UP TO @pagesize ROWS.
-      ELSE.
-*       ELIMINADO DS4K9B5URA (mantenido para rollback): SELECT desde V2 con pagina (~20 JOINs de jerarquias)
-        SELECT (columns) FROM zc_intercojeitemclass(
-      p_companycode = @p_companycode,
-      p_ledger = @p_ledger,
-      p_fiscalyear = @p_fiscalyear,
-      p_fiscalperiod = @p_fiscalperiod,
-      p_paymenttype = @p_paymenttype,
-      p_bgprocessing = @p_bgprocessing )
-      WHERE (where) AND pandll0id IN @lt_range_pandll0id_q
-           GROUP BY (groupby)
-           ORDER BY (orderby)
-      INTO CORRESPONDING FIELDS OF TABLE @results
-        OFFSET @offset
-        UP TO @pagesize ROWS.
       ENDIF.
     ELSE.
-      IF p_bgprocessing = c_bgprocessing-on.
+      IF is_bg = abap_true.
         " Ini Facturación Local CH/ARG EXT_OSCUGALD 07.10.2026 - C12o (7c.3): tipo comercial en consulta BG sin límite
-        " SELECT anterior conservado: usaba el indicador BG como PaymentType.
-        " SELECT (columns) FROM zc_intercojeitemclassbg(
-        "     p_companycode = @p_companycode,
-        "     p_ledger = @p_ledger,
-        "     p_fiscalyear = @p_fiscalyear,
-        "     p_fiscalperiod = @p_fiscalperiod,
-        "     p_paymenttype = @p_bgprocessing )
-        "     WHERE (where)
-        "          GROUP BY (groupby)
-        "          ORDER BY (orderby)
-        "     INTO CORRESPONDING FIELDS OF TABLE @results
-        "     OFFSET @offset.
-
         SELECT (columns) FROM zc_intercojeitemclassbg(
             p_companycode = @p_companycode,
             p_ledger = @p_ledger,
@@ -299,33 +185,13 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
             INTO CORRESPONDING FIELDS OF TABLE @results
             OFFSET @offset.
         " Fin EXT_OSCUGALD 07.10.2026 - C12o (7c.3)
-      ELSEIF use_v3 = abap_true.
-        " AGREGADO DS4K9B5URA: SELECT desde V3 sin limite (tabla materializada)
-        SELECT (columns) FROM zc_intercojeitemclassv3(
-            p_companycode  = @p_companycode,
-            p_ledger       = @p_ledger,
-            p_fiscalyear   = @p_fiscalyear,
-            p_fiscalperiod = @p_fiscalperiod,
-            p_paymenttype  = @p_paymenttype )
+      ELSE.
+        SELECT (columns) FROM (lv_source)
             WHERE (where) AND pandll0id IN @lt_range_pandll0id_q
                  GROUP BY (groupby)
                  ORDER BY (orderby)
             INTO CORRESPONDING FIELDS OF TABLE @results
             OFFSET @offset.
-      ELSE.
-*       ELIMINADO DS4K9B5URA (mantenido para rollback): SELECT desde V2 sin limite (~20 JOINs de jerarquias)
-        SELECT (columns) FROM zc_intercojeitemclass(
-  p_companycode = @p_companycode,
-  p_ledger = @p_ledger,
-  p_fiscalyear = @p_fiscalyear,
-  p_fiscalperiod = @p_fiscalperiod,
-  p_paymenttype = @p_paymenttype,
-  p_bgprocessing = @p_bgprocessing )
-  WHERE (where) AND pandll0id IN @lt_range_pandll0id_q
-       GROUP BY (groupby)
-       ORDER BY (orderby)
-  INTO CORRESPONDING FIELDS OF TABLE @results
-  OFFSET @offset.
       ENDIF.
     ENDIF.
 
@@ -335,7 +201,7 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
     " framework sepa que el offset supero el fin del conjunto y deje de paginar sin limpiar.
     IF results IS INITIAL AND offset > 0.
       DATA lv_safety_total TYPE int8.
-      IF p_bgprocessing = c_bgprocessing-on.
+      IF is_bg = abap_true.
         SELECT COUNT(*) FROM zc_intercojeitemclassbg(
             p_companycode = @p_companycode,
             p_ledger      = @p_ledger,
@@ -343,22 +209,8 @@ CLASS zcl_interco_jeitem_class IMPLEMENTATION.
             p_fiscalperiod = @p_fiscalperiod,
             p_paymenttype  = @p_paymenttype )
           WHERE (where) INTO @lv_safety_total.
-      ELSEIF use_v3 = abap_true.
-        SELECT COUNT(*) FROM zc_intercojeitemclassv3(
-            p_companycode  = @p_companycode,
-            p_ledger       = @p_ledger,
-            p_fiscalyear   = @p_fiscalyear,
-            p_fiscalperiod = @p_fiscalperiod,
-            p_paymenttype  = @p_paymenttype )
-          WHERE (where) AND pandll0id IN @lt_range_pandll0id_q INTO @lv_safety_total.
       ELSE.
-        SELECT COUNT(*) FROM zc_intercojeitemclass(
-            p_companycode  = @p_companycode,
-            p_ledger       = @p_ledger,
-            p_fiscalyear   = @p_fiscalyear,
-            p_fiscalperiod = @p_fiscalperiod,
-            p_paymenttype  = @p_paymenttype,
-            p_bgprocessing = @p_bgprocessing )
+        SELECT COUNT(*) FROM (lv_source)
           WHERE (where) AND pandll0id IN @lt_range_pandll0id_q INTO @lv_safety_total.
       ENDIF.
       io_response->set_total_number_of_records( lv_safety_total ).

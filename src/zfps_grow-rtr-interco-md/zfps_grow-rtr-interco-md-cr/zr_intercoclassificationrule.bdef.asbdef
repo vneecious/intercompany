@@ -36,7 +36,9 @@ with additional save
   ValidTo,
   RuleName,
   Ledger;
-
+  // Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - C13F-R1: tipo de facturación obligatorio
+  field ( mandatory ) PaymentType;
+  // Fin EXT_OSCUGALD 17.11.2026 - C13F-R1
   field ( readonly ) RuleID;
 
   /*-----------------------------------------------------------------

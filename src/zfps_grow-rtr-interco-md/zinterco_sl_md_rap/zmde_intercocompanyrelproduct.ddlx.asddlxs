@@ -67,7 +67,7 @@ annotate entity ZC_IntercoCompanyRelProduct with
             { type: #FOR_ACTION, dataAction: 'Block', label: 'Block', position: 50},
             { type: #FOR_ACTION, dataAction: 'Release', label: 'Release', position: 60},
             { type: #FOR_ACTION, dataAction: 'SetDelete', label: 'Set Delete', position: 70}
-//            { type: #FOR_ACTION, dataAction: 'deleteDraft', label: 'Delete Draft', position: 80}
+  //            { type: #FOR_ACTION, dataAction: 'deleteDraft', label: 'Delete Draft', position: 80}
       ],
       identification:[ { position: 10 } ]}
   @UI.fieldGroup: [{ qualifier: 'General', position: 10 }, { qualifier: 'HeaderData', position: 10 }]
@@ -88,6 +88,17 @@ annotate entity ZC_IntercoCompanyRelProduct with
   @EndUserText.label: 'Product Name'
   //@UI.hidden: true
   ProductName;
+
+  -- Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01A: columna, filtro y value help
+  @UI: { lineItem: [ { position: 35 } ],identification:[ { position: 35 } ]}
+  @UI.fieldGroup: [{ qualifier: 'General', position: 15 }]
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZI_IntercoPaymentTypeVH', element: 'PaymentType' }
+  }]
+  @UI.selectionField: [{ position: 20 }]
+  @EndUserText.label: 'Tipo Fac. Interco'
+  PaymentType;
+  -- Fin EXT_OSCUGALD 24.10.2026 - G01A
 
   @UI: { lineItem: [ { position: 40 } ],identification:[ { position: 40 } ]}
   @UI.fieldGroup: [{ qualifier: 'General', position: 20 }, { qualifier: 'HeaderData', position: 20 }]
@@ -154,7 +165,7 @@ annotate entity ZC_IntercoCompanyRelProduct with
 
   @UI: { lineItem: [ { position: 115 } ],identification:[ { position: 115 } ]}
   @EndUserText.label: 'Percentage'
-//  @UI.hidden: true
+  //  @UI.hidden: true
   RateUnit;
 
   @UI: { lineItem: [ { position: 120 } ],identification:[ { position: 120 } ]}
@@ -186,13 +197,13 @@ annotate entity ZC_IntercoCompanyRelProduct with
   @UI.fieldGroup: [{ qualifier: 'Status', position: 20 }]
   @EndUserText.label: 'Is Deleted'
   IsDeleted;
-  
+
   @UI.hidden: true
   zindex;
-  
+
   @UI.hidden: true
   AuthorizationGroup;
-  
+
   @UI: { lineItem: [ { position: 150 } ],identification:[ { position: 150 } ]}
   @UI.fieldGroup: [{ qualifier: 'Status', position: 30 }]
   @EndUserText.label: 'Created At'

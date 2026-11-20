@@ -4,7 +4,7 @@
   <asx:values>
    <VSEOCLASS>
     <CLSNAME>ZCL_INTERCO_PAPM</CLSNAME>
-    <LANGU>S</LANGU>
+    <LANGU>E</LANGU>
     <DESCRIPT>Interco - Clase de proceso de reporte a PAPM</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>

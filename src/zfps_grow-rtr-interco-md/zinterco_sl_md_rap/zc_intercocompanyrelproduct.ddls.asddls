@@ -17,6 +17,9 @@ define root view entity ZC_IntercoCompanyRelProduct
       //@ObjectModel.text.element:  [ 'ProductName' ]
       Product,
       ProductName,
+      -- Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01A: proyecta PaymentType
+      PaymentType,
+      -- Fin EXT_OSCUGALD 24.10.2026 - G01A
       //@ObjectModel.text.element:  [ 'ProfitCenterName' ]
       ProfitCenter,
       ProfitCenterName,

@@ -33,6 +33,7 @@ CLASS zcl_proposal_bo_interdiv IMPLEMENTATION.
 
 
   METHOD mapping_bo_sec.
+
     TYPES ty_lineitem TYPE n LENGTH 6.
 
     TYPES:
@@ -178,6 +179,13 @@ CLASS zcl_proposal_bo_interdiv IMPLEMENTATION.
       FROM @recipient_glitems AS recipient_glitems
       INTO @DATA(total).
 
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - C20d: precarga BLART
+    DATA(lo_blart_interdiv) = NEW zcl_interco_doc_blart(
+      i_valid_at              = last_day_of_month
+      i_doctype               = zcl_interco_doc_glaccount=>co_doc_type-interdivisinoal
+      i_provider_company_code = gs_header-providercompanycode ).
+    " Fin EXT_OSCUGALD 04.11.2026 - C20d
+
     "  Build Journal Entries
     LOOP AT recipient_glitems REFERENCE INTO DATA(recipient_glitem)
         GROUP BY recipient_glitem->recipientcompanycode INTO FINAL(recipient_company_code).
@@ -188,7 +196,18 @@ CLASS zcl_proposal_bo_interdiv IMPLEMENTATION.
       " HEADER
       """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
       journal_entry->%cid = gs_header-providercompanycode && gs_header-product && sy-datum && sy-index.
-      journal_entry->%param-accountingdocumenttype = 'CH'.
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - C20d: BLART con fallback CH
+      "      journal_entry->%param-accountingdocumenttype = 'CH'.
+
+      DATA(lv_blart_interdiv) = lo_blart_interdiv->get(
+        i_recipientcompanycode = recipient_company_code
+        i_paymenttype          = gs_header-paymenttype
+        i_amount               = total ).
+
+      journal_entry->%param-accountingdocumenttype = COND #(
+        WHEN lv_blart_interdiv IS NOT INITIAL THEN lv_blart_interdiv
+        ELSE 'CH' ).
+      " Fin EXT_OSCUGALD 04.11.2026 - C20d
       journal_entry->%param-createdbyuser = sy-uname.
       journal_entry->%param-accountingdocumentheadertext = |{ gs_header-providercompanycode } { recipient_company_code } { gs_header-productname }|.
       journal_entry->%param-companycode = gs_header-providercompanycode.

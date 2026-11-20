@@ -209,7 +209,11 @@ CLASS lhc_exemption IMPLEMENTATION.
        ENTITY exemption
          EXECUTE delimit FROM delimited_exemptions
          CREATE
-            FIELDS ( companycode product validfrom validto )
+            " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - C13F-R2: conserva PaymentType al copiar la exclusión
+            " Original conservado:
+            " FIELDS ( companycode product validfrom validto )
+            FIELDS ( companycode product validfrom validto paymenttype )
+            " Fin EXT_OSCUGALD 17.11.2026 - C13F-R2
                 WITH exemptions
          CREATE BY \_exemptionrules
             FIELDS ( accountingdocumenttype glaccount costcenter profitcenter )

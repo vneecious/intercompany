@@ -12,8 +12,8 @@ lock master total etag LastChangedAt
 authorization master ( global, instance )
 etag master LastChangedAt
 {
-  create ;
-  update ;
+  create;
+  update;
   delete ( features : instance, precheck );
 
   draft action Resume;
@@ -25,6 +25,11 @@ etag master LastChangedAt
   field ( readonly, numbering : managed ) uuid;
   field ( readonly ) Createdat, Createdby, LastChangedAt, Isdeleted;
   field ( mandatory ) Providercompanycode, Recipientcompanycode, Product, Validfrom, Validto;
+
+  // Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - C25-R2: tipo de facturación obligatorio
+  field ( mandatory ) PaymentType;
+  // Fin EXT_OSCUGALD 17.11.2026 - C25-R2
+
   field ( readonly ) ProvidercompanycodeName, RecipientCompanyName, ProductName;
 
   determination GetProductName on modify { field Product; }
@@ -47,6 +52,12 @@ etag master LastChangedAt
 
   }
 
-  mapping
-       for zint_a_md003 corresponding;
+  // Ini Facturación Local CH/ARG EXT_OSCUGALD 12.11.2026 - C25-R1: mapear PaymentType a payment_type de la tabla activa
+  // mapping
+  //      for zint_a_md003 corresponding;
+  mapping for zint_a_md003 corresponding
+    {
+      PaymentType = payment_type;
     }
+  // Fin EXT_OSCUGALD 12.11.2026 - C25-R1
+}

@@ -174,7 +174,7 @@ annotate entity ZC_IntercoExemptionTP with
   CompanyCode;
 
   -- Ini Facturación Local CH/ARG EXT_OSCUGALD 06.10.2026 - C13F: muestra PaymentType y asigna value help
-  @EndUserText.label: 'Payment Type'
+  @EndUserText.label: 'Tipo Fac. Interco'
   @Consumption.valueHelpDefinition: [{
     entity: {
       name: 'ZI_IntercoPaymentTypeVH',

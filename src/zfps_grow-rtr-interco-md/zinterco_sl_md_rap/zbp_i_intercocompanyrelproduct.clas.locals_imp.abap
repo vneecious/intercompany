@@ -11,10 +11,14 @@ CLASS lsc_zi_intercocompanyrelprodu IMPLEMENTATION.
 
     DATA(lref_cdo) = NEW zcl_interco_cdo( ).
     IF create-zi_intercocompanyrelproduct IS NOT INITIAL.
-      lt_md001 = CORRESPONDING #( create-zi_intercocompanyrelproduct ).
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 11.11.2026 - G01B-R1: persistir tipo al crear
+      " lt_md001 = CORRESPONDING #( create-zi_intercocompanyrelproduct ).
+      lt_md001 = CORRESPONDING #( create-zi_intercocompanyrelproduct
+                                 MAPPING payment_type = PaymentType ).
+      " Fin EXT_OSCUGALD 11.11.2026 - G01B-R1
       SORT lt_md001 BY id.
 
-      SELECT mandt, id, validfrom, validto, providercompanycode, recipientcompanycode, product, profitcenter, rate,
+      SELECT mandt, id, validfrom, validto, providercompanycode, recipientcompanycode, product, payment_type, profitcenter, rate,
              flow, ispromo, isblocked, isdeleted, zindex, authorizationgroup, createdat, createdby, lastchangedat
         FROM zint_a_md001
         FOR ALL ENTRIES IN @lt_md001
@@ -36,10 +40,14 @@ CLASS lsc_zi_intercocompanyrelprodu IMPLEMENTATION.
                             it_data = lt_md001 ).
     ENDIF.
     IF update-zi_intercocompanyrelproduct IS NOT INITIAL.
-      lt_md001 = CORRESPONDING #( update-zi_intercocompanyrelproduct ).
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 11.11.2026 - G01B-R1: persistir tipo al actualizar
+      " lt_md001 = CORRESPONDING #( update-zi_intercocompanyrelproduct ).
+      lt_md001 = CORRESPONDING #( update-zi_intercocompanyrelproduct
+                                 MAPPING payment_type = PaymentType ).
+      " Fin EXT_OSCUGALD 11.11.2026 - G01B-R1
       SORT lt_md001 BY id.
 
-      SELECT mandt, id, validfrom, validto, providercompanycode, recipientcompanycode, product, profitcenter, rate,
+      SELECT mandt, id, validfrom, validto, providercompanycode, recipientcompanycode, product, payment_type, profitcenter, rate,
              flow, ispromo, isblocked, isdeleted, zindex, authorizationgroup, createdat, createdby, lastchangedat
         FROM zint_a_md001
         FOR ALL ENTRIES IN @lt_md001
@@ -88,6 +96,11 @@ CLASS lhc_zi_intercocompanyrelproduc DEFINITION INHERITING FROM cl_abap_behavior
 
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR zi_intercocompanyrelproduct RESULT result.
+
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01B
+    METHODS precheck FOR PRECHECK
+      IMPORTING entities_create FOR CREATE ZI_IntercoCompanyRelProduct.
+    " Fin EXT_OSCUGALD 24.10.2026 - G01B
 
     "    METHODS precheck FOR PRECHECK
     "     IMPORTING entities_create FOR CREATE CompanyRelationshipProduct
@@ -260,6 +273,24 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
   "                      ) ).
   "ENDMETHOD.
 
+  " Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01B: Rate informado en creación RAP
+  METHOD precheck.
+    LOOP AT entities_create INTO DATA(ls_gap_create).
+      IF ls_gap_create-PaymentType = 'L'
+         AND ls_gap_create-%control-Rate = if_abap_behv=>mk-off.
+        APPEND VALUE #( %cid = ls_gap_create-%cid )
+          TO failed-zi_intercocompanyrelproduct.
+        APPEND VALUE #(
+          %cid = ls_gap_create-%cid
+          %msg = new_message_with_text(
+                   severity = if_abap_behv_message=>severity-error
+                   text     = 'Rate is required for PaymentType L.' ) )
+          TO reported-zi_intercocompanyrelproduct.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+  " Fin EXT_OSCUGALD 24.10.2026 - G01B
+
   METHOD precheck_delete.
     READ ENTITIES OF zi_intercocompanyrelproduct IN LOCAL MODE
        ENTITY zi_intercocompanyrelproduct ALL FIELDS WITH CORRESPONDING #( keys )
@@ -276,6 +307,12 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
   METHOD validatedata.
     DATA lt_companyproduct TYPE TABLE OF zi_intercocompanyrelproduct.
     DATA lv_index          TYPE symsg-msgv1.
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01B
+    DATA lv_conflict_id       TYPE zint_a_md001-id.
+    DATA lv_conflict_found    TYPE abap_bool.
+    DATA lv_other_paymenttype TYPE zint_dte_paymenttype.
+    DATA lt_gap_db TYPE STANDARD TABLE OF zint_a_md001 WITH EMPTY KEY.
+    " Fin EXT_OSCUGALD 24.10.2026 - G01B
 
     CLEAR: failed-zi_intercocompanyrelproduct,
            reported-zi_intercocompanyrelproduct.
@@ -301,6 +338,114 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
     READ TABLE lt_compprod  REFERENCE INTO DATA(ls_compprod) INDEX 1.
 
     lt_companyproduct = CORRESPONDING #( lt_compprod ).
+
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01B: dominio y conflicto vacío/L
+    IF lt_compprod IS NOT INITIAL.
+      SELECT id,
+             providercompanycode,
+             product,
+             payment_type,
+             isdeleted,
+             validfrom,
+             validto
+        FROM zint_a_md001
+        FOR ALL ENTRIES IN @lt_compprod
+        WHERE providercompanycode = @lt_compprod-ProviderCompanyCode
+          AND product             = @lt_compprod-Product
+          AND isdeleted           = @abap_false
+        INTO CORRESPONDING FIELDS OF TABLE @lt_gap_db.
+    ENDIF.
+
+    LOOP AT lt_compprod INTO DATA(ls_gap_row).
+
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G01B-R2: exigir tipo al guardar
+      IF ls_gap_row-PaymentType IS INITIAL.
+        APPEND VALUE #( %tky = ls_gap_row-%tky )
+          TO failed-zi_intercocompanyrelproduct.
+
+        APPEND VALUE #(
+          %tky                 = ls_gap_row-%tky
+          %element-PaymentType = if_abap_behv=>mk-on
+          %msg                 = new_message_with_text(
+                                   severity = if_abap_behv_message=>severity-error
+                                   text     = 'Tipo Fac. Interco es obligatorio.' ) )
+          TO reported-zi_intercocompanyrelproduct.
+      ENDIF.
+      " Fin EXT_OSCUGALD 17.11.2026 - G01B-R2
+
+      IF ls_gap_row-PaymentType IS NOT INITIAL
+         AND ls_gap_row-PaymentType <> 'E'
+         AND ls_gap_row-PaymentType <> 'L'.
+        APPEND VALUE #( %key = ls_gap_row-%key )
+          TO failed-zi_intercocompanyrelproduct.
+        APPEND VALUE #(
+          %key = ls_gap_row-%key
+          %msg = new_message_with_text(
+                   severity = if_abap_behv_message=>severity-error
+                   text     = 'PaymentType must be E or L.' ) )
+          TO reported-zi_intercocompanyrelproduct.
+      ENDIF.
+
+      IF ls_gap_row-IsDeleted <> abap_true
+         AND ls_gap_row-ProviderCompanyCode IS NOT INITIAL
+         AND ls_gap_row-Product IS NOT INITIAL
+         AND ls_gap_row-ValidFrom IS NOT INITIAL
+         AND ls_gap_row-ValidTo IS NOT INITIAL
+         AND ( ls_gap_row-PaymentType = 'L'
+               OR ls_gap_row-PaymentType IS INITIAL ).
+
+        CLEAR: lv_conflict_id, lv_conflict_found.
+
+        IF ls_gap_row-PaymentType = 'L'.
+          CLEAR lv_other_paymenttype.
+        ELSE.
+          lv_other_paymenttype = 'L'.
+        ENDIF.
+
+        SELECT SINGLE candidate~id
+          FROM @lt_gap_db AS candidate
+          WHERE candidate~id                  <> @ls_gap_row-id
+            AND candidate~providercompanycode  = @ls_gap_row-ProviderCompanyCode
+            AND candidate~product              = @ls_gap_row-Product
+            AND candidate~payment_type         = @lv_other_paymenttype
+            AND candidate~isdeleted            = @abap_false
+            AND candidate~validfrom           <= @ls_gap_row-ValidTo
+            AND candidate~validto             >= @ls_gap_row-ValidFrom
+          INTO @lv_conflict_id.
+
+        IF sy-subrc = 0.
+          lv_conflict_found = abap_true.
+        ELSE.
+          SELECT SINGLE candidate~id
+            FROM @lt_companyproduct AS candidate
+            WHERE candidate~id                  <> @ls_gap_row-id
+              AND candidate~providercompanycode  = @ls_gap_row-ProviderCompanyCode
+              AND candidate~product              = @ls_gap_row-Product
+              AND candidate~paymenttype          = @lv_other_paymenttype
+              AND candidate~isdeleted            = @abap_false
+              AND candidate~validfrom           <= @ls_gap_row-ValidTo
+              AND candidate~validto             >= @ls_gap_row-ValidFrom
+            INTO @lv_conflict_id.
+
+          IF sy-subrc = 0.
+            lv_conflict_found = abap_true.
+          ENDIF.
+        ENDIF.
+
+        IF lv_conflict_found = abap_true.
+          APPEND VALUE #( %key = ls_gap_row-%key )
+            TO failed-zi_intercocompanyrelproduct.
+          APPEND VALUE #(
+            %key = ls_gap_row-%key
+            %msg = new_message_with_text(
+                     severity = if_abap_behv_message=>severity-error
+                     text     = 'An active empty PaymentType relationship conflicts with PaymentType L for the same provider and product.' ) )
+            TO reported-zi_intercocompanyrelproduct.
+        ENDIF.
+      ENDIF.
+
+    ENDLOOP.
+    " Fin EXT_OSCUGALD 24.10.2026 - G01B
 
     READ TABLE lt_companyproduct REFERENCE INTO DATA(ls_companyrelepproduct) INDEX 1.
 
@@ -575,7 +720,7 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
           WHERE zi_intercorelationship~RecipientCompanyCode = @lt_data_aux-RecipientCompanyCode
           INTO TABLE @DATA(lt_company2).
         IF sy-subrc = 0.
-          SORT lt_company BY ProviderCompanyCode.
+          SORT lt_company2 BY RecipientCompanyCode.
         ENDIF.
       ENDIF.
 
@@ -639,7 +784,29 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
 
         DATA lt_companyprod TYPE STANDARD TABLE OF zi_intercocompanyrelproduct.
 
-        SELECT *
+        " Ini Facturación Local CH/ARG EXT_OSCUGALD 25.10.2026 - G01B: corrección ATC P2
+
+        " Código anterior: conservado como referencia
+        " SELECT *
+        "   FROM zi_intercocompanyrelproduct
+        "   FOR ALL ENTRIES IN @lt_data_aux
+        "   WHERE providercompanycode  = @lt_data_aux-providercompanycode
+        "     AND recipientcompanycode = @lt_data_aux-recipientcompanycode
+        "     AND product              = @lt_data_aux-product
+        "     AND profitcenter         = @lt_data_aux-profitcenter
+        "     AND flow                 = @lt_data_aux-flow
+        "     AND isdeleted            = @abap_false
+        "   INTO TABLE @lt_companyprod.
+
+        " Selección explícita de los campos utilizados por la validación
+        SELECT Id,
+               ProviderCompanyCode,
+               RecipientCompanyCode,
+               Product,
+               ProfitCenter,
+               Flow,
+               ValidFrom,
+               ValidTo
           FROM zi_intercocompanyrelproduct
           FOR ALL ENTRIES IN @lt_data_aux
           WHERE providercompanycode  = @lt_data_aux-providercompanycode
@@ -648,7 +815,9 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
             AND profitcenter         = @lt_data_aux-profitcenter
             AND flow                 = @lt_data_aux-flow
             AND isdeleted            = @abap_false
-          INTO TABLE @lt_companyprod.
+          INTO CORRESPONDING FIELDS OF TABLE @lt_companyprod.
+
+        " Fin EXT_OSCUGALD 25.10.2026 - G01B
 
 ***        READ ENTITIES OF zi_intercocompanyrelproduct IN LOCAL MODE
 ***             ENTITY zi_intercocompanyrelproduct ALL FIELDS
@@ -1080,6 +1249,23 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
     DATA(lcl_interco_upload) = NEW zcl_interco_master_upload( ).
     DATA(lt_data) = lcl_interco_upload->upload_companyproduct( is_params = CONV #( <fs_key>-%param ) ).
 
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01B: Rate requerido para L en carga JSON
+    LOOP AT lt_data ASSIGNING FIELD-SYMBOL(<fs_gap_upload>).
+      IF <fs_gap_upload>-paymentType = 'L'
+         AND <fs_gap_upload>-rate IS INITIAL.
+        APPEND VALUE #( %cid = <fs_key>-%cid )
+          TO failed-zi_intercocompanyrelproduct.
+        APPEND VALUE #(
+          %cid = <fs_key>-%cid
+          %msg = new_message_with_text(
+                   severity = if_abap_behv_message=>severity-error
+                   text     = 'Rate is required for PaymentType L.' ) )
+          TO reported-zi_intercocompanyrelproduct.
+        RETURN.
+      ENDIF.
+    ENDLOOP.
+    " Fin EXT_OSCUGALD 24.10.2026 - G01B
+
     IF lt_data[] IS INITIAL.
       APPEND VALUE #( %cid = <fs_key>-%cid ) TO failed-zi_intercocompanyrelproduct.
       APPEND VALUE #( %cid = <fs_key>-%cid %msg = new_message( id = 'ZINT_MSG_INTERCO_MD' number = '051' severity = if_abap_behv_message=>severity-error ) ) TO reported-zi_intercocompanyrelproduct.
@@ -1090,6 +1276,9 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
       lt_companyproduct = VALUE #( FOR ls_data IN lt_data INDEX INTO lv_index
                                    ( %cid                 = lv_index + 1
                                      Product              = ls_data-material
+" Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01B
+                                     PaymentType          = ls_data-paymentType
+" Fin EXT_OSCUGALD 24.10.2026 - G01B
                                      ProviderCompanyCode  = ls_data-providerCompany
                                      RecipientCompanyCode = ls_data-recipientcompany
                                      ProfitCenter         = |{ ls_data-profitCenter ALPHA = IN }|
@@ -1115,7 +1304,9 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
       TRY.
           MODIFY ENTITIES OF ZI_IntercoCompanyRelProduct IN LOCAL MODE
                  ENTITY ZI_IntercoCompanyRelProduct
-                 CREATE FIELDS ( Product ProviderCompanyCode RecipientCompanyCode ProfitCenter ValidFrom ValidTo rate flow ispromo zindex CreatedBy CreatedAt )
+" Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01B
+                 CREATE FIELDS ( Product PaymentType ProviderCompanyCode RecipientCompanyCode ProfitCenter ValidFrom ValidTo rate flow ispromo zindex CreatedBy CreatedAt )
+" Fin EXT_OSCUGALD 24.10.2026 - G01B
                  WITH lt_companyproduct[]
                  MAPPED mapped
                  FAILED failed

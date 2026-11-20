@@ -10,7 +10,10 @@ lock master total etag LastChangedAt
 authorization master ( instance, global )
 etag master LastChangedAt
 {
-  create;
+  // Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01B
+  // create;
+  create ( precheck );
+  // Fin EXT_OSCUGALD 24.10.2026 - G01B
   update;
   delete ( features : instance, precheck );
 
@@ -20,6 +23,11 @@ etag master LastChangedAt
   field ( readonly ) CreatedAt, CreatedBy, LastChangedAt, IsDeleted, IsBlocked, Metric;
   //field ( features : instance ) IsDeleted, IsBlocked;
   field ( mandatory ) ProviderCompanyCode, RecipientCompanyCode, Product, ProfitCenter, Flow, ValidFrom, ValidTo;
+
+  // Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - G01B-R2: tipo de facturación obligatorio
+  field ( mandatory ) PaymentType;
+  // Fin EXT_OSCUGALD 17.11.2026 - G01B-R2
+
   field ( features : instance ) ProviderCompanyCode, RecipientCompanyCode, Product, ProfitCenter, Flow, ValidFrom, ValidTo;
 
   validation validateData on save { create; update; }
@@ -28,15 +36,16 @@ etag master LastChangedAt
   determination DeterValidFrom on modify { field ValidFrom; }
   determination DeterValidTo on modify { field validTo; }
 
-  side effects {
-      field ProviderCompanyCode affects $self, messages;
-      field RecipientCompanyCode affects $self, messages;
-      field Product affects $self, messages;
-      field ProfitCenter affects $self, messages;
-      field Flow affects $self, messages;
-      field ValidFrom affects $self, messages;
-      field ValidTo affects $self, messages;
-      field Rate affects $self, messages;
+  side effects
+  {
+    field ProviderCompanyCode affects $self, messages;
+    field RecipientCompanyCode affects $self, messages;
+    field Product affects $self, messages;
+    field ProfitCenter affects $self, messages;
+    field Flow affects $self, messages;
+    field ValidFrom affects $self, messages;
+    field ValidTo affects $self, messages;
+    field Rate affects $self, messages;
   }
 
 

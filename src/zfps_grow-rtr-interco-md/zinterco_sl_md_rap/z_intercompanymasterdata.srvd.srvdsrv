@@ -7,6 +7,7 @@ define service Z_IntercompanyMasterData {
   expose ZC_IntercoRelationship       as CompanyRelationships;
   expose ZC_IntercoProduct            as Products;
   expose ZC_IntercoCompanyRelProduct  as CompanyRelationshipProduct;
+  expose ZI_IntercoPaymentTypeVH;
   expose ZC_IntercoCompanyRelProdRate as CompanyRelationshipProdRate;
   expose ZC_IntercoCompanyRelProdBill as CompanyRelationshipProductBill;
   expose ZC_TEST_INTERCO_STATEMENT_2  as TestBRFExemptions2;

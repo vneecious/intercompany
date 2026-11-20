@@ -487,6 +487,13 @@ CLASS zcl_proposal_bo_ar_taxbr_recl IMPLEMENTATION.
 
     DATA(brf_helper) = NEW zcl_interco_brf_wht( ).
 
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - C20i: precarga BLART
+    DATA(lo_blart_tax_recl) = NEW zcl_interco_doc_blart(
+      i_valid_at              = last_day_of_month
+      i_doctype               = zcl_interco_doc_glaccount=>co_doc_type-taxbr_reclas_ar
+      i_provider_company_code = gs_header-providercompanycode ).
+    " Fin EXT_OSCUGALD 04.11.2026 - C20i
+
     LOOP AT mt_origin_documents REFERENCE INTO DATA(lr_origin_document)
       GROUP BY lr_origin_document->accountingdocument INTO FINAL(lv_document_key).
 
@@ -500,7 +507,23 @@ CLASS zcl_proposal_bo_ar_taxbr_recl IMPLEMENTATION.
 
       APPEND INITIAL LINE TO lt_journal_entry REFERENCE INTO DATA(lr_journal_entry).
       lr_journal_entry->%cid = lr_origin_document->accountingdocument && gs_header-product && sy-datum && sy-index.
-      lr_journal_entry->%param-accountingdocumenttype = lr_origin_document->accountingdocumenttype.
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 04.11.2026 - C20i: BLART con fallback original
+      "      lr_journal_entry->%param-accountingdocumenttype = lr_origin_document->accountingdocumenttype.
+
+      DATA(lv_amount_tax_recl) = REDUCE fis_wsl(
+        INIT total = CONV fis_wsl( 0 )
+        FOR origin_blart_line IN GROUP lv_document_key
+        NEXT total = total + origin_blart_line-amountintransactioncurrency ).
+
+      DATA(lv_blart_tax_recl) = lo_blart_tax_recl->get(
+        i_recipientcompanycode = lr_proposal_item->recipientcompanycode
+        i_paymenttype          = gs_header-paymenttype
+        i_amount               = lv_amount_tax_recl ).
+
+      lr_journal_entry->%param-accountingdocumenttype = COND #(
+        WHEN lv_blart_tax_recl IS NOT INITIAL THEN lv_blart_tax_recl
+        ELSE lr_origin_document->accountingdocumenttype ).
+      " Fin EXT_OSCUGALD 04.11.2026 - C20i
       lr_journal_entry->%param-ledgergroup = 'INUS'.
       lr_journal_entry->%param-createdbyuser = sy-uname.
       lr_journal_entry->%param-accountingdocumentheadertext = lr_origin_document->accountingdocumentheadertext.

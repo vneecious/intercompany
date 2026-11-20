@@ -37,7 +37,7 @@ CLASS ZCL_ZINT_A_MD001_CH_CHDO IMPLEMENTATION.
   method WRITE.
 *"----------------------------------------------------------------------
 *"         this WRITE method is generated for object ZINT_A_MD001_CH
-*"         never change it manually, please!        :05.03.2025
+*"         never change it manually, please!        :24.10.2026
 *"         All changes will be overwritten without a warning!
 *"
 *"         CX_CHDO_WRITE_ERROR is used for error handling

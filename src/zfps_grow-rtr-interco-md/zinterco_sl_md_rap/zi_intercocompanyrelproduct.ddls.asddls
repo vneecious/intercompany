@@ -9,41 +9,60 @@
 }
 define root view entity ZI_IntercoCompanyRelProduct
   as select from zint_a_md001
-  association [0..1] to ZI_IntercoCompanyCode     as _ProviderCompany  on _ProviderCompany.CompanyCode = $projection.ProviderCompanyCode
-  association [0..1] to ZI_IntercoCompanyCode     as _RecipientCompany on _RecipientCompany.CompanyCode = $projection.RecipientCompanyCode
-  association [0..1] to ZI_IntercoProduct         as _Product          on _Product.Product = $projection.Product
-  association [0..1] to ZI_IntercoProfitCenter_SH as _ProfitCenterText on _ProfitCenterText.ProfitCenter = $projection.ProfitCenter
-  association [0..*] to zi_intercorelproduct_log  as _log              on _log.uuid = $projection.Id
-  association [0..1] to ZI_IntercoFlow_SH         as _Flow             on _Flow.Flow = $projection.Flow
-
+  association [0..1] to ZI_IntercoCompanyCode         as _ProviderCompany  on  _ProviderCompany.CompanyCode = $projection.ProviderCompanyCode
+  association [0..1] to ZI_IntercoCompanyCode         as _RecipientCompany on  _RecipientCompany.CompanyCode = $projection.RecipientCompanyCode
+  association [0..1] to ZI_IntercoProduct             as _Product          on  _Product.Product = $projection.Product
+  association [0..1] to ZI_IntercoProfitCenter_SH     as _ProfitCenterText on  _ProfitCenterText.ProfitCenter = $projection.ProfitCenter
+  association [0..*] to zi_intercorelproduct_log      as _log              on  _log.uuid = $projection.Id
+  association [0..1] to ZI_IntercoFlow_SH             as _Flow             on  _Flow.Flow = $projection.Flow
+  -- Ini Facturación Local CH/ARG EXT_OSCUGALD 25.10.2026 - G02B: determinación de métrica
+  association [0..1] to ZI_IntercoMetricDetermination as _Metric           on  _Metric.Product               = $projection.Product
+                                                                           and (
+                                                                              _Metric.ProviderCompanyCode    = $projection.ProviderCompanyCode
+                                                                              or _Metric.ProviderCompanyCode = ''
+                                                                            )
+                                                                           and (
+                                                                              _Metric.PaymentType            = $projection.PaymentType
+                                                                              or _Metric.PaymentType         = ''
+                                                                            )
+                                                                           and _Metric.IsDeleted             = ''
+                                                                           and _Metric.ValidFrom             <= $session.system_date
+                                                                           and _Metric.ValidTo               >= $session.system_date
+  -- Fin EXT_OSCUGALD 25.10.2026 - G02B
 {
       @Semantics.uuid: true
-  key id                                 as Id,
-      providercompanycode                as ProviderCompanyCode,
-      _ProviderCompany.CompanyCodeName   as ProviderCompanyCodeName,
-      recipientcompanycode               as RecipientCompanyCode,
-      _RecipientCompany.CompanyCodeName  as RecipientCompanyCodeName,
-      product                            as Product,
-      _Product.ProductName               as ProductName,
-      _Product.Metric                    as Metric,
-      profitcenter                       as ProfitCenter,
-      _ProfitCenterText.ProfitCenterName as ProfitCenterName,
-      validfrom                          as ValidFrom,
-      validto                            as ValidTo,
-      rate                               as Rate,
-      cast( '%' as abap.unit( 3 ) )      as RateUnit,
-      flow                               as Flow,
-      _Flow.FlowName                     as FlowName,
-      ispromo                            as IsPromo,
-      isblocked                          as IsBlocked,
-      isdeleted                          as IsDeleted,
-      zindex                             as zindex,
-      _Product.AuthorizationGroup        as AuthorizationGroup,
+  key id                                          as Id,
+      providercompanycode                         as ProviderCompanyCode,
+      _ProviderCompany.CompanyCodeName            as ProviderCompanyCodeName,
+      recipientcompanycode                        as RecipientCompanyCode,
+      _RecipientCompany.CompanyCodeName           as RecipientCompanyCodeName,
+      product                                     as Product,
+      _Product.ProductName                        as ProductName,
+      -- Ini Facturación Local CH/ARG EXT_OSCUGALD 24.10.2026 - G01A: expone PaymentType
+      payment_type                                as PaymentType,
+      -- Fin EXT_OSCUGALD 24.10.2026 - G01A
+      -- Ini Facturación Local CH/ARG EXT_OSCUGALD 25.10.2026 - G02B: prioridad tabla y fallback
+      -- _Product.Metric                    as Metric,
+      coalesce( _Metric.Metric, _Product.Metric ) as Metric,
+      -- Fin EXT_OSCUGALD 25.10.2026 - G02B
+      profitcenter                                as ProfitCenter,
+      _ProfitCenterText.ProfitCenterName          as ProfitCenterName,
+      validfrom                                   as ValidFrom,
+      validto                                     as ValidTo,
+      rate                                        as Rate,
+      cast( '%' as abap.unit( 3 ) )               as RateUnit,
+      flow                                        as Flow,
+      _Flow.FlowName                              as FlowName,
+      ispromo                                     as IsPromo,
+      isblocked                                   as IsBlocked,
+      isdeleted                                   as IsDeleted,
+      zindex                                      as zindex,
+      _Product.AuthorizationGroup                 as AuthorizationGroup,
       @Semantics.systemDateTime.createdAt: true
-      createdat                          as CreatedAt,
+      createdat                                   as CreatedAt,
       @Semantics.user.createdBy: true
-      createdby                          as CreatedBy,
-      lastchangedat                      as LastChangedAt,
+      createdby                                   as CreatedBy,
+      lastchangedat                               as LastChangedAt,
 
       _ProviderCompany,
       _RecipientCompany,

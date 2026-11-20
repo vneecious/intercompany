@@ -301,20 +301,9 @@ where
 
   -- E/L se filtran por el resultado de clasificación; se conserva la ruta histórica I.
   and(
-    (
-      (
-                $parameters.P_PaymentType    =  'E'
-        or      $parameters.P_PaymentType    =  'L'
-      )
-      and       OriginObjectType             =  '02'
-      and       PaymentType                  = $parameters.P_PaymentType
-    )
-    or(
-                $parameters.P_PaymentType    =  'I'
-      and(
-                OriginObjectType             =  '01'
-        or      OriginObjectType             =  '45'
-      )
-    )
+                OriginObjectType             =  '02'
+    or          OriginObjectType             =  '01'
+    or          OriginObjectType             =  '45'
   )
+  and           PaymentType                  = $parameters.P_PaymentType
 -- Fin EXT_OSCUGALD 07.10.2026 - C12n (7b)

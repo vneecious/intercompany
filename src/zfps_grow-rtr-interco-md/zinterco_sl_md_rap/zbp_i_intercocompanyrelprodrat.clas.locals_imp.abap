@@ -11,7 +11,11 @@ CLASS lsc_zi_intercocompanyrelprodr IMPLEMENTATION.
 
     DATA(lref_cdo) = NEW zcl_interco_cdo( ).
     IF create-zi_intercocompanyrelprodrate IS NOT INITIAL.
-      lt_md003 = CORRESPONDING #( create-zi_intercocompanyrelprodrate ).
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 12.11.2026 - C25-R1: incluir PaymentType en el documento de cambios al crear
+      " lt_md003 = CORRESPONDING #( create-zi_intercocompanyrelprodrate ).
+      lt_md003 = CORRESPONDING #( create-zi_intercocompanyrelprodrate
+                                 MAPPING payment_type = PaymentType ).
+      " Fin EXT_OSCUGALD 12.11.2026 - C25-R1
       SORT lt_md003 BY uuid.
 
       SELECT client, uuid, providercompanycode, providercompanycodeName, recipientcompanycode, recipientcompanyName, "#EC CI_FAE_NO_LINES_OK
@@ -39,7 +43,11 @@ CLASS lsc_zi_intercocompanyrelprodr IMPLEMENTATION.
 
     ENDIF.
     IF update-zi_intercocompanyrelprodrate IS NOT INITIAL.
-      lt_md003 = CORRESPONDING #( update-zi_intercocompanyrelprodrate ).
+      " Ini Facturación Local CH/ARG EXT_OSCUGALD 12.11.2026 - C25-R1: incluir PaymentType en el documento de cambios al actualizar
+      " lt_md003 = CORRESPONDING #( update-zi_intercocompanyrelprodrate ).
+      lt_md003 = CORRESPONDING #( update-zi_intercocompanyrelprodrate
+                                 MAPPING payment_type = PaymentType ).
+      " Fin EXT_OSCUGALD 12.11.2026 - C25-R1
       SORT lt_md003 BY uuid.
 
       SELECT client, uuid, providercompanycode, providercompanycodeName, recipientcompanycode, recipientcompanyName, "#EC CI_FAE_NO_LINES_OK
@@ -230,6 +238,27 @@ CLASS lhc_ZI_INTERCOCOMPANYRELPRODRA IMPLEMENTATION.
 
     READ ENTITIES OF zi_intercocompanyrelprodrate IN LOCAL MODE
          ENTITY zi_intercocompanyrelprodrate ALL FIELDS WITH CORRESPONDING #( keys ) RESULT DATA(prodrate).
+
+    " Ini Facturación Local CH/ARG EXT_OSCUGALD 17.11.2026 - C25-R2: exigir tipo al guardar
+    LOOP AT prodrate INTO DATA(ls_c25r2_prodrate).
+
+      IF ls_c25r2_prodrate-PaymentType IS INITIAL.
+
+        APPEND VALUE #( %tky = ls_c25r2_prodrate-%tky )
+          TO failed-zi_intercocompanyrelprodrate.
+
+        APPEND VALUE #(
+          %tky                 = ls_c25r2_prodrate-%tky
+          %element-PaymentType = if_abap_behv=>mk-on
+          %msg                 = new_message_with_text(
+                                   severity = if_abap_behv_message=>severity-error
+                                   text     = 'Tipo Fac. Interco es obligatorio.' ) )
+          TO reported-zi_intercocompanyrelprodrate.
+
+      ENDIF.
+
+    ENDLOOP.
+    " Fin EXT_OSCUGALD 17.11.2026 - C25-R2
 
     READ TABLE prodrate  REFERENCE INTO DATA(ls_prodrate2) INDEX 1.
 

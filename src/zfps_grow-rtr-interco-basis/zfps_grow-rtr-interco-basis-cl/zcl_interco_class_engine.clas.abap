@@ -156,7 +156,10 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
       | AND LEDGER = '{ header-ledger }'| &&
       | AND SOURCELEDGER = '{ header-ledger }'| &&
       " | AND PAYMENTTYPE = '{ header-paymenttype }'| &&
-      | AND ORIGINOBJECTTYPE = '02'| &&
+      " Ini EXT_VINBARRI 12.11.2026 - CMC ingresos: sin filtro de origen.
+      " ZI_IntercoJEItem ya limita a los origenes 01/02/45.
+      " | AND ORIGINOBJECTTYPE = '02'| &&
+      " Fin EXT_VINBARRI 12.11.2026
       COND #( WHEN iv_processing_type = co_processing_type-delta THEN
       | AND CREATIONDATETIME >= '{ _createdat }' | ELSE space ).
     " Fin EXT_OSCUGALD 06.10.2026 - C12
@@ -187,7 +190,10 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
     FROM zi_intercojeitempandl
     WITH PRIVILEGED ACCESS
     WHERE (where)
-      AND ccallocationparentnode    IS NOT INITIAL
+      " Ini EXT_VINBARRI 12.11.2026 - CMC ingresos: allocation obligatorio solo para gastos (origen 02)
+      " AND ccallocationparentnode    IS NOT INITIAL
+      AND ( originobjecttype <> '02' OR ccallocationparentnode IS NOT INITIAL )
+      " Fin EXT_VINBARRI 12.11.2026
     AND glaccountparentnode IN @range_glparentnode
     AND pandll0id IN @range_pandll0id
     INTO CORRESPONDING FIELDS OF TABLE @lt_ag
@@ -284,7 +290,11 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
         | AND FISCALPERIOD = '{ header-fiscalperiod }'| &&
         | AND LEDGER = '{ header-ledger }'| &&
         | AND SOURCELEDGER = '{ header-ledger }'| &&
-        | AND PAYMENTTYPE = 'E'|.
+        " Ini EXT_VINBARRI 12.11.2026 - CMC ingresos: sin filtro de PaymentType en AG.
+        " AG ya contiene solo lo que se debe clasificar; E/L lo determina la regla ganadora.
+        " | AND PAYMENTTYPE = 'E'|.
+        ||.
+        " Fin EXT_VINBARRI 12.11.2026
       " Fin EXT_OSCUGALD 06.10.2026 - C12
 
       SELECT DISTINCT
@@ -592,7 +602,11 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
         | AND LEDGER = '{ header-ledger }'| &&
         | AND SOURCELEDGER = '{ header-ledger }'| &&
         " | AND PAYMENTTYPE = '{ header-paymenttype }'|.
-        | AND PAYMENTTYPE = 'E'|.
+        " Ini EXT_VINBARRI 12.11.2026 - CMC ingresos: sin filtro de PaymentType en AG.
+        " AG ya contiene solo lo que se debe clasificar; E/L lo determina la regla ganadora.
+        " | AND PAYMENTTYPE = 'E'|.
+        ||.
+        " Fin EXT_VINBARRI 12.11.2026
       " Fin EXT_OSCUGALD 06.10.2026 - C12
 
       SELECT DISTINCT
@@ -781,7 +795,11 @@ CLASS zcl_interco_class_engine IMPLEMENTATION.
       " AGREGADO DS4K9B5URA: items sin CCConsolidation no se clasifican.
       " Replica comportamiento V2: JOIN SQL "= NULL" nunca matchea rule → IsBillable = '-'.
       " En V3: item existe en AG pero sin entrada en CI → aparece como no tratado.
-      IF item->ccconsolidation IS INITIAL.
+      " Ini EXT_VINBARRI 12.11.2026 - CMC ingresos: exigir CCConsolidation solo si el item tiene CeCo.
+      " El area de jerarquia estandar es obligatoria en el maestro de CeCo: area vacia = item sin CeCo.
+      " IF item->ccconsolidation IS INITIAL.
+      IF item->ccconsolidation IS INITIAL AND item->costcenterstandardhierarea IS NOT INITIAL.
+      " Fin EXT_VINBARRI 12.11.2026
         CONTINUE.
       ENDIF.
 

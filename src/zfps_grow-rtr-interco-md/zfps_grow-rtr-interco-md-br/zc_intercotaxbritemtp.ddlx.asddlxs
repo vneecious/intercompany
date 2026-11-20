@@ -18,8 +18,7 @@ annotate entity ZC_IntercoTaxBRItemTP with
   @Consumption.valueHelpDefinition: [{
       entity: { name: 'ZI_DomainFixedValueVH', element: 'value_low' },
       useForValidation: true,
-      additionalBinding: [{ element: 'domain_name', localConstant: 'ZINT_TXBR_TAXTYPE', usage: #FILTER }],
-      distinctValues: true
+      additionalBinding: [{ element: 'domain_name', localConstant: 'ZINT_TXBR_TAXTYPE', usage: #FILTER }]
       }]
   @EndUserText.label: '{@i18n>TaxType}'
   TaxType;

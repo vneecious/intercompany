@@ -30,7 +30,7 @@ CLASS lsc_zi_intercocompanyrelprodr IMPLEMENTATION.
 
         lref_cdo->write_md003_chdo( EXPORTING iv_chin     = lref_cdo->cs_chdo-create
                                               is_data     = <fs_md003>
-                                              is_data_old = ls_data_old
+                                              is_data_old = corresponding #( ls_data_old )
                                     " TODO: variable is assigned but never used (ABAP cleaner)
                                     IMPORTING ev_error    = DATA(lv_error) ).
 
@@ -58,7 +58,7 @@ CLASS lsc_zi_intercocompanyrelprodr IMPLEMENTATION.
 
         lref_cdo->write_md003_chdo( EXPORTING iv_chin     = lref_cdo->cs_chdo-update
                                               is_data     = <fs_md003>
-                                              is_data_old = ls_data_old
+                                              is_data_old = corresponding #( ls_data_old )
                                     IMPORTING ev_error    = lv_error ).
         CLEAR ls_data_old.
       ENDLOOP.
@@ -84,7 +84,7 @@ CLASS lsc_zi_intercocompanyrelprodr IMPLEMENTATION.
 
         lref_cdo->write_md003_chdo( EXPORTING iv_chin     = lref_cdo->cs_chdo-delete
                                               is_data     = <fs_md003>
-                                              is_data_old = ls_data_old
+                                              is_data_old = corresponding #( ls_data_old )
                                     IMPORTING ev_error    = lv_error ).
         CLEAR ls_data_old.
       ENDLOOP.

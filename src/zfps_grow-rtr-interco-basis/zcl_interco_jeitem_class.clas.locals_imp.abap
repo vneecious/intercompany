@@ -66,9 +66,6 @@ CLASS lcl_query_in_parallel IMPLEMENTATION.
 
     DATA(groupby) = concat_lines_of( table = groupped_elements sep = ', ' ).
 
-    DATA lt_range_pandll0id_q TYPE zcl_interco_class_filter=>ty_pandl_range.
-    lt_range_pandll0id_q = zcl_interco_class_filter=>get_active_pandll0_range( ).
-
     "  Parameters
     DATA(p_companycode) = CONV bukrs( parameters[ parameter_name = 'P_COMPANYCODE' ]-value ).
     DATA(p_ledger) = CONV fins_ledger( parameters[ parameter_name = 'P_LEDGER' ]-value ).
@@ -83,7 +80,7 @@ CLASS lcl_query_in_parallel IMPLEMENTATION.
         p_fiscalperiod = @p_fiscalperiod,
         p_paymenttype = @p_paymenttype,
         p_bgprocessing = @abap_false )
-        WHERE (where) AND pandll0id IN @lt_range_pandll0id_q
+        WHERE (where)
         GROUP BY (groupby)
         INTO CORRESPONDING FIELDS OF TABLE @results.
 

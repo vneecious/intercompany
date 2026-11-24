@@ -13,6 +13,7 @@ define root view entity ZR_IntercoJEItemClassBGTP
       PaymentType,
       Pending,
       AllFilters,
+      RequestedColumns,
       @Semantics.user.lastChangedBy: true
       Createdby,
       @Semantics.systemDateTime.lastChangedAt: true

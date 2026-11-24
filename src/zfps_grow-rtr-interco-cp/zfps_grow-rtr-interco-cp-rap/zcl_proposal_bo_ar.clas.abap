@@ -1372,16 +1372,16 @@ CLASS ZCL_PROPOSAL_BO_AR IMPLEMENTATION.
         withholding_tax_item->withholdingtaxtype = standard_withtax_row->withholdingtaxtype.
       ENDDO.
 
-*      IF lv_wht_codes_found = 0 AND lines( customers_withtaxes ) > 0.
-*        " Ningun tipo activo del cliente tiene codigo BRF+ para este material: aqui si
-*        " es una brecha real de parametrizacion, el documento quedaria sin retencion.
-*        add_msg_to_log(
-*          iv_current_item = CORRESPONDING #( proposal_item_detail->* )
-*          iv_dockey       = dummy_documentkey
-*          iv_doctype      = mv_posting_doctype
-*          iv_message_type = 'W'
-*          iv_message_text = |WHT: ningun tipo del cliente { recipient_item->recipientcustomer } tiene codigo BRF+ parametrizado para material { recipient_item->product }| ).
-*      ENDIF.
+      IF lv_wht_codes_found = 0 AND lines( customers_withtaxes ) > 0.
+        " Ningun tipo activo del cliente tiene codigo BRF+ para este material: aqui si
+        " es una brecha real de parametrizacion, el documento quedaria sin retencion.
+        add_msg_to_log(
+          iv_current_item = CORRESPONDING #( proposal_item_detail->* )
+          iv_dockey       = dummy_documentkey
+          iv_doctype      = mv_posting_doctype
+          iv_message_type = 'W'
+          iv_message_text = |WHT: ningun tipo del cliente { recipient_item->recipientcustomer } tiene codigo BRF+ parametrizado para material { recipient_item->product }| ).
+      ENDIF.
 *Fin EXT_OSCUGALD 08.09.2026 - DF-522: genera un indicador WHT por cada tipo del cliente
 
       gta_je_post = journal_entries.

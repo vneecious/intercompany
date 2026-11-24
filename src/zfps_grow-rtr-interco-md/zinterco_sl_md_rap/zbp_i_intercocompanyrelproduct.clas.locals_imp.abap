@@ -28,7 +28,7 @@ CLASS lsc_zi_intercocompanyrelprodu IMPLEMENTATION.
 
         lref_cdo->write_md001_chdo( EXPORTING iv_chin     = lref_cdo->cs_chdo-create
                                               is_data     = <fs_md001>
-                                              is_data_old = ls_data_old
+                                              is_data_old = CORRESPONDING #( ls_data_old )
                                              " TODO: variable is assigned but never used (ABAP cleaner)
                                     IMPORTING ev_error    = DATA(lv_error) ).
       ENDLOOP.
@@ -54,7 +54,7 @@ CLASS lsc_zi_intercocompanyrelprodu IMPLEMENTATION.
 
         lref_cdo->write_md001_chdo( EXPORTING iv_chin     = lref_cdo->cs_chdo-update
                                               is_data     = <fs_md001>
-                                              is_data_old = ls_data_old
+                                              is_data_old = CORRESPONDING #( ls_data_old )
                                     IMPORTING ev_error    = lv_error ).
       ENDLOOP.
       lref_cdo->save_md001( iv_chin = lref_cdo->cs_chdo-update
@@ -66,7 +66,7 @@ CLASS lsc_zi_intercocompanyrelprodu IMPLEMENTATION.
         READ TABLE lt_md001_orig INTO ls_data_old WITH KEY id = <fs_md001>-id BINARY SEARCH.
         lref_cdo->write_md001_chdo( EXPORTING iv_chin     = lref_cdo->cs_chdo-delete
                                               is_data     = <fs_md001>
-                                              is_data_old = ls_data_old
+                                              is_data_old = CORRESPONDING #( ls_data_old )
                                     IMPORTING ev_error    = lv_error ).
       ENDLOOP.
       lref_cdo->save_md001( iv_chin = lref_cdo->cs_chdo-delete
@@ -111,12 +111,12 @@ CLASS lhc_zi_intercocompanyrelproduc DEFINITION INHERITING FROM cl_abap_behavior
       IMPORTING keys FOR ACTION zi_intercocompanyrelproduct~setdelete.
     METHODS deletedraft FOR MODIFY
       IMPORTING keys FOR ACTION zi_intercocompanyrelproduct~deletedraft.
-    METHODS uploadCompProducts FOR MODIFY
-      IMPORTING keys FOR ACTION zi_intercocompanyrelproduct~uploadCompProducts.
-    METHODS DeterValidFrom FOR DETERMINE ON MODIFY
-      IMPORTING keys FOR ZI_IntercoCompanyRelProduct~DeterValidFrom.
-    METHODS DeterValidTo FOR DETERMINE ON MODIFY
-      IMPORTING keys FOR ZI_IntercoCompanyRelProduct~DeterValidTo.
+    METHODS uploadcompproducts FOR MODIFY
+      IMPORTING keys FOR ACTION zi_intercocompanyrelproduct~uploadcompproducts.
+    METHODS detervalidfrom FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR zi_intercocompanyrelproduct~detervalidfrom.
+    METHODS detervalidto FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR zi_intercocompanyrelproduct~detervalidto.
 
     METHODS get_last_day_of_month
       IMPORTING VALUE(day_in)            TYPE sy-datum
@@ -135,19 +135,19 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
       APPEND VALUE #( %is_draft         = keys[ id = <fs_rate>-id ]-%is_draft
                       id                = <fs_rate>-id
                       %update           = COND #( WHEN <fs_rate>-isdeleted = abap_true
-                                                   OR <fs_rate>-IsBlocked = abap_true
+                                                   OR <fs_rate>-isblocked = abap_true
                       THEN if_abap_behv=>auth-unauthorized
-                      ELSE if_abap_behv=>auth-Allowed )
+                      ELSE if_abap_behv=>auth-allowed )
                       %delete           = COND #( WHEN <fs_rate>-isdeleted = abap_true
-                      THEN if_abap_behv=>auth-Allowed
+                      THEN if_abap_behv=>auth-allowed
                       ELSE if_abap_behv=>auth-unauthorized )
-                      %action-Block     = if_abap_behv=>auth-Allowed
+                      %action-block     = if_abap_behv=>auth-allowed
                       %action-release   = COND #( WHEN <fs_rate>-isdeleted = abap_true
                       THEN if_abap_behv=>auth-unauthorized
-                      ELSE if_abap_behv=>auth-Allowed )
-                      %action-SetDelete = COND #( WHEN <fs_rate>-isdeleted = abap_true
+                      ELSE if_abap_behv=>auth-allowed )
+                      %action-setdelete = COND #( WHEN <fs_rate>-isdeleted = abap_true
                       THEN if_abap_behv=>auth-unauthorized
-                      ELSE if_abap_behv=>auth-Allowed )
+                      ELSE if_abap_behv=>auth-allowed )
       ) TO result.
     ENDLOOP.
 
@@ -175,25 +175,25 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
       result-%delete = COND #( WHEN sy-subrc = 0 THEN if_abap_behv=>auth-allowed
                                ELSE if_abap_behv=>auth-unauthorized ).
     ENDIF.
-    IF requested_authorizations-%action-SetDelete = if_abap_behv=>mk-on.
+    IF requested_authorizations-%action-setdelete = if_abap_behv=>mk-on.
       AUTHORITY-CHECK OBJECT 'ZFI_IC_LVL'
       ID 'ACTVT' FIELD '02'
       ID 'ZFI_IC_LVV' DUMMY.
-      result-%action-SetDelete = COND #( WHEN sy-subrc = 0 THEN if_abap_behv=>auth-allowed
+      result-%action-setdelete = COND #( WHEN sy-subrc = 0 THEN if_abap_behv=>auth-allowed
                                          ELSE if_abap_behv=>auth-unauthorized ).
     ENDIF.
-    IF requested_authorizations-%action-Block = if_abap_behv=>mk-on.
+    IF requested_authorizations-%action-block = if_abap_behv=>mk-on.
       AUTHORITY-CHECK OBJECT 'ZFI_IC_LVL'
       ID 'ACTVT' FIELD '02'
       ID 'ZFI_IC_LVV' DUMMY.
-      result-%action-Block = COND #( WHEN sy-subrc = 0 THEN if_abap_behv=>auth-allowed
+      result-%action-block = COND #( WHEN sy-subrc = 0 THEN if_abap_behv=>auth-allowed
                                      ELSE if_abap_behv=>auth-unauthorized ).
     ENDIF.
-    IF requested_authorizations-%action-Release = if_abap_behv=>mk-on.
+    IF requested_authorizations-%action-release = if_abap_behv=>mk-on.
       AUTHORITY-CHECK OBJECT 'ZFI_IC_LVL'
       ID 'ACTVT' FIELD '02'
       ID 'ZFI_IC_LVV' DUMMY.
-      result-%action-Release = COND #( WHEN sy-subrc = 0 THEN if_abap_behv=>auth-allowed
+      result-%action-release = COND #( WHEN sy-subrc = 0 THEN if_abap_behv=>auth-allowed
                                        ELSE if_abap_behv=>auth-unauthorized ).
     ENDIF.
   ENDMETHOD.
@@ -215,25 +215,25 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
 
       "Cambio FPSRUNFI-5784 | Siempre permitir edición, solo marcar como mandatory si están vacíos**
       APPEND VALUE #( %tky                        = <fs_rate>-%tky
-                      %field-ProviderCompanyCode  = COND #( WHEN <fs_rate>-ProviderCompanyCode IS INITIAL
+                      %field-providercompanycode  = COND #( WHEN <fs_rate>-providercompanycode IS INITIAL
                                                            THEN if_abap_behv=>fc-f-mandatory
                                                            ELSE if_abap_behv=>fc-f-unrestricted )
-                      %field-RecipientCompanyCode = COND #( WHEN <fs_rate>-RecipientCompanyCode IS INITIAL
+                      %field-recipientcompanycode = COND #( WHEN <fs_rate>-recipientcompanycode IS INITIAL
                                                            THEN if_abap_behv=>fc-f-mandatory
                                                            ELSE if_abap_behv=>fc-f-unrestricted )
-                      %field-Product              = COND #( WHEN <fs_rate>-Product IS INITIAL
+                      %field-product              = COND #( WHEN <fs_rate>-product IS INITIAL
                                                            THEN if_abap_behv=>fc-f-mandatory
                                                            ELSE if_abap_behv=>fc-f-unrestricted )
-                      %field-ProfitCenter         = COND #( WHEN <fs_rate>-ProfitCenter IS INITIAL
+                      %field-profitcenter         = COND #( WHEN <fs_rate>-profitcenter IS INITIAL
                                                            THEN if_abap_behv=>fc-f-mandatory
                                                            ELSE if_abap_behv=>fc-f-unrestricted )
-                      %field-Flow                 = COND #( WHEN <fs_rate>-Flow IS INITIAL
+                      %field-flow                 = COND #( WHEN <fs_rate>-flow IS INITIAL
                                                            THEN if_abap_behv=>fc-f-mandatory
                                                            ELSE if_abap_behv=>fc-f-unrestricted )
-                      %field-ValidFrom            = COND #( WHEN <fs_rate>-ValidFrom IS INITIAL
+                      %field-validfrom            = COND #( WHEN <fs_rate>-validfrom IS INITIAL
                                                            THEN if_abap_behv=>fc-f-mandatory
                                                            ELSE if_abap_behv=>fc-f-unrestricted )
-                      %field-ValidTo              = COND #( WHEN <fs_rate>-ValidTo IS INITIAL
+                      %field-validto              = COND #( WHEN <fs_rate>-validto IS INITIAL
                                                            THEN if_abap_behv=>fc-f-mandatory
                                                            ELSE if_abap_behv=>fc-f-unrestricted )
                     ) TO result.
@@ -284,15 +284,15 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
          ENTITY zi_intercocompanyrelproduct ALL FIELDS WITH CORRESPONDING #( keys ) RESULT DATA(lt_compprod).
 
     LOOP AT lt_compprod INTO DATA(ls_comp_check).
-      IF ls_comp_check-ProviderCompanyCode IS NOT INITIAL AND
-         ls_comp_check-RecipientCompanyCode IS NOT INITIAL AND
-         ls_comp_check-Product IS NOT INITIAL AND
-         ls_comp_check-ProfitCenter IS NOT INITIAL AND
-         ls_comp_check-Flow IS NOT INITIAL AND
-         ls_comp_check-ValidFrom IS NOT INITIAL AND
-         ls_comp_check-ValidTo IS NOT INITIAL.
+      IF ls_comp_check-providercompanycode IS NOT INITIAL AND
+         ls_comp_check-recipientcompanycode IS NOT INITIAL AND
+         ls_comp_check-product IS NOT INITIAL AND
+         ls_comp_check-profitcenter IS NOT INITIAL AND
+         ls_comp_check-flow IS NOT INITIAL AND
+         ls_comp_check-validfrom IS NOT INITIAL AND
+         ls_comp_check-validto IS NOT INITIAL.
 
-        IF ls_comp_check-Flow = 'O' OR ls_comp_check-Flow = 'I'.
+        IF ls_comp_check-flow = 'O' OR ls_comp_check-flow = 'I'.
           CONTINUE.
         ENDIF.
       ENDIF.
@@ -400,14 +400,14 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
         "###### Fim DF-190.
 
         IF ls_companyrelepproduct->profitcenter IS INITIAL.
-          APPEND VALUE #( %key = ls_compprod->%key ) TO failed-ZI_IntercoCompanyRelProduct.
+          APPEND VALUE #( %key = ls_compprod->%key ) TO failed-zi_intercocompanyrelproduct.
           APPEND VALUE #( %key = ls_compprod->%key
                           %msg = new_message( id       = 'ZINT_MSG_INTERCO_MD'
                                               number   = '008'
-                                              severity = if_abap_behv_message=>severity-error ) ) TO reported-ZI_IntercoCompanyRelProduct.
+                                              severity = if_abap_behv_message=>severity-error ) ) TO reported-zi_intercocompanyrelproduct.
         ELSE.
-          SELECT SINGLE ProfitCenter FROM zi_intercoprofitcenter
-            WHERE ProfitCenter = @ls_companyrelepproduct->profitcenter
+          SELECT SINGLE profitcenter FROM zi_intercoprofitcenter
+            WHERE profitcenter = @ls_companyrelepproduct->profitcenter
             INTO @DATA(lv_profitcenter).
           IF lv_profitcenter IS INITIAL.
             APPEND VALUE #( %key = ls_compprod->%key ) TO failed-zi_intercocompanyrelproduct.
@@ -517,9 +517,9 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
             AND recipientcompanycode  = @ls_companyrelepproduct->recipientcompanycode
             AND product               = @ls_companyrelepproduct->product
             AND profitcenter          = @ls_companyrelepproduct->profitcenter
-            AND flow                  = @ls_companyrelepproduct->Flow
-            AND validfrom            <= @ls_companyrelepproduct->ValidFrom
-            AND validto              >= @ls_companyrelepproduct->ValidTo
+            AND flow                  = @ls_companyrelepproduct->flow
+            AND validfrom            <= @ls_companyrelepproduct->validfrom
+            AND validto              >= @ls_companyrelepproduct->validto
             AND isdeleted             = @abap_false
           INTO @DATA(ls_companyproduct_aux).
 
@@ -548,8 +548,8 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
     ELSE.
 
       DATA(lt_data_aux) = lt_companyproduct[].
-      SORT lt_Data_aux BY ProviderCompanyCode.
-      DELETE ADJACENT DUPLICATES FROM lt_Data_aux COMPARING ProviderCompanyCode.
+      SORT lt_data_aux BY providercompanycode.
+      DELETE ADJACENT DUPLICATES FROM lt_data_aux COMPARING providercompanycode.
 
       IF lt_data_aux[] IS NOT INITIAL.
 
@@ -559,30 +559,30 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
           WHERE zi_intercorelationship~providercompanycode = @lt_data_aux-providercompanycode
           INTO TABLE @DATA(lt_company).
         IF sy-subrc = 0.
-          SORT lt_company BY ProviderCompanyCode.
+          SORT lt_company BY providercompanycode.
         ENDIF.
       ENDIF.
 
       lt_data_aux = lt_companyproduct[].
-      SORT lt_Data_aux BY RecipientCompanyCode.
-      DELETE ADJACENT DUPLICATES FROM lt_Data_aux COMPARING RecipientCompanyCode.
+      SORT lt_data_aux BY recipientcompanycode.
+      DELETE ADJACENT DUPLICATES FROM lt_data_aux COMPARING recipientcompanycode.
 
       IF lt_data_aux[] IS NOT INITIAL.
 
-        SELECT zi_intercorelationship~RecipientCompanyCode
+        SELECT zi_intercorelationship~recipientcompanycode
           FROM zi_intercorelationship
           FOR ALL ENTRIES IN @lt_data_aux
-          WHERE zi_intercorelationship~RecipientCompanyCode = @lt_data_aux-RecipientCompanyCode
+          WHERE zi_intercorelationship~recipientcompanycode = @lt_data_aux-recipientcompanycode
           INTO TABLE @DATA(lt_company2).
         IF sy-subrc = 0.
-          SORT lt_company BY ProviderCompanyCode.
+          SORT lt_company BY providercompanycode.
         ENDIF.
       ENDIF.
 
       lt_data_aux = lt_companyproduct[].
-      SORT lt_Data_aux BY providercompanycode
-                          RecipientCompanyCode.
-      DELETE ADJACENT DUPLICATES FROM lt_Data_aux COMPARING providercompanycode RecipientCompanyCode.
+      SORT lt_data_aux BY providercompanycode
+                          recipientcompanycode.
+      DELETE ADJACENT DUPLICATES FROM lt_data_aux COMPARING providercompanycode recipientcompanycode.
 
       IF lt_data_aux[] IS NOT INITIAL.
         SELECT providercompanycode, recipientcompanycode
@@ -592,14 +592,14 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
             AND recipientcompanycode = @lt_data_aux-recipientcompanycode
           INTO TABLE @DATA(lt_intercorelationship).
         IF sy-subrc = 0.
-          SORT lt_intercorelationship BY ProviderCompanyCode
+          SORT lt_intercorelationship BY providercompanycode
                                          recipientcompanycode.
         ENDIF.
       ENDIF.
 
       lt_data_aux = lt_companyproduct[].
-      SORT lt_Data_aux BY Product.
-      DELETE ADJACENT DUPLICATES FROM lt_Data_aux COMPARING Product.
+      SORT lt_data_aux BY product.
+      DELETE ADJACENT DUPLICATES FROM lt_data_aux COMPARING product.
 
       IF lt_data_aux[] IS NOT INITIAL.
 
@@ -608,32 +608,32 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
           WHERE product = @lt_data_aux-product
           INTO TABLE @DATA(lt_product).
         IF sy-subrc = 0.
-          SORT lt_product BY Product.
+          SORT lt_product BY product.
         ENDIF.
       ENDIF.
 
       lt_data_aux = lt_companyproduct[].
-      SORT lt_Data_aux BY ProfitCenter.
-      DELETE ADJACENT DUPLICATES FROM lt_Data_aux COMPARING ProfitCenter.
+      SORT lt_data_aux BY profitcenter.
+      DELETE ADJACENT DUPLICATES FROM lt_data_aux COMPARING profitcenter.
 
       IF lt_data_aux[] IS NOT INITIAL.
-        SELECT ProfitCenter FROM zi_intercoprofitcenter
+        SELECT profitcenter FROM zi_intercoprofitcenter
           FOR ALL ENTRIES IN @lt_data_aux
-          WHERE ProfitCenter = @lt_data_aux-profitcenter
+          WHERE profitcenter = @lt_data_aux-profitcenter
           INTO TABLE @DATA(lt_profitcenter).
         IF sy-subrc = 0.
-          SORT lt_profitcenter BY ProfitCenter.
+          SORT lt_profitcenter BY profitcenter.
         ENDIF.
       ENDIF.
 
       lt_data_aux = lt_companyproduct[].
-      SORT lt_Data_aux BY id
+      SORT lt_data_aux BY id
                           providercompanycode
-                          RecipientCompanyCode
-                          Product
-                          ProfitCenter
+                          recipientcompanycode
+                          product
+                          profitcenter
                           flow.
-      DELETE ADJACENT DUPLICATES FROM lt_Data_aux COMPARING id providercompanycode RecipientCompanyCode Product ProfitCenter flow.
+      DELETE ADJACENT DUPLICATES FROM lt_data_aux COMPARING id providercompanycode recipientcompanycode product profitcenter flow.
 
       IF lt_data_aux[] IS NOT INITIAL.
 
@@ -688,9 +688,9 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
         IF sy-subrc = 0.
 
           SORT lt_companyprod BY providercompanycode
-                                 RecipientCompanyCode
-                                 Product
-                                 ProfitCenter
+                                 recipientcompanycode
+                                 product
+                                 profitcenter
                                  flow.
         ENDIF.
       ENDIF.
@@ -699,8 +699,8 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
       " Por Favor ajustar la validacion de datos en la applicacion Relaciones de Sociedades por Conceptos (IC02D)
       " de maneira tal de permitir registros sin CEBE para materiales de Cost Sharing Brasil
       lt_data_aux = lt_companyproduct[].
-      SORT lt_Data_aux BY product.
-      DELETE ADJACENT DUPLICATES FROM lt_Data_aux COMPARING Product.
+      SORT lt_data_aux BY product.
+      DELETE ADJACENT DUPLICATES FROM lt_data_aux COMPARING product.
 
       IF lt_data_aux[] IS NOT INITIAL.
 
@@ -727,8 +727,9 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
                                               number   = '042'
                                               severity = if_abap_behv_message=>severity-error ) ) TO reported-zi_intercocompanyrelproduct.
         ELSE.
-          READ TABLE lt_company TRANSPORTING NO FIELDS WITH KEY providercompanycode = ls_companyrelepproduct->providercompanycode BINARY SEARCH.
-          IF sy-subrc <> 0.
+*          READ TABLE lt_company TRANSPORTING NO FIELDS WITH KEY providercompanycode = ls_companyrelepproduct->providercompanycode BINARY SEARCH.
+*          IF sy-subrc <> 0.
+          IF NOT line_exists( lt_company[ providercompanycode = ls_companyrelepproduct->providercompanycode ] ).
             APPEND VALUE #( %key = ls_compprod->%key ) TO failed-zi_intercocompanyrelproduct.
             APPEND VALUE #( %key = ls_compprod->%key
                             %msg = new_message( id       = 'ZINT_MSG_INTERCO_MD'
@@ -747,8 +748,9 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
                                               severity = if_abap_behv_message=>severity-error ) ) TO reported-zi_intercocompanyrelproduct.
         ELSE.
 
-          READ TABLE lt_company2 TRANSPORTING NO FIELDS WITH KEY RecipientCompanyCode = ls_companyrelepproduct->RecipientCompanyCode BINARY SEARCH.
-          IF sy-subrc <> 0.
+*          READ TABLE lt_company2 TRANSPORTING NO FIELDS WITH KEY recipientcompanycode = ls_companyrelepproduct->recipientcompanycode BINARY SEARCH.
+*          IF sy-subrc <> 0.
+          IF NOT line_exists( lt_company2[ recipientcompanycode = ls_companyrelepproduct->recipientcompanycode ] ).
             APPEND VALUE #( %key = ls_compprod->%key ) TO failed-zi_intercocompanyrelproduct.
             APPEND VALUE #( %key = ls_compprod->%key
                             %msg = new_message( id       = 'ZINT_MSG_INTERCO_MD'
@@ -762,8 +764,8 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
            AND ls_companyrelepproduct->recipientcompanycode IS NOT INITIAL
            AND ls_companyrelepproduct->providercompanycode  <> ls_companyrelepproduct->recipientcompanycode.
 
-          READ TABLE lt_intercorelationship TRANSPORTING NO FIELDS WITH KEY ProviderCompanyCode  = ls_companyrelepproduct->ProviderCompanyCode
-                                                                            RecipientCompanyCode = ls_companyrelepproduct->RecipientCompanyCode BINARY SEARCH.
+          READ TABLE lt_intercorelationship TRANSPORTING NO FIELDS WITH KEY providercompanycode  = ls_companyrelepproduct->providercompanycode
+                                                                            recipientcompanycode = ls_companyrelepproduct->recipientcompanycode BINARY SEARCH.
           IF sy-subrc <> 0.
             APPEND VALUE #( %key = ls_compprod->%key ) TO failed-zi_intercocompanyrelproduct.
             APPEND VALUE #( %key = ls_compprod->%key
@@ -783,7 +785,7 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
                                               severity = if_abap_behv_message=>severity-error ) ) TO reported-zi_intercocompanyrelproduct.
         ELSE.
 
-          READ TABLE lt_product TRANSPORTING NO FIELDS WITH KEY Product = ls_companyrelepproduct->Product BINARY SEARCH.
+          READ TABLE lt_product TRANSPORTING NO FIELDS WITH KEY product = ls_companyrelepproduct->product BINARY SEARCH.
           IF sy-subrc <> 0.
             APPEND VALUE #( %key = ls_compprod->%key ) TO failed-zi_intercocompanyrelproduct.
             APPEND VALUE #( %key = ls_compprod->%key
@@ -795,20 +797,20 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
         ENDIF.
 
         "###### Inicio DF-190 - Submiter: Florencia Majul
-        READ TABLE lt_productgroup INTO DATA(ls_productgroup) WITH KEY product = ls_companyrelepproduct->Product BINARY SEARCH.
+        READ TABLE lt_productgroup INTO DATA(ls_productgroup) WITH KEY product = ls_companyrelepproduct->product BINARY SEARCH.
         IF ls_productgroup-group <> 'IC' AND ls_productgroup-group <> 'CS'.
           "###### Fim DF-190.
 
           IF ls_companyrelepproduct->profitcenter IS INITIAL.
-            APPEND VALUE #( %key = ls_compprod->%key ) TO failed-ZI_IntercoCompanyRelProduct.
+            APPEND VALUE #( %key = ls_compprod->%key ) TO failed-zi_intercocompanyrelproduct.
             APPEND VALUE #( %key = ls_compprod->%key
                             %msg = new_message( id       = 'ZINT_MSG_INTERCO_MD'
                                                 number   = '046'
                                                 v1       = lv_index
-                                                severity = if_abap_behv_message=>severity-error ) ) TO reported-ZI_IntercoCompanyRelProduct.
+                                                severity = if_abap_behv_message=>severity-error ) ) TO reported-zi_intercocompanyrelproduct.
           ELSE.
 
-            READ TABLE lt_profitcenter TRANSPORTING NO FIELDS WITH KEY ProfitCenter = ls_companyrelepproduct->ProfitCenter BINARY SEARCH.
+            READ TABLE lt_profitcenter TRANSPORTING NO FIELDS WITH KEY profitcenter = ls_companyrelepproduct->profitcenter BINARY SEARCH.
             IF sy-subrc <> 0.
               APPEND VALUE #( %key = ls_compprod->%key ) TO failed-zi_intercocompanyrelproduct.
               APPEND VALUE #( %key = ls_compprod->%key
@@ -885,9 +887,9 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
             AND ltprod~recipientcompanycode  = @ls_companyrelepproduct->recipientcompanycode
             AND ltprod~product               = @ls_companyrelepproduct->product
             AND ltprod~profitcenter          = @ls_companyrelepproduct->profitcenter
-            AND ltprod~flow                  = @ls_companyrelepproduct->Flow
-            AND ltprod~Validfrom            <= @ls_companyrelepproduct->Validfrom
-            AND ltprod~Validto              >= @ls_companyrelepproduct->Validto
+            AND ltprod~flow                  = @ls_companyrelepproduct->flow
+            AND ltprod~validfrom            <= @ls_companyrelepproduct->validfrom
+            AND ltprod~validto              >= @ls_companyrelepproduct->validto
           INTO TABLE @DATA(lt_duplicated).
         IF lt_duplicated[] IS NOT INITIAL.
           CLEAR lt_duplicated[].
@@ -919,9 +921,9 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
               AND ltcomprod~recipientcompanycode  = @ls_companyrelepproduct->recipientcompanycode
               AND ltcomprod~product               = @ls_companyrelepproduct->product
               AND ltcomprod~profitcenter          = @ls_companyrelepproduct->profitcenter
-              AND ltcomprod~flow                  = @ls_companyrelepproduct->Flow
-              AND ltcomprod~Validfrom            <= @ls_companyrelepproduct->Validfrom
-              AND ltcomprod~Validto              >= @ls_companyrelepproduct->Validto
+              AND ltcomprod~flow                  = @ls_companyrelepproduct->flow
+              AND ltcomprod~validfrom            <= @ls_companyrelepproduct->validfrom
+              AND ltcomprod~validto              >= @ls_companyrelepproduct->validto
             INTO @DATA(ls_exist).
           IF ls_exist IS NOT INITIAL.
             CLEAR ls_exist.
@@ -1028,7 +1030,7 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-  METHOD deleteDraft.
+  METHOD deletedraft.
 
     READ ENTITIES OF zi_intercocompanyrelproduct IN LOCAL MODE
        ENTITY zi_intercocompanyrelproduct ALL FIELDS WITH CORRESPONDING #( keys )
@@ -1056,7 +1058,7 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD uploadCompProducts.
+  METHOD uploadcompproducts.
     DATA lt_companyproduct TYPE TABLE FOR CREATE zi_intercocompanyrelproduct.
 
     IF keys IS INITIAL.
@@ -1089,33 +1091,33 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
       GET TIME STAMP FIELD DATA(lv_tmtmpl).
       lt_companyproduct = VALUE #( FOR ls_data IN lt_data INDEX INTO lv_index
                                    ( %cid                 = lv_index + 1
-                                     Product              = ls_data-material
-                                     ProviderCompanyCode  = ls_data-providerCompany
-                                     RecipientCompanyCode = ls_data-recipientcompany
-                                     ProfitCenter         = |{ ls_data-profitCenter ALPHA = IN }|
-                                     ValidFrom            = ls_data-validFrom
-                                     ValidTo              = ls_data-validTo
-                                     Flow                 = ls_data-flow
+                                     product              = ls_data-material
+                                     providercompanycode  = ls_data-providercompany
+                                     recipientcompanycode = ls_data-recipientcompany
+                                     profitcenter         = |{ ls_data-profitcenter ALPHA = IN }|
+                                     validfrom            = ls_data-validfrom
+                                     validto              = ls_data-validto
+                                     flow                 = ls_data-flow
                                      rate                 = ls_data-rate
 *                                     IsPromo              = ls_data-ispromo
-                                     IsPromo              = abap_false
-                                     CreatedBy            = sy-uname
-                                     CreatedAt            = lv_tmtmpl
+                                     ispromo              = abap_false
+                                     createdby            = sy-uname
+                                     createdat            = lv_tmtmpl
                                      zindex               = lv_index + 1 ) ).
       LOOP AT lt_companyproduct ASSIGNING FIELD-SYMBOL(<fs_row>).
-        IF <fs_row>-ValidFrom IS NOT INITIAL.
-          <fs_row>-ValidFrom+6(2) = '01'.
+        IF <fs_row>-validfrom IS NOT INITIAL.
+          <fs_row>-validfrom+6(2) = '01'.
         ENDIF.
-        IF <fs_row>-ValidTo <> '99991231'.
-          get_last_day_of_month( EXPORTING day_in            = <fs_row>-ValidTo
-                                 IMPORTING last_day_of_month = <fs_row>-ValidTo ).
+        IF <fs_row>-validto <> '99991231'.
+          get_last_day_of_month( EXPORTING day_in            = <fs_row>-validto
+                                 IMPORTING last_day_of_month = <fs_row>-validto ).
         ENDIF.
       ENDLOOP.
 
       TRY.
-          MODIFY ENTITIES OF ZI_IntercoCompanyRelProduct IN LOCAL MODE
-                 ENTITY ZI_IntercoCompanyRelProduct
-                 CREATE FIELDS ( Product ProviderCompanyCode RecipientCompanyCode ProfitCenter ValidFrom ValidTo rate flow ispromo zindex CreatedBy CreatedAt )
+          MODIFY ENTITIES OF zi_intercocompanyrelproduct IN LOCAL MODE
+                 ENTITY zi_intercocompanyrelproduct
+                 CREATE FIELDS ( product providercompanycode recipientcompanycode profitcenter validfrom validto rate flow ispromo zindex createdby createdat )
                  WITH lt_companyproduct[]
                  MAPPED mapped
                  FAILED failed
@@ -1155,7 +1157,7 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-  METHOD DeterValidFrom.
+  METHOD detervalidfrom.
     IF keys IS INITIAL.
       RETURN.
     ENDIF.
@@ -1166,35 +1168,35 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
     ENDIF.
 
     READ ENTITIES OF zi_intercocompanyrelproduct IN LOCAL MODE
-         ENTITY ZI_IntercoCompanyRelProduct
-         FIELDS ( ValidFrom ValidTo )
+         ENTITY zi_intercocompanyrelproduct
+         FIELDS ( validfrom validto )
          WITH CORRESPONDING #( keys )
-         RESULT DATA(lt_companyProducts).
+         RESULT DATA(lt_companyproducts).
     IF sy-subrc <> 0.
       RETURN.
     ENDIF.
 
     ASSIGN lt_companyproducts[ 1 ] TO FIELD-SYMBOL(<fs_prod>).
     IF sy-subrc = 0.
-      IF <fs_prod>-ValidFrom+6(2) <> '01' OR <fs_prod>-ValidTo IS INITIAL.
-        <fs_prod>-ValidFrom+6(2) = '01'.
-        IF <fs_prod>-ValidTo <> '99991231'.
-          get_last_day_of_month( EXPORTING day_in            = <fs_prod>-ValidFrom
-                                 IMPORTING last_day_of_month = <fs_prod>-ValidTo ).
+      IF <fs_prod>-validfrom+6(2) <> '01' OR <fs_prod>-validto IS INITIAL.
+        <fs_prod>-validfrom+6(2) = '01'.
+        IF <fs_prod>-validto <> '99991231'.
+          get_last_day_of_month( EXPORTING day_in            = <fs_prod>-validfrom
+                                 IMPORTING last_day_of_month = <fs_prod>-validto ).
 
         ENDIF.
 
         UNASSIGN <fs_prod>.
 
         MODIFY ENTITIES OF zi_intercocompanyrelproduct IN LOCAL MODE
-               ENTITY ZI_IntercoCompanyRelProduct
-               UPDATE FIELDS ( ValidFrom ValidTo )
-               WITH CORRESPONDING #( lt_companyProducts ).
+               ENTITY zi_intercocompanyrelproduct
+               UPDATE FIELDS ( validfrom validto )
+               WITH CORRESPONDING #( lt_companyproducts ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
 
-  METHOD DeterValidTo.
+  METHOD detervalidto.
     IF keys IS INITIAL.
       RETURN.
     ENDIF.
@@ -1205,26 +1207,26 @@ CLASS lhc_zi_intercocompanyrelproduc IMPLEMENTATION.
     ENDIF.
 
     READ ENTITIES OF zi_intercocompanyrelproduct IN LOCAL MODE
-         ENTITY ZI_IntercoCompanyRelProduct
-         FIELDS ( ValidTo )
+         ENTITY zi_intercocompanyrelproduct
+         FIELDS ( validto )
          WITH CORRESPONDING #( keys )
-         RESULT DATA(lt_companyProducts).
+         RESULT DATA(lt_companyproducts).
     IF sy-subrc <> 0.
       RETURN.
     ENDIF.
 
     ASSIGN lt_companyproducts[ 1 ] TO FIELD-SYMBOL(<fs_prod>).
     IF sy-subrc = 0.
-      IF <fs_prod>-ValidTo <> '99991231'.
-        DATA(lv_validTo) = zcl_interco_utils=>rp_last_day_of_months( day_in = <fs_prod>-ValidTo ).
+      IF <fs_prod>-validto <> '99991231'.
+        DATA(lv_validto) = zcl_interco_utils=>rp_last_day_of_months( day_in = <fs_prod>-validto ).
 *        get_last_day_of_month( EXPORTING day_in            = <fs_prod>-ValidTo
 *                               IMPORTING last_day_of_month = DATA(lv_validTo) ).
-        IF lv_validTo <> <fs_prod>-ValidTo.
-          <fs_prod>-ValidTo = lv_validTo.
+        IF lv_validto <> <fs_prod>-validto.
+          <fs_prod>-validto = lv_validto.
           MODIFY ENTITIES OF zi_intercocompanyrelproduct IN LOCAL MODE
-                 ENTITY ZI_IntercoCompanyRelProduct
-                 UPDATE FIELDS ( ValidTo )
-                 WITH CORRESPONDING #( lt_companyProducts ).
+                 ENTITY zi_intercocompanyrelproduct
+                 UPDATE FIELDS ( validto )
+                 WITH CORRESPONDING #( lt_companyproducts ).
         ENDIF.
       ENDIF.
 

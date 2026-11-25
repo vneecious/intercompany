@@ -144,7 +144,6 @@ CLASS ZCL_INTERCO_JEITEM_BG IMPLEMENTATION.
   ENDMETHOD.
 
 
-
   METHOD build_field_list.
     " Sin columnas informadas (UI anterior a este ajuste): se graban todas, como antes.
     IF iv_requested_columns IS INITIAL.
@@ -294,7 +293,7 @@ CLASS ZCL_INTERCO_JEITEM_BG IMPLEMENTATION.
         result_db->bgcreatedby = sy-uname.
       ENDDO.
 
-*      MODIFY zint_a_jei FROM TABLE @results_db.
+      MODIFY zint_a_jei FROM TABLE @results_db.
     ENDSELECT.
 
     COMMIT WORK.
@@ -318,4 +317,3 @@ CLASS ZCL_INTERCO_JEITEM_BG IMPLEMENTATION.
 
   ENDMETHOD.
 ENDCLASS.
-
